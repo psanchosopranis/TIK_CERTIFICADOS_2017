@@ -399,10 +399,10 @@ $ gcr-viewer rsakeypair01.pem
 
 ### Ejemplo 01.02: Obtener la clave RSA generada en el ejemplo anterior codificada en `DER  (Distinguished Encoding Rules)` sin cifrar `(PKCS#1)` utilizando `openssl rsa`
 
-´´´
+```
 $ openssl rsa -in rsakeypair01.pem -inform PEM -out rsakeypair01.der -outform DER
 writing RSA key
-´´´
+```
 
 #### Visualizando el archivo obtenido:
 
@@ -501,6 +501,7 @@ $ ghex rsakeypair01.der
 * Visualización con las mismas herramientas utilizadas en el ejemplo anterior producirán el mismo resultado:
     * `$ openssl rsa -in rsakeypair01.der -inform DER -text`
     * `$ openssl asn1parse -in rsakeypair01.der -inform DER -i -dump`
+    * `$ gcr-viewer rsakeypair01.der`
 
 >Nota: No olvidar informar correctamente que el archivo se encuentra en encoding format `DER ( -inform DER )`
 
@@ -609,3 +610,445 @@ $ dumpasn1 -adhl rsakeypair01.der
 0 warnings, 0 errors.
 
 ```
+
+### Ejemplo 01.03: Generar clave RSA en formato `(PKCS#1)` `PEM` y `DER` con diferentes protecciones de cifrado `(PKCS#1)`
+
+>Nota: ver [PKCS #5: Password-Based Cryptography Standard](https://web.archive.org/web/20061210143350/http://www.rsasecurity.com/rsalabs/node.asp?id=2127)
+
+#### En formato `PEM` con `PBE - Password Based Encription` y `des3 - 'Triple DES`:
+
+```
+$ openssl genrsa -out rsakeypair02_des3.pem -des3 -passout pass:changeit
+Generating RSA private key, 2048 bit long modulus
+..............................+++
+.........+++
+e is 65537 (0x10001)
+```
+
+* Visualización:
+
+```
+$ cat rsakeypair02_des3.pem 
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: DES-EDE3-CBC,4B71D975CC60A4FC
+
+TF60GPXKPaHd3YvBX8HY+oKFs0580y0BDFKn4EkZ7NfROYVT+urP7VcTpnQfWODu
+Knf0whwbWZHh2blqiS5sGgl9SEpBMMdAHAJi/vjnkBatFoJuzhlJkQ+8zDNbooZ4
+aHuGN9+4JTIFmwM2PeUpbIgk4epuot3CXCkkdDN13i28MY48aL94e0qL9Hw9HxpE
+ZAjHgelFKDVhig6Qdi/o4x92ulmurQbp7r8J78rUG2cF81ou9/FafgOrquOR4GNC
+7UrR4WqJlI2NMLndeGAXksEGK8HpiSukvFirOg2OmYwuch7eMxAUuHu8AvyToK7o
+s2Aknn66RF9U/dQCVNxaBzwqI+HCK+QugosjjppwahjGgaRkcHqYoUKOdDYT2N/6
+EQjz91gaCa4ZNaydQvm04Bnj2vEq9QZVFH8j7hIHLjlODAXxxiIalL49PIgWvwTe
+gE7uPt80BQeTSLw5Aw15POoXNyPMreXHIhHtPD/Er6UXW6MsEoiX2FjpebU2Haeh
+yipcdc7Bre61MyfPv/ScA8/34WWV+MC7MRksq9DvdunWylCh4osdsjHrBWqaxPmk
+v9fRt6n1S0/tgsQX9vKs4jDl4w1q6VVqz4hkdaI16KRBGkXU476pVysBmo2zDqWf
+ukyRTVQL7OOYPesiIgpWKWM4jfrijlgMH6JXXyXlfgWOsSBdCaTF/xr/JIcz+/p7
+MmM6WvDHPm7bqdTDwHOLB8xlCFcQEf1ZlgY0k6Tg4Zh+q2BfQQev3hidG7LEjU9p
+2Ns2mUayOI0NNA2w1NzKCEjbBcHbDVpiHdN6ncMJjtNPrsg49sFNsm0cxL2AQmg1
+mQc67yV0d9h7sVAZY3SsQVpz61odWDkYtQOxwkS5Qa56VEs7rJ0Ba0iRC1WtIEd7
+d8VUUnM7C6iBByp037wFCqTFhrp5RQ8QlJiWAtBdwLawZaWzPwuJctBqzC3GmneD
+YddhHBQ80aqqqKPtfqjlFnmjnNGLuYtBgVA3jYztZrTOhafQ8wIeqG5nl21JJCte
+HoqYeDodSDESYuQsxuBZ4lK8+YV/CnWk6sxy4vDrjyoyFDkzV6/n1BP3uheB+GYp
+CKKQSfVB7c18dKbBa6+sIqJXQPDx5JASWrHGDs7pOgxM2hQVHlr4sZBChGrCNNes
+mLdG7JmJIxtrQpQKzT4S+04MOO65ZhfEXvyVQ3KQrNOQzfwgw7HuNywCYlTN/Hc2
+bEAldW3V/AhSPyjWi0bTfWqarEF0NjgPn0oCc5gPFMUef9HBfZ+6K5RFP8fbsfsQ
+v4cfpjuUVkYYrngLT8mX3e4rLwolppKlMmqaZsMviKmHE8cAh/r469yqKbW+aTjT
+b9tedHyjI0xQbTCrYK2nx5Xbtu0cZB9BBaeRFueaVXIRXcd7wO++sGtcJQJ3p+Gl
+3R7FQ7NHKr9NRJF+B6EyRpwBPw5MQCyd+PcNGd+ftpNNTR7R8uZfAKPXcEZLbhYx
+lZEzW70hd1RKZevF1sdpHAT+j4YOhl09+lfiiJL8TxXqlddUn+lzc8R/tdizSYnU
+e3huBhNS7xPU/6PvG48snWhTxaqXx2LR3Fi2dk6iRsiGWwc1GYalTFTXFhodS7MY
+-----END RSA PRIVATE KEY-----
+```
+
+>Nota: la visualización con `ASN.1 JavaScript decoder` y `openssl asn1parse -in rsakeypair02_des3.pem -inform PEM -i -dump` fallarán al estar cifrado el archivo.
+
+```
+$ openssl rsa -in rsakeypair02_des3.pem -inform PEM -text -passin pass:changeit
+Private-Key: (2048 bit)
+modulus:
+    00:d8:44:a6:b7:57:28:35:c9:72:0a:ef:8b:ed:8f:
+    2a:33:85:a3:0a:8b:b6:de:59:82:22:66:b3:8b:3b:
+    d9:25:da:f3:3c:29:81:43:62:0a:36:44:36:05:82:
+    4b:76:0b:08:40:0f:bf:ce:8a:84:d7:32:4e:70:50:
+    f2:c7:e7:38:6c:18:ce:78:1d:41:42:28:e7:d3:2a:
+    e9:51:d1:51:09:f2:94:df:ac:c5:9e:91:26:5c:46:
+    8b:e2:04:ad:ae:56:b7:e2:c1:e0:34:79:ac:ce:da:
+    0b:7e:98:e7:05:69:75:bb:fe:4a:65:eb:cc:97:e7:
+    b9:0a:f4:aa:9c:63:bb:54:ef:11:dd:cc:39:a5:5b:
+    e1:9f:e2:c6:6f:5a:3d:7b:9c:18:a0:28:c3:fe:de:
+    bb:ff:d4:04:d6:2c:90:6c:bb:14:7f:bd:b3:8a:1b:
+    b4:bf:06:42:a2:1a:1a:c1:7d:26:7e:6d:a1:5d:f5:
+    74:81:f1:f6:75:d8:37:ec:49:18:7e:9b:81:f5:b2:
+    8f:ec:29:13:88:de:07:80:bf:5b:2e:6d:92:95:4c:
+    64:06:bd:fc:6a:d3:18:bc:04:b8:57:24:43:f7:02:
+    55:4d:df:f5:96:1f:7f:05:d4:02:1b:0b:ce:c5:d9:
+    64:f0:9d:fc:b4:a6:b5:fb:3d:cb:76:2c:4c:85:d9:
+    12:21
+publicExponent: 65537 (0x10001)
+privateExponent:
+    00:ca:5e:6b:16:92:42:f9:19:b8:52:4d:57:45:83:
+    3a:bd:1d:66:b4:3e:8a:6e:c3:99:07:31:cc:fe:13:
+    91:9d:5f:a5:4d:7d:95:0c:85:98:02:b1:8f:4f:56:
+    5d:e0:66:70:60:e9:9b:d4:dc:3f:73:d3:0a:1d:05:
+    52:39:06:bf:00:3f:b2:2c:29:4b:e0:69:c0:8c:13:
+    d2:62:12:18:df:d3:13:c5:bd:b8:ea:28:ee:99:58:
+    16:1a:f7:bf:c1:ac:39:c3:c1:21:58:59:27:00:24:
+    7e:af:06:ca:de:80:91:7f:c9:72:ba:ae:8c:32:f4:
+    cd:6d:58:06:b1:f2:8c:df:ea:5f:96:bb:2e:63:44:
+    c3:71:48:15:6c:52:64:0e:13:ed:ab:e9:ea:c9:fc:
+    67:f2:07:29:bf:0f:01:4f:18:0d:49:19:1d:ae:2e:
+    b5:2f:d1:6b:8c:12:e4:82:36:a4:7f:f2:5b:a8:36:
+    0e:5e:7e:ea:32:86:1e:08:9b:87:3c:64:fc:da:f1:
+    3f:60:a4:a2:4e:6a:cf:cc:83:9a:4e:4b:b1:98:98:
+    7a:ca:46:8f:5a:74:39:19:97:b2:a2:71:d8:f4:68:
+    83:cc:7a:4d:ff:12:4d:0c:7f:5b:1c:1e:61:13:ae:
+    a3:5a:f7:24:eb:f6:7e:71:82:fc:05:38:78:3f:57:
+    6a:85
+prime1:
+    00:ff:7f:e9:7f:f8:22:53:17:3a:47:6a:27:d6:a6:
+    07:96:cb:bd:ff:58:b8:84:59:c0:4e:6e:fe:d4:bf:
+    00:7e:b9:cd:7c:40:86:56:90:f2:6f:81:a8:e7:1c:
+    f4:1b:29:5d:fd:8c:1b:ce:5c:15:a5:d7:c3:9f:69:
+    74:1a:5c:19:05:cc:26:8a:28:37:9a:fe:ec:a9:fa:
+    de:d1:ab:29:f7:7d:c5:b9:11:2c:43:b6:df:d7:73:
+    90:8d:b4:a6:7c:ec:1f:5d:cb:15:f0:e7:71:5b:ee:
+    b5:8e:1a:c9:fb:cd:81:ac:02:77:4e:82:17:d4:d9:
+    8d:3a:8a:57:aa:12:2b:7a:5b
+prime2:
+    00:d8:b1:12:4c:13:f6:5b:71:32:06:91:72:9a:87:
+    73:5a:be:a8:3f:39:85:28:6a:0c:2a:7e:91:bd:56:
+    f3:d1:dc:2b:81:cc:f8:2d:21:bf:67:15:be:ce:9b:
+    79:e0:1a:62:9b:ff:a0:f5:07:de:b5:4a:a6:f3:60:
+    cc:9e:8e:64:df:d7:40:36:6e:94:49:cf:3a:f9:18:
+    9b:c0:36:1d:92:95:46:0a:83:9d:f2:27:ff:94:76:
+    e8:82:23:bc:42:6c:22:21:4a:04:09:93:d3:15:bb:
+    99:a2:a5:08:ca:a2:26:31:28:2e:c1:1e:b5:fe:1b:
+    4d:0c:66:c7:8e:e3:09:b6:33
+exponent1:
+    00:9d:06:aa:25:42:05:26:78:02:13:5e:04:ba:01:
+    34:6c:d3:2f:24:3e:0c:b9:1a:c7:fb:ec:6f:a5:a4:
+    f5:d2:ec:b2:83:88:cc:87:6b:71:f4:62:05:c2:74:
+    a2:fa:06:84:83:8d:96:91:4f:3a:e6:c0:22:b4:58:
+    85:48:a6:0d:a2:e8:83:4f:29:c4:72:f7:f5:cf:ca:
+    25:23:4b:44:f1:9c:54:e6:96:cd:53:98:93:1d:c1:
+    22:b8:54:ac:75:de:50:b0:be:5d:ef:be:ee:86:87:
+    c1:01:63:29:7c:1e:23:71:e9:da:15:60:12:f1:77:
+    fb:3a:5d:47:df:78:67:4c:3d
+exponent2:
+    07:5c:2c:54:ed:30:a6:f6:77:4e:85:ce:30:b5:7d:
+    13:8d:fa:44:fb:7d:2c:5c:3d:c1:8b:bf:03:81:5a:
+    92:bc:39:b6:14:f2:31:06:3e:6c:0f:ef:05:31:7e:
+    b8:3f:ed:2d:83:47:42:4b:5c:23:28:3f:f7:70:48:
+    42:f2:6f:36:b3:26:f9:32:54:53:15:78:d9:51:1e:
+    a9:2e:ad:5e:77:37:83:cf:e8:a3:7a:fc:51:5c:a0:
+    95:1b:05:9f:f3:f0:4c:d5:28:c1:f2:85:6e:ed:8a:
+    50:5d:ee:a8:83:4d:6c:ca:02:9c:88:a0:81:db:07:
+    88:ee:4c:c4:eb:ad:3e:c5
+coefficient:
+    15:99:5e:f9:ab:d5:83:62:97:bb:7e:35:9a:d2:cf:
+    eb:92:2f:2e:0c:7f:5f:4d:65:78:be:00:b2:f2:fb:
+    38:ca:44:55:c5:36:74:3a:ec:0c:1b:88:ea:36:e5:
+    bb:f4:06:af:60:1f:5b:ca:58:24:8a:33:3c:c0:4d:
+    83:79:ba:be:59:5d:b1:0c:59:f7:bd:d8:8e:ff:bf:
+    18:88:2f:3e:60:86:0c:19:44:7b:5c:26:0e:8b:b7:
+    09:37:ec:a4:58:84:08:16:00:5f:56:90:b2:45:68:
+    8c:5f:4d:66:5a:fd:85:de:25:15:ac:d6:2a:5c:33:
+    ce:9a:9c:20:a9:ed:b5:48
+writing RSA key
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA2ESmt1coNclyCu+L7Y8qM4WjCou23lmCImazizvZJdrzPCmB
+Q2IKNkQ2BYJLdgsIQA+/zoqE1zJOcFDyx+c4bBjOeB1BQijn0yrpUdFRCfKU36zF
+npEmXEaL4gStrla34sHgNHmsztoLfpjnBWl1u/5KZevMl+e5CvSqnGO7VO8R3cw5
+pVvhn+LGb1o9e5wYoCjD/t67/9QE1iyQbLsUf72zihu0vwZCohoawX0mfm2hXfV0
+gfH2ddg37EkYfpuB9bKP7CkTiN4HgL9bLm2SlUxkBr38atMYvAS4VyRD9wJVTd/1
+lh9/BdQCGwvOxdlk8J38tKa1+z3LdixMhdkSIQIDAQABAoIBAQDKXmsWkkL5GbhS
+TVdFgzq9HWa0Popuw5kHMcz+E5GdX6VNfZUMhZgCsY9PVl3gZnBg6ZvU3D9z0wod
+BVI5Br8AP7IsKUvgacCME9JiEhjf0xPFvbjqKO6ZWBYa97/BrDnDwSFYWScAJH6v
+BsregJF/yXK6rowy9M1tWAax8ozf6l+Wuy5jRMNxSBVsUmQOE+2r6erJ/GfyBym/
+DwFPGA1JGR2uLrUv0WuMEuSCNqR/8luoNg5efuoyhh4Im4c8ZPza8T9gpKJOas/M
+g5pOS7GYmHrKRo9adDkZl7Kicdj0aIPMek3/Ek0Mf1scHmETrqNa9yTr9n5xgvwF
+OHg/V2qFAoGBAP9/6X/4IlMXOkdqJ9amB5bLvf9YuIRZwE5u/tS/AH65zXxAhlaQ
+8m+BqOcc9BspXf2MG85cFaXXw59pdBpcGQXMJoooN5r+7Kn63tGrKfd9xbkRLEO2
+39dzkI20pnzsH13LFfDncVvutY4ayfvNgawCd06CF9TZjTqKV6oSK3pbAoGBANix
+EkwT9ltxMgaRcpqHc1q+qD85hShqDCp+kb1W89HcK4HM+C0hv2cVvs6beeAaYpv/
+oPUH3rVKpvNgzJ6OZN/XQDZulEnPOvkYm8A2HZKVRgqDnfIn/5R26IIjvEJsIiFK
+BAmT0xW7maKlCMqiJjEoLsEetf4bTQxmx47jCbYzAoGBAJ0GqiVCBSZ4AhNeBLoB
+NGzTLyQ+DLkax/vsb6Wk9dLssoOIzIdrcfRiBcJ0ovoGhIONlpFPOubAIrRYhUim
+DaLog08pxHL39c/KJSNLRPGcVOaWzVOYkx3BIrhUrHXeULC+Xe++7oaHwQFjKXwe
+I3Hp2hVgEvF3+zpdR994Z0w9AoGAB1wsVO0wpvZ3ToXOMLV9E436RPt9LFw9wYu/
+A4Fakrw5thTyMQY+bA/vBTF+uD/tLYNHQktcIyg/93BIQvJvNrMm+TJUUxV42VEe
+qS6tXnc3g8/oo3r8UVyglRsFn/PwTNUowfKFbu2KUF3uqINNbMoCnIiggdsHiO5M
+xOutPsUCgYAVmV75q9WDYpe7fjWa0s/rki8uDH9fTWV4vgCy8vs4ykRVxTZ0OuwM
+G4jqNuW79AavYB9bylgkijM8wE2Debq+WV2xDFn3vdiO/78YiC8+YIYMGUR7XCYO
+i7cJN+ykWIQIFgBfVpCyRWiMX01mWv2F3iUVrNYqXDPOmpwgqe21SA==
+-----END RSA PRIVATE KEY-----
+```
+>Nota: Adviértase la presencia del parámetro `-passin pass:changeit` para indicar la password (`PBE - Password Based Encription`) con la que está cifrada la clave RSA.
+
+#### Convertida a formato `DER` manteniendo el cifrado con `PBE - Password Based Encription` y `des3 - 'Triple DES`:
+
+```
+$ openssl rsa -in rsakeypair02_des3.pem -inform PEM -out rsakeypair02_des3.der -outform DER -des3 -passin pass:changeit -passout pass:changeit
+writing RSA key
+```
+
+>ADVERTENCIA: Aunque APARENTEMENTE debería haber generado una CLAVE RSA protegida por clave, SIN EMBARGO, OpenSSL la ha generado SIN PROTECCION (puede apreciarse en que NO solicita la password) 
+
+* Visualización:
+
+```
+$ openssl rsa -in rsakeypair02_des3.der -inform DER -text
+Private-Key: (2048 bit)
+modulus:
+    00:d8:44:a6:b7:57:28:35:c9:72:0a:ef:8b:ed:8f:
+    2a:33:85:a3:0a:8b:b6:de:59:82:22:66:b3:8b:3b:
+    d9:25:da:f3:3c:29:81:43:62:0a:36:44:36:05:82:
+    4b:76:0b:08:40:0f:bf:ce:8a:84:d7:32:4e:70:50:
+    f2:c7:e7:38:6c:18:ce:78:1d:41:42:28:e7:d3:2a:
+    e9:51:d1:51:09:f2:94:df:ac:c5:9e:91:26:5c:46:
+    8b:e2:04:ad:ae:56:b7:e2:c1:e0:34:79:ac:ce:da:
+    0b:7e:98:e7:05:69:75:bb:fe:4a:65:eb:cc:97:e7:
+    b9:0a:f4:aa:9c:63:bb:54:ef:11:dd:cc:39:a5:5b:
+    e1:9f:e2:c6:6f:5a:3d:7b:9c:18:a0:28:c3:fe:de:
+    bb:ff:d4:04:d6:2c:90:6c:bb:14:7f:bd:b3:8a:1b:
+    b4:bf:06:42:a2:1a:1a:c1:7d:26:7e:6d:a1:5d:f5:
+    74:81:f1:f6:75:d8:37:ec:49:18:7e:9b:81:f5:b2:
+    8f:ec:29:13:88:de:07:80:bf:5b:2e:6d:92:95:4c:
+    64:06:bd:fc:6a:d3:18:bc:04:b8:57:24:43:f7:02:
+    55:4d:df:f5:96:1f:7f:05:d4:02:1b:0b:ce:c5:d9:
+    64:f0:9d:fc:b4:a6:b5:fb:3d:cb:76:2c:4c:85:d9:
+    12:21
+publicExponent: 65537 (0x10001)
+privateExponent:
+    00:ca:5e:6b:16:92:42:f9:19:b8:52:4d:57:45:83:
+    3a:bd:1d:66:b4:3e:8a:6e:c3:99:07:31:cc:fe:13:
+    91:9d:5f:a5:4d:7d:95:0c:85:98:02:b1:8f:4f:56:
+    5d:e0:66:70:60:e9:9b:d4:dc:3f:73:d3:0a:1d:05:
+    52:39:06:bf:00:3f:b2:2c:29:4b:e0:69:c0:8c:13:
+    d2:62:12:18:df:d3:13:c5:bd:b8:ea:28:ee:99:58:
+    16:1a:f7:bf:c1:ac:39:c3:c1:21:58:59:27:00:24:
+    7e:af:06:ca:de:80:91:7f:c9:72:ba:ae:8c:32:f4:
+    cd:6d:58:06:b1:f2:8c:df:ea:5f:96:bb:2e:63:44:
+    c3:71:48:15:6c:52:64:0e:13:ed:ab:e9:ea:c9:fc:
+    67:f2:07:29:bf:0f:01:4f:18:0d:49:19:1d:ae:2e:
+    b5:2f:d1:6b:8c:12:e4:82:36:a4:7f:f2:5b:a8:36:
+    0e:5e:7e:ea:32:86:1e:08:9b:87:3c:64:fc:da:f1:
+    3f:60:a4:a2:4e:6a:cf:cc:83:9a:4e:4b:b1:98:98:
+    7a:ca:46:8f:5a:74:39:19:97:b2:a2:71:d8:f4:68:
+    83:cc:7a:4d:ff:12:4d:0c:7f:5b:1c:1e:61:13:ae:
+    a3:5a:f7:24:eb:f6:7e:71:82:fc:05:38:78:3f:57:
+    6a:85
+prime1:
+    00:ff:7f:e9:7f:f8:22:53:17:3a:47:6a:27:d6:a6:
+    07:96:cb:bd:ff:58:b8:84:59:c0:4e:6e:fe:d4:bf:
+    00:7e:b9:cd:7c:40:86:56:90:f2:6f:81:a8:e7:1c:
+    f4:1b:29:5d:fd:8c:1b:ce:5c:15:a5:d7:c3:9f:69:
+    74:1a:5c:19:05:cc:26:8a:28:37:9a:fe:ec:a9:fa:
+    de:d1:ab:29:f7:7d:c5:b9:11:2c:43:b6:df:d7:73:
+    90:8d:b4:a6:7c:ec:1f:5d:cb:15:f0:e7:71:5b:ee:
+    b5:8e:1a:c9:fb:cd:81:ac:02:77:4e:82:17:d4:d9:
+    8d:3a:8a:57:aa:12:2b:7a:5b
+prime2:
+    00:d8:b1:12:4c:13:f6:5b:71:32:06:91:72:9a:87:
+    73:5a:be:a8:3f:39:85:28:6a:0c:2a:7e:91:bd:56:
+    f3:d1:dc:2b:81:cc:f8:2d:21:bf:67:15:be:ce:9b:
+    79:e0:1a:62:9b:ff:a0:f5:07:de:b5:4a:a6:f3:60:
+    cc:9e:8e:64:df:d7:40:36:6e:94:49:cf:3a:f9:18:
+    9b:c0:36:1d:92:95:46:0a:83:9d:f2:27:ff:94:76:
+    e8:82:23:bc:42:6c:22:21:4a:04:09:93:d3:15:bb:
+    99:a2:a5:08:ca:a2:26:31:28:2e:c1:1e:b5:fe:1b:
+    4d:0c:66:c7:8e:e3:09:b6:33
+exponent1:
+    00:9d:06:aa:25:42:05:26:78:02:13:5e:04:ba:01:
+    34:6c:d3:2f:24:3e:0c:b9:1a:c7:fb:ec:6f:a5:a4:
+    f5:d2:ec:b2:83:88:cc:87:6b:71:f4:62:05:c2:74:
+    a2:fa:06:84:83:8d:96:91:4f:3a:e6:c0:22:b4:58:
+    85:48:a6:0d:a2:e8:83:4f:29:c4:72:f7:f5:cf:ca:
+    25:23:4b:44:f1:9c:54:e6:96:cd:53:98:93:1d:c1:
+    22:b8:54:ac:75:de:50:b0:be:5d:ef:be:ee:86:87:
+    c1:01:63:29:7c:1e:23:71:e9:da:15:60:12:f1:77:
+    fb:3a:5d:47:df:78:67:4c:3d
+exponent2:
+    07:5c:2c:54:ed:30:a6:f6:77:4e:85:ce:30:b5:7d:
+    13:8d:fa:44:fb:7d:2c:5c:3d:c1:8b:bf:03:81:5a:
+    92:bc:39:b6:14:f2:31:06:3e:6c:0f:ef:05:31:7e:
+    b8:3f:ed:2d:83:47:42:4b:5c:23:28:3f:f7:70:48:
+    42:f2:6f:36:b3:26:f9:32:54:53:15:78:d9:51:1e:
+    a9:2e:ad:5e:77:37:83:cf:e8:a3:7a:fc:51:5c:a0:
+    95:1b:05:9f:f3:f0:4c:d5:28:c1:f2:85:6e:ed:8a:
+    50:5d:ee:a8:83:4d:6c:ca:02:9c:88:a0:81:db:07:
+    88:ee:4c:c4:eb:ad:3e:c5
+coefficient:
+    15:99:5e:f9:ab:d5:83:62:97:bb:7e:35:9a:d2:cf:
+    eb:92:2f:2e:0c:7f:5f:4d:65:78:be:00:b2:f2:fb:
+    38:ca:44:55:c5:36:74:3a:ec:0c:1b:88:ea:36:e5:
+    bb:f4:06:af:60:1f:5b:ca:58:24:8a:33:3c:c0:4d:
+    83:79:ba:be:59:5d:b1:0c:59:f7:bd:d8:8e:ff:bf:
+    18:88:2f:3e:60:86:0c:19:44:7b:5c:26:0e:8b:b7:
+    09:37:ec:a4:58:84:08:16:00:5f:56:90:b2:45:68:
+    8c:5f:4d:66:5a:fd:85:de:25:15:ac:d6:2a:5c:33:
+    ce:9a:9c:20:a9:ed:b5:48
+writing RSA key
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA2ESmt1coNclyCu+L7Y8qM4WjCou23lmCImazizvZJdrzPCmB
+Q2IKNkQ2BYJLdgsIQA+/zoqE1zJOcFDyx+c4bBjOeB1BQijn0yrpUdFRCfKU36zF
+npEmXEaL4gStrla34sHgNHmsztoLfpjnBWl1u/5KZevMl+e5CvSqnGO7VO8R3cw5
+pVvhn+LGb1o9e5wYoCjD/t67/9QE1iyQbLsUf72zihu0vwZCohoawX0mfm2hXfV0
+gfH2ddg37EkYfpuB9bKP7CkTiN4HgL9bLm2SlUxkBr38atMYvAS4VyRD9wJVTd/1
+lh9/BdQCGwvOxdlk8J38tKa1+z3LdixMhdkSIQIDAQABAoIBAQDKXmsWkkL5GbhS
+TVdFgzq9HWa0Popuw5kHMcz+E5GdX6VNfZUMhZgCsY9PVl3gZnBg6ZvU3D9z0wod
+BVI5Br8AP7IsKUvgacCME9JiEhjf0xPFvbjqKO6ZWBYa97/BrDnDwSFYWScAJH6v
+BsregJF/yXK6rowy9M1tWAax8ozf6l+Wuy5jRMNxSBVsUmQOE+2r6erJ/GfyBym/
+DwFPGA1JGR2uLrUv0WuMEuSCNqR/8luoNg5efuoyhh4Im4c8ZPza8T9gpKJOas/M
+g5pOS7GYmHrKRo9adDkZl7Kicdj0aIPMek3/Ek0Mf1scHmETrqNa9yTr9n5xgvwF
+OHg/V2qFAoGBAP9/6X/4IlMXOkdqJ9amB5bLvf9YuIRZwE5u/tS/AH65zXxAhlaQ
+8m+BqOcc9BspXf2MG85cFaXXw59pdBpcGQXMJoooN5r+7Kn63tGrKfd9xbkRLEO2
+39dzkI20pnzsH13LFfDncVvutY4ayfvNgawCd06CF9TZjTqKV6oSK3pbAoGBANix
+EkwT9ltxMgaRcpqHc1q+qD85hShqDCp+kb1W89HcK4HM+C0hv2cVvs6beeAaYpv/
+oPUH3rVKpvNgzJ6OZN/XQDZulEnPOvkYm8A2HZKVRgqDnfIn/5R26IIjvEJsIiFK
+BAmT0xW7maKlCMqiJjEoLsEetf4bTQxmx47jCbYzAoGBAJ0GqiVCBSZ4AhNeBLoB
+NGzTLyQ+DLkax/vsb6Wk9dLssoOIzIdrcfRiBcJ0ovoGhIONlpFPOubAIrRYhUim
+DaLog08pxHL39c/KJSNLRPGcVOaWzVOYkx3BIrhUrHXeULC+Xe++7oaHwQFjKXwe
+I3Hp2hVgEvF3+zpdR994Z0w9AoGAB1wsVO0wpvZ3ToXOMLV9E436RPt9LFw9wYu/
+A4Fakrw5thTyMQY+bA/vBTF+uD/tLYNHQktcIyg/93BIQvJvNrMm+TJUUxV42VEe
+qS6tXnc3g8/oo3r8UVyglRsFn/PwTNUowfKFbu2KUF3uqINNbMoCnIiggdsHiO5M
+xOutPsUCgYAVmV75q9WDYpe7fjWa0s/rki8uDH9fTWV4vgCy8vs4ykRVxTZ0OuwM
+G4jqNuW79AavYB9bylgkijM8wE2Debq+WV2xDFn3vdiO/78YiC8+YIYMGUR7XCYO
+i7cJN+ykWIQIFgBfVpCyRWiMX01mWv2F3iUVrNYqXDPOmpwgqe21SA==
+-----END RSA PRIVATE KEY-----
+```
+
+Para evitar este problema podríamos hacerlo mediante manipulación directa:
+
+Editamos el archivo (por ejemplo con `vim` en linea de comando o con `gedit` en entorno gráfico) y eliminamos las lineas de _cabecera_:
+
+```
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: DES-EDE3-CBC,4B71D975CC60A4FC
+```
+...  y _pié_:
+
+```
+-----END RSA PRIVATE KEY-----
+```
+```
+$ cp rsakeypair02_des3.pem rsakeypair02_des3.b64 && vim rsakeypair02_des3.b64 && cat rsakeypair02_des3.b64
+TF60GPXKPaHd3YvBX8HY+oKFs0580y0BDFKn4EkZ7NfROYVT+urP7VcTpnQfWODu
+Knf0whwbWZHh2blqiS5sGgl9SEpBMMdAHAJi/vjnkBatFoJuzhlJkQ+8zDNbooZ4
+aHuGN9+4JTIFmwM2PeUpbIgk4epuot3CXCkkdDN13i28MY48aL94e0qL9Hw9HxpE
+ZAjHgelFKDVhig6Qdi/o4x92ulmurQbp7r8J78rUG2cF81ou9/FafgOrquOR4GNC
+7UrR4WqJlI2NMLndeGAXksEGK8HpiSukvFirOg2OmYwuch7eMxAUuHu8AvyToK7o
+s2Aknn66RF9U/dQCVNxaBzwqI+HCK+QugosjjppwahjGgaRkcHqYoUKOdDYT2N/6
+EQjz91gaCa4ZNaydQvm04Bnj2vEq9QZVFH8j7hIHLjlODAXxxiIalL49PIgWvwTe
+gE7uPt80BQeTSLw5Aw15POoXNyPMreXHIhHtPD/Er6UXW6MsEoiX2FjpebU2Haeh
+yipcdc7Bre61MyfPv/ScA8/34WWV+MC7MRksq9DvdunWylCh4osdsjHrBWqaxPmk
+v9fRt6n1S0/tgsQX9vKs4jDl4w1q6VVqz4hkdaI16KRBGkXU476pVysBmo2zDqWf
+ukyRTVQL7OOYPesiIgpWKWM4jfrijlgMH6JXXyXlfgWOsSBdCaTF/xr/JIcz+/p7
+MmM6WvDHPm7bqdTDwHOLB8xlCFcQEf1ZlgY0k6Tg4Zh+q2BfQQev3hidG7LEjU9p
+2Ns2mUayOI0NNA2w1NzKCEjbBcHbDVpiHdN6ncMJjtNPrsg49sFNsm0cxL2AQmg1
+mQc67yV0d9h7sVAZY3SsQVpz61odWDkYtQOxwkS5Qa56VEs7rJ0Ba0iRC1WtIEd7
+d8VUUnM7C6iBByp037wFCqTFhrp5RQ8QlJiWAtBdwLawZaWzPwuJctBqzC3GmneD
+YddhHBQ80aqqqKPtfqjlFnmjnNGLuYtBgVA3jYztZrTOhafQ8wIeqG5nl21JJCte
+HoqYeDodSDESYuQsxuBZ4lK8+YV/CnWk6sxy4vDrjyoyFDkzV6/n1BP3uheB+GYp
+CKKQSfVB7c18dKbBa6+sIqJXQPDx5JASWrHGDs7pOgxM2hQVHlr4sZBChGrCNNes
+mLdG7JmJIxtrQpQKzT4S+04MOO65ZhfEXvyVQ3KQrNOQzfwgw7HuNywCYlTN/Hc2
+bEAldW3V/AhSPyjWi0bTfWqarEF0NjgPn0oCc5gPFMUef9HBfZ+6K5RFP8fbsfsQ
+v4cfpjuUVkYYrngLT8mX3e4rLwolppKlMmqaZsMviKmHE8cAh/r469yqKbW+aTjT
+b9tedHyjI0xQbTCrYK2nx5Xbtu0cZB9BBaeRFueaVXIRXcd7wO++sGtcJQJ3p+Gl
+3R7FQ7NHKr9NRJF+B6EyRpwBPw5MQCyd+PcNGd+ftpNNTR7R8uZfAKPXcEZLbhYx
+lZEzW70hd1RKZevF1sdpHAT+j4YOhl09+lfiiJL8TxXqlddUn+lzc8R/tdizSYnU
+e3huBhNS7xPU/6PvG48snWhTxaqXx2LR3Fi2dk6iRsiGWwc1GYalTFTXFhodS7MY
+```
+
+a continuación con `openssl enc` podemos decodificar el contenido en `Base 64` y obtener su equivalente binario, que constituye el contenido en `DER encoded`:
+
+>[Base 64 - Wikipedia (es)](https://es.wikipedia.org/wiki/Base64)
+
+>[Base 64 - Wikipedia (en)](https://en.wikipedia.org/wiki/Base64)
+
+```
+$ openssl enc -d -base64 -in rsakeypair02_des3.b64 -out rsakeypair02_des3.der
+```
+
+```
+$ xxd -c 16 rsakeypair02_des3.der
+00000000: 4c5e b418 f5ca 3da1 dddd 8bc1 5fc1 d8fa  L^....=....._...
+00000010: 8285 b34e 7cd3 2d01 0c52 a7e0 4919 ecd7  ...N|.-..R..I...
+00000020: d139 8553 faea cfed 5713 a674 1f58 e0ee  .9.S....W..t.X..
+00000030: 2a77 f4c2 1c1b 5991 e1d9 b96a 892e 6c1a  *w....Y....j..l.
+00000040: 097d 484a 4130 c740 1c02 62fe f8e7 9016  .}HJA0.@..b.....
+00000050: ad16 826e ce19 4991 0fbc cc33 5ba2 8678  ...n..I....3[..x
+00000060: 687b 8637 dfb8 2532 059b 0336 3de5 296c  h{.7..%2...6=.)l
+00000070: 8824 e1ea 6ea2 ddc2 5c29 2474 3375 de2d  .$..n...\)$t3u.-
+00000080: bc31 8e3c 68bf 787b 4a8b f47c 3d1f 1a44  .1.<h.x{J..|=..D
+00000090: 6408 c781 e945 2835 618a 0e90 762f e8e3  d....E(5a...v/..
+000000a0: 1f76 ba59 aead 06e9 eebf 09ef cad4 1b67  .v.Y...........g
+000000b0: 05f3 5a2e f7f1 5a7e 03ab aae3 91e0 6342  ..Z...Z~......cB
+000000c0: ed4a d1e1 6a89 948d 8d30 b9dd 7860 1792  .J..j....0..x`..
+000000d0: c106 2bc1 e989 2ba4 bc58 ab3a 0d8e 998c  ..+...+..X.:....
+000000e0: 2e72 1ede 3310 14b8 7bbc 02fc 93a0 aee8  .r..3...{.......
+000000f0: b360 249e 7eba 445f 54fd d402 54dc 5a07  .`$.~.D_T...T.Z.
+00000100: 3c2a 23e1 c22b e42e 828b 238e 9a70 6a18  <*#..+....#..pj.
+00000110: c681 a464 707a 98a1 428e 7436 13d8 dffa  ...dpz..B.t6....
+00000120: 1108 f3f7 581a 09ae 1935 ac9d 42f9 b4e0  ....X....5..B...
+00000130: 19e3 daf1 2af5 0655 147f 23ee 1207 2e39  ....*..U..#....9
+00000140: 4e0c 05f1 c622 1a94 be3d 3c88 16bf 04de  N...."...=<.....
+00000150: 804e ee3e df34 0507 9348 bc39 030d 793c  .N.>.4...H.9..y<
+00000160: ea17 3723 ccad e5c7 2211 ed3c 3fc4 afa5  ..7#...."..<?...
+00000170: 175b a32c 1288 97d8 58e9 79b5 361d a7a1  .[.,....X.y.6...
+00000180: ca2a 5c75 cec1 adee b533 27cf bff4 9c03  .*\u.....3'.....
+00000190: cff7 e165 95f8 c0bb 3119 2cab d0ef 76e9  ...e....1.,...v.
+000001a0: d6ca 50a1 e28b 1db2 31eb 056a 9ac4 f9a4  ..P.....1..j....
+000001b0: bfd7 d1b7 a9f5 4b4f ed82 c417 f6f2 ace2  ......KO........
+000001c0: 30e5 e30d 6ae9 556a cf88 6475 a235 e8a4  0...j.Uj..du.5..
+000001d0: 411a 45d4 e3be a957 2b01 9a8d b30e a59f  A.E....W+.......
+000001e0: ba4c 914d 540b ece3 983d eb22 220a 5629  .L.MT....=."".V)
+000001f0: 6338 8dfa e28e 580c 1fa2 575f 25e5 7e05  c8....X...W_%.~.
+00000200: 8eb1 205d 09a4 c5ff 1aff 2487 33fb fa7b  .. ]......$.3..{
+00000210: 3263 3a5a f0c7 3e6e dba9 d4c3 c073 8b07  2c:Z..>n.....s..
+00000220: cc65 0857 1011 fd59 9606 3493 a4e0 e198  .e.W...Y..4.....
+00000230: 7eab 605f 4107 afde 189d 1bb2 c48d 4f69  ~.`_A.........Oi
+00000240: d8db 3699 46b2 388d 0d34 0db0 d4dc ca08  ..6.F.8..4......
+00000250: 48db 05c1 db0d 5a62 1dd3 7a9d c309 8ed3  H.....Zb..z.....
+00000260: 4fae c838 f6c1 4db2 6d1c c4bd 8042 6835  O..8..M.m....Bh5
+00000270: 9907 3aef 2574 77d8 7bb1 5019 6374 ac41  ..:.%tw.{.P.ct.A
+00000280: 5a73 eb5a 1d58 3918 b503 b1c2 44b9 41ae  Zs.Z.X9.....D.A.
+00000290: 7a54 4b3b ac9d 016b 4891 0b55 ad20 477b  zTK;...kH..U. G{
+000002a0: 77c5 5452 733b 0ba8 8107 2a74 dfbc 050a  w.TRs;....*t....
+000002b0: a4c5 86ba 7945 0f10 9498 9602 d05d c0b6  ....yE.......]..
+000002c0: b065 a5b3 3f0b 8972 d06a cc2d c69a 7783  .e..?..r.j.-..w.
+000002d0: 61d7 611c 143c d1aa aaa8 a3ed 7ea8 e516  a.a..<......~...
+000002e0: 79a3 9cd1 8bb9 8b41 8150 378d 8ced 66b4  y......A.P7...f.
+000002f0: ce85 a7d0 f302 1ea8 6e67 976d 4924 2b5e  ........ng.mI$+^
+00000300: 1e8a 9878 3a1d 4831 1262 e42c c6e0 59e2  ...x:.H1.b.,..Y.
+00000310: 52bc f985 7f0a 75a4 eacc 72e2 f0eb 8f2a  R.....u...r....*
+00000320: 3214 3933 57af e7d4 13f7 ba17 81f8 6629  2.93W.........f)
+00000330: 08a2 9049 f541 edcd 7c74 a6c1 6baf ac22  ...I.A..|t..k.."
+00000340: a257 40f0 f1e4 9012 5ab1 c60e cee9 3a0c  .W@.....Z.....:.
+00000350: 4cda 1415 1e5a f8b1 9042 846a c234 d7ac  L....Z...B.j.4..
+00000360: 98b7 46ec 9989 231b 6b42 940a cd3e 12fb  ..F...#.kB...>..
+00000370: 4e0c 38ee b966 17c4 5efc 9543 7290 acd3  N.8..f..^..Cr...
+00000380: 90cd fc20 c3b1 ee37 2c02 6254 cdfc 7736  ... ...7,.bT..w6
+00000390: 6c40 2575 6dd5 fc08 523f 28d6 8b46 d37d  l@%um...R?(..F.}
+000003a0: 6a9a ac41 7436 380f 9f4a 0273 980f 14c5  j..At68..J.s....
+000003b0: 1e7f d1c1 7d9f ba2b 9445 3fc7 dbb1 fb10  ....}..+.E?.....
+000003c0: bf87 1fa6 3b94 5646 18ae 780b 4fc9 97dd  ....;.VF..x.O...
+000003d0: ee2b 2f0a 25a6 92a5 326a 9a66 c32f 88a9  .+/.%...2j.f./..
+000003e0: 8713 c700 87fa f8eb dcaa 29b5 be69 38d3  ..........)..i8.
+000003f0: 6fdb 5e74 7ca3 234c 506d 30ab 60ad a7c7  o.^t|.#LPm0.`...
+00000400: 95db b6ed 1c64 1f41 05a7 9116 e79a 5572  .....d.A......Ur
+00000410: 115d c77b c0ef beb0 6b5c 2502 77a7 e1a5  .].{....k\%.w...
+00000420: dd1e c543 b347 2abf 4d44 917e 07a1 3246  ...C.G*.MD.~..2F
+00000430: 9c01 3f0e 4c40 2c9d f8f7 0d19 df9f b693  ..?.L@,.........
+00000440: 4d4d 1ed1 f2e6 5f00 a3d7 7046 4b6e 1631  MM...._...pFKn.1
+00000450: 9591 335b bd21 7754 4a65 ebc5 d6c7 691c  ..3[.!wTJe....i.
+00000460: 04fe 8f86 0e86 5d3d fa57 e288 92fc 4f15  ......]=.W....O.
+00000470: ea95 d754 9fe9 7373 c47f b5d8 b349 89d4  ...T..ss.....I..
+00000480: 7b78 6e06 1352 ef13 d4ff a3ef 1b8f 2c9d  {xn..R........,.
+00000490: 6853 c5aa 97c7 62d1 dc58 b676 4ea2 46c8  hS....b..X.vN.F.
+000004a0: 865b 0735 1986 a54c 54d7 161a 1d4b b318  .[.5...LT....K..
+```
+
+>Nota: Se trata de un archivo ASN.1 cifrado en triple DES y por lo tanto NO legible directamente como ASN.1 en claro. Veremos la diferencia al utilizar más adelante el formato `PKCS#8`
