@@ -1,11 +1,7 @@
-### notas TIK sobre certificados (Dic 2017)
+# Lab 01 RSA Key Pairs 
+##### Apuntes para TIK sobre certificados (Dic 2017)
 
-Incluir imagen:
-
-
-![alt text](images/image01.png "Title")
-
-## TOOLS
+### TOOLS
 
 >[CSR Decoder and Certificate Decoder (Red Krestel)(new)](https://redkestrel.co.uk/products/decoder/)
 
@@ -14,7 +10,7 @@ Incluir imagen:
 >[ASN.1 JavaScript decoder](https://lapo.it/asn1js/)
 
 
-## Generacion de Claves RSA con OpenSSL
+### Preparación del laboratorio
 
 Creacion del directorio de trabajo del lab:
 
@@ -27,6 +23,8 @@ $ pwd
 /home/devel1/labs/lab01_rsa
 
 ```
+
+## SECCION 01: Generación y manejo de claves RSA con `openssl`
 
 Ayuda de openssl para `genrsa`:
 
@@ -52,7 +50,7 @@ usage: genrsa [args] [numbits]
 
 ```
 
-### Ejemplo 01: Generar clave RSA en formato PEM sin cifrar (PKCS#1)
+### Ejemplo 01.01: Generar clave RSA en formato `PEM` sin cifrar `(PKCS#1)`
 
 >[Public-Key Cryptography Standards (PKCS)](https://web.archive.org/web/20061209135809/http://www.rsasecurity.com/rsalabs/node.asp?id=2124)
 
@@ -99,6 +97,17 @@ PyFsxxarmKbJ46VX43pytw3Mx/mBPqU8Zbrx7SMr4bBcQ8dZpD29
 -----END RSA PRIVATE KEY-----
 
 ```
+
+#### _INTERLUDIO_: `ASN.1` Abstract Syntax Notation One
+* [What is ASN.1 (Abstract Syntax Notation One)?](http://whatis.techtarget.com/definition/ASN1-Abstract-Syntax-Notation-One)
+* [Wikipedia (ES) ASN.1](https://es.wikipedia.org/wiki/ASN.1)
+* [Wikipedia (EN) ASN.1](https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One)
+* [International Telecommunication Union (ITU) - Introduction to ASN.1​](http://www.itu.int/en/ITU-T/asn1/Pages/introduction.aspx)
+* [Reglas de codificación básicas](https://es.wikipedia.org/wiki/Reglas_de_codificaci%C3%B3n_b%C3%A1sicas)
+* [The standard ASN.1 encoding rules (Wikipedia EN) BER, CER, DER, XER](https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One#Encodings)
+* [PEM - Privacy-enhanced Electronic Mail (Wikipedia EN)](https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail)
+* [ITU - X.690 : Information technology - ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)](https://www.itu.int/rec/T-REC-X.690/en)
+
 
 #### Visualizacion del contenido del archivo de clave generado con `openssl rsa`:
 
@@ -385,3 +394,13 @@ $ gcr-viewer rsakeypair01.pem
 ```
 
 ![$ gcr-viewer rsakeypair01.pem](images/rsakeypair01_image02.png "$ gcr-viewer rsakeypair01.pem")
+
+### Ejemplo 01.02: Obtener la clave RSA en formato PEM sin cifrar (PKCS#1)
+
+>[Public-Key Cryptography Standards (PKCS)](https://web.archive.org/web/20061209135809/http://www.rsasecurity.com/rsalabs/node.asp?id=2124)
+
+>[02 - PKCS #1: RSA Cryptography Standard](https://web.archive.org/web/20061210143154/http://www.rsasecurity.com/rsalabs/node.asp?id=2125)
+
+>[Wikipedia (ES) PKCS](https://es.wikipedia.org/wiki/PKCS)
+
+>[Wikipedia (EN) PKCS](https://en.wikipedia.org/wiki/PKCS)
