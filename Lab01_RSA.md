@@ -141,6 +141,8 @@ where options are
  -engine e       use engine e, possibly a hardware device.
  ```
 
+>Nota: En realidad la opción `--help` no es una opción válida `( unknown option --help )`pero sirve de _truco_ para obtener la ayuda de los diferentes _comandos_ `( commands )` de OpenSSL 
+
 * Utilización de `openssl rsa` para visualizar el archivo:
 
 ```
@@ -395,12 +397,215 @@ $ gcr-viewer rsakeypair01.pem
 
 ![$ gcr-viewer rsakeypair01.pem](images/rsakeypair01_image02.png "$ gcr-viewer rsakeypair01.pem")
 
-### Ejemplo 01.02: Obtener la clave RSA en formato PEM sin cifrar (PKCS#1)
+### Ejemplo 01.02: Obtener la clave RSA generada en el ejemplo anterior codificada en `DER  (Distinguished Encoding Rules)` sin cifrar `(PKCS#1)` utilizando `openssl rsa`
 
->[Public-Key Cryptography Standards (PKCS)](https://web.archive.org/web/20061209135809/http://www.rsasecurity.com/rsalabs/node.asp?id=2124)
+´´´
+$ openssl rsa -in rsakeypair01.pem -inform PEM -out rsakeypair01.der -outform DER
+writing RSA key
+´´´
 
->[02 - PKCS #1: RSA Cryptography Standard](https://web.archive.org/web/20061210143154/http://www.rsasecurity.com/rsalabs/node.asp?id=2125)
+#### Visualizando el archivo obtenido:
 
->[Wikipedia (ES) PKCS](https://es.wikipedia.org/wiki/PKCS)
+>Nota: El archivo obtenido se encuentra en formato binario y no es adecuado visualizarlo como texto (por ejemplo con `cat`)
 
->[Wikipedia (EN) PKCS](https://en.wikipedia.org/wiki/PKCS)
+* Visualizándolo en Hexadecimal (_en línea de comando -- CLI --_) con `xxd` ('make a hexdump or do the reverse.')
+```
+$ xxd -c 16 rsakeypair01.der 
+00000000: 3082 04a3 0201 0002 8201 0100 ab49 63a2  0............Ic.
+00000010: ede4 6b6c 57d7 2b78 83a7 60f6 c9bc 8ab9  ..klW.+x..`.....
+00000020: cd6a 398f 036e acf4 66db 61b2 7d02 0cbf  .j9..n..f.a.}...
+00000030: f176 cf1b 9878 5f6a 48ae 7d73 c65c 9ba7  .v...x_jH.}s.\..
+00000040: e4fe 4d4b 0946 9c02 dabf a34e f610 88f2  ..MK.F.....N....
+00000050: 492a bcdc 9713 3a3c f94d 0de8 e200 6b9b  I*....:<.M....k.
+00000060: 1e1a 2fab ecdb e2da 3d2c 43b4 a849 9b65  ../.....=,C..I.e
+00000070: 0f4d f0da 367d 9572 522c d3ae e345 920e  .M..6}.rR,...E..
+00000080: 32f2 6044 b62a 9305 b2f2 a805 0bce 1288  2.`D.*..........
+00000090: a094 e1a5 5bd1 f831 ee37 7b9c 0838 1848  ....[..1.7{..8.H
+000000a0: 2007 6a61 7866 2853 42df f960 c7dc b248   .jaxf(SB..`...H
+000000b0: 88d3 275e 9f6d 38e9 7fb3 6e9b f46a e4fc  ..'^.m8...n..j..
+000000c0: 4ab2 60d6 4116 454b 365c e8f4 c5a8 c409  J.`.A.EK6\......
+000000d0: aa05 f3b9 7e40 3ac1 5804 e5b3 36d2 18fe  ....~@:.X...6...
+000000e0: 4864 a87b 24ac d4bf ad1c 71a0 2020 8617  Hd.{$.....q.  ..
+000000f0: f019 039b f03b 438f 970e c194 8083 5841  .....;C.......XA
+00000100: 8c03 f490 f65f 28da 88bc cce5 0203 0100  ....._(.........
+00000110: 0102 8201 0004 2e86 8033 ce9f d0c5 543b  .........3....T;
+00000120: 7b75 bb60 62a6 0a34 58d4 eb02 fcba d8b8  {u.`b..4X.......
+00000130: e03e a29c 7fff 0d4d c261 e2c4 aba7 cd48  .>.....M.a.....H
+00000140: 870f bf32 d0e0 c6e2 05f7 513e 11d6 e822  ...2......Q>..."
+00000150: 66ef 703e 4c6f 3578 2272 26d8 f589 baae  f.p>Lo5x"r&.....
+00000160: 714e a4d2 f21c 9266 0e23 6e00 3bf2 4c6b  qN.....f.#n.;.Lk
+00000170: fd68 00ec a63c 758f 95a8 09ff 1754 bd3c  .h...<u......T.<
+00000180: 28ce 58c9 d23b 3a37 96a1 27c9 b1e3 c0a6  (.X..;:7..'.....
+00000190: 563d 482f 51e5 fae4 0aa8 0ba3 7cc1 63a2  V=H/Q.......|.c.
+000001a0: 579c 7088 1bfe 7e78 f7b3 04c4 cf85 2efe  W.p...~x........
+000001b0: 237c d1d3 4c6e 91f1 384c a657 0fe3 3c73  #|..Ln..8L.W..<s
+000001c0: d4b4 d459 0587 c11d ffc1 724c 8bfd 0af5  ...Y......rL....
+000001d0: 4358 a4cd 4319 ebdd bf40 d270 25bd c2bf  CX..C....@.p%...
+000001e0: 7079 8962 d071 18a9 b7ed f53c 5ac4 63cc  py.b.q.....<Z.c.
+000001f0: 55d6 36d6 fef0 69a1 8875 9c8a 51c3 7d76  U.6...i..u..Q.}v
+00000200: 5c61 10a0 520f fad8 6d93 757a dc09 c331  \a..R...m.uz...1
+00000210: d208 5153 0102 8181 00dc 739e 4861 633a  ..QS......s.Hac:
+00000220: 668a 01c6 0f4d 8915 d704 7d5f a5dc b210  f....M....}_....
+00000230: 97f1 d6a7 a19f 59c2 0d02 2d52 5b3a cc21  ......Y...-R[:.!
+00000240: f37a e610 98a5 d6e2 458f c6c1 0f67 f5d2  .z......E....g..
+00000250: 8004 17b9 1b3e 9ee1 b16d 694e 4473 0ac3  .....>...miNDs..
+00000260: 8b53 0af3 248e 6c21 e297 f8c8 c793 e0ae  .S..$.l!........
+00000270: e8ff 1441 bb6e 42e7 e0fd c962 1b5e bd69  ...A.nB....b.^.i
+00000280: 1dde 94de 7598 1dd5 0db4 5d96 7376 ac26  ....u.....].sv.&
+00000290: 4c89 dad1 ef2f 21d8 7302 8181 00c6 e835  L..../!.s......5
+000002a0: ec64 9635 4328 ca7a 9376 6b1c 15e0 c653  .d.5C(.z.vk....S
+000002b0: ce6c dbc7 2e53 9936 0e9a fe84 67f4 0672  .l...S.6....g..r
+000002c0: c4af 866d 61d0 a22f cf77 2203 13b5 7f61  ...ma../.w"....a
+000002d0: 39c6 3f6f e410 5ce6 0f05 cc71 84c1 5f83  9.?o..\....q.._.
+000002e0: 59ec 7879 1c95 5eb0 0e8d 2396 b8f4 6e9f  Y.xy..^...#...n.
+000002f0: 7a98 cf1f f86d 816b 1332 94dd 4d4f 0c96  z....m.k.2..MO..
+00000300: da25 09b1 cdc7 88a8 a59b 948a d0fd 4840  .%............H@
+00000310: 7524 36cb 76e2 6653 85e3 4ee7 4702 8180  u$6.v.fS..N.G...
+00000320: 5240 411a 385b d17a 589b 78ce 54db 84ee  R@A.8[.zX.x.T...
+00000330: 889a 4e89 8fe2 5016 a100 b9e2 af95 c9b5  ..N...P.........
+00000340: 18ce d81f 79bc 981e 4408 7ac0 b97f 8744  ....y...D.z....D
+00000350: f4f3 ef2c 5459 7f84 8c02 5dea 305f 0f4e  ...,TY....].0_.N
+00000360: 27c8 568f 6b6c e4b0 a2f7 3ee8 b0ca df89  '.V.kl....>.....
+00000370: afb1 ff17 97b1 0911 9dba 6d1c 0573 a918  ..........m..s..
+00000380: 6518 3226 8c1e 978d b172 51de 0637 7b3a  e.2&.....rQ..7{:
+00000390: 75c5 4551 2741 ebb8 3ae7 0dd4 f3fc e8c9  u.EQ'A..:.......
+000003a0: 0281 8075 fbe3 9077 11ca 422d fdfc bb5f  ...u...w..B-..._
+000003b0: b0a5 162d 2037 31e8 cc6c d783 eb0b 6f9a  ...- 71..l....o.
+000003c0: 6c82 698f 0c0c 23b2 e210 1bc7 3f8d 1088  l.i...#.....?...
+000003d0: dff9 e744 ef6b e273 3fc9 c504 17b6 b70e  ...D.k.s?.......
+000003e0: 7f78 8e80 8d81 4263 cc0a 3af4 3718 4369  .x....Bc..:.7.Ci
+000003f0: 60c4 d4ac d8b9 6c65 1be7 20db 03bb 59c5  `.....le.. ...Y.
+00000400: d51b 77f1 fdcb b555 e6ec 3add b2a8 26a3  ..w....U..:...&.
+00000410: a476 bb04 a248 e9b3 3375 78ed 4e39 18df  .v...H..3ux.N9..
+00000420: fe3b 9d02 8181 00bb 65ae 0d0c 1375 43ed  .;......e....uC.
+00000430: c4d8 f38b 3297 571c ed77 6993 e978 4077  ....2.W..wi..x@w
+00000440: 9280 2857 d2cf 2ecd bb18 7c3f 362a 793a  ..(W......|?6*y:
+00000450: 3ca5 5b01 b1b8 918d 6f90 912e 28fb 12a6  <.[.....o...(...
+00000460: 1fe6 1231 59e3 e4ee 268c b31c 04c6 3697  ...1Y...&.....6.
+00000470: f30e 9713 9776 2907 e87e 1e8d e73e 72cb  .....v)..~...>r.
+00000480: 3f21 6cc7 16ab 98a6 c9e3 a557 e37a 72b7  ?!l........W.zr.
+00000490: 0dcc c7f9 813e a53c 65ba f1ed 232b e1b0  .....>.<e...#+..
+000004a0: 5c43 c759 a43d bd                        \C.Y.=.
+```
+
+>Nota: adviértase el _significativo_ comienzo por `0x8032` _delator_ de la presencia de un posible archivo codificado en `ASN.1` en `DER format` comenzando por una `SEQUENCE`
+
+* Visualizándolo en Hexadecimal (_en entorno gráfico_) con `ghex`
+
+```
+$ ghex rsakeypair01.der
+```
+
+![ASN.1 JavaScript decoder](images/rsakeypair01_image03_GHex.png "ASN.1 JavaScript decoder")
+
+* Visualización con las mismas herramientas utilizadas en el ejemplo anterior producirán el mismo resultado:
+    * `$ openssl rsa -in rsakeypair01.der -inform DER -text`
+    * `$ openssl asn1parse -in rsakeypair01.der -inform DER -i -dump`
+
+>Nota: No olvidar informar correctamente que el archivo se encuentra en encoding format `DER ( -inform DER )`
+
+* La visualización con `dumpasn1` esta vez sí obtendrá el resultado esperado al hallarse el archivo codificado en `DER` encoding format:
+
+```
+$ dumpasn1 -adhl rsakeypair01.der
+    <30 82 04 A3>
+   0 1187: SEQUENCE {
+    <02 01>
+   4    1: . INTEGER 0
+    <02 82 01 01>
+   7  257: . INTEGER
+         : . . 00 AB 49 63 A2 ED E4 6B 6C 57 D7 2B 78 83 A7 60
+         : . . F6 C9 BC 8A B9 CD 6A 39 8F 03 6E AC F4 66 DB 61
+         : . . B2 7D 02 0C BF F1 76 CF 1B 98 78 5F 6A 48 AE 7D
+         : . . 73 C6 5C 9B A7 E4 FE 4D 4B 09 46 9C 02 DA BF A3
+         : . . 4E F6 10 88 F2 49 2A BC DC 97 13 3A 3C F9 4D 0D
+         : . . E8 E2 00 6B 9B 1E 1A 2F AB EC DB E2 DA 3D 2C 43
+         : . . B4 A8 49 9B 65 0F 4D F0 DA 36 7D 95 72 52 2C D3
+         : . . AE E3 45 92 0E 32 F2 60 44 B6 2A 93 05 B2 F2 A8
+         : . . 05 0B CE 12 88 A0 94 E1 A5 5B D1 F8 31 EE 37 7B
+         : . . 9C 08 38 18 48 20 07 6A 61 78 66 28 53 42 DF F9
+         : . . 60 C7 DC B2 48 88 D3 27 5E 9F 6D 38 E9 7F B3 6E
+         : . . 9B F4 6A E4 FC 4A B2 60 D6 41 16 45 4B 36 5C E8
+         : . . F4 C5 A8 C4 09 AA 05 F3 B9 7E 40 3A C1 58 04 E5
+         : . . B3 36 D2 18 FE 48 64 A8 7B 24 AC D4 BF AD 1C 71
+         : . . A0 20 20 86 17 F0 19 03 9B F0 3B 43 8F 97 0E C1
+         : . . 94 80 83 58 41 8C 03 F4 90 F6 5F 28 DA 88 BC CC
+         : . . E5
+    <02 03>
+ 268    3: . INTEGER 65537
+    <02 82 01 00>
+ 273  256: . INTEGER
+         : . . 04 2E 86 80 33 CE 9F D0 C5 54 3B 7B 75 BB 60 62
+         : . . A6 0A 34 58 D4 EB 02 FC BA D8 B8 E0 3E A2 9C 7F
+         : . . FF 0D 4D C2 61 E2 C4 AB A7 CD 48 87 0F BF 32 D0
+         : . . E0 C6 E2 05 F7 51 3E 11 D6 E8 22 66 EF 70 3E 4C
+         : . . 6F 35 78 22 72 26 D8 F5 89 BA AE 71 4E A4 D2 F2
+         : . . 1C 92 66 0E 23 6E 00 3B F2 4C 6B FD 68 00 EC A6
+         : . . 3C 75 8F 95 A8 09 FF 17 54 BD 3C 28 CE 58 C9 D2
+         : . . 3B 3A 37 96 A1 27 C9 B1 E3 C0 A6 56 3D 48 2F 51
+         : . . E5 FA E4 0A A8 0B A3 7C C1 63 A2 57 9C 70 88 1B
+         : . . FE 7E 78 F7 B3 04 C4 CF 85 2E FE 23 7C D1 D3 4C
+         : . . 6E 91 F1 38 4C A6 57 0F E3 3C 73 D4 B4 D4 59 05
+         : . . 87 C1 1D FF C1 72 4C 8B FD 0A F5 43 58 A4 CD 43
+         : . . 19 EB DD BF 40 D2 70 25 BD C2 BF 70 79 89 62 D0
+         : . . 71 18 A9 B7 ED F5 3C 5A C4 63 CC 55 D6 36 D6 FE
+         : . . F0 69 A1 88 75 9C 8A 51 C3 7D 76 5C 61 10 A0 52
+         : . . 0F FA D8 6D 93 75 7A DC 09 C3 31 D2 08 51 53 01
+    <02 81 81>
+ 533  129: . INTEGER
+         : . . 00 DC 73 9E 48 61 63 3A 66 8A 01 C6 0F 4D 89 15
+         : . . D7 04 7D 5F A5 DC B2 10 97 F1 D6 A7 A1 9F 59 C2
+         : . . 0D 02 2D 52 5B 3A CC 21 F3 7A E6 10 98 A5 D6 E2
+         : . . 45 8F C6 C1 0F 67 F5 D2 80 04 17 B9 1B 3E 9E E1
+         : . . B1 6D 69 4E 44 73 0A C3 8B 53 0A F3 24 8E 6C 21
+         : . . E2 97 F8 C8 C7 93 E0 AE E8 FF 14 41 BB 6E 42 E7
+         : . . E0 FD C9 62 1B 5E BD 69 1D DE 94 DE 75 98 1D D5
+         : . . 0D B4 5D 96 73 76 AC 26 4C 89 DA D1 EF 2F 21 D8
+         : . . 73
+    <02 81 81>
+ 665  129: . INTEGER
+         : . . 00 C6 E8 35 EC 64 96 35 43 28 CA 7A 93 76 6B 1C
+         : . . 15 E0 C6 53 CE 6C DB C7 2E 53 99 36 0E 9A FE 84
+         : . . 67 F4 06 72 C4 AF 86 6D 61 D0 A2 2F CF 77 22 03
+         : . . 13 B5 7F 61 39 C6 3F 6F E4 10 5C E6 0F 05 CC 71
+         : . . 84 C1 5F 83 59 EC 78 79 1C 95 5E B0 0E 8D 23 96
+         : . . B8 F4 6E 9F 7A 98 CF 1F F8 6D 81 6B 13 32 94 DD
+         : . . 4D 4F 0C 96 DA 25 09 B1 CD C7 88 A8 A5 9B 94 8A
+         : . . D0 FD 48 40 75 24 36 CB 76 E2 66 53 85 E3 4E E7
+         : . . 47
+    <02 81 80>
+ 797  128: . INTEGER
+         : . . 52 40 41 1A 38 5B D1 7A 58 9B 78 CE 54 DB 84 EE
+         : . . 88 9A 4E 89 8F E2 50 16 A1 00 B9 E2 AF 95 C9 B5
+         : . . 18 CE D8 1F 79 BC 98 1E 44 08 7A C0 B9 7F 87 44
+         : . . F4 F3 EF 2C 54 59 7F 84 8C 02 5D EA 30 5F 0F 4E
+         : . . 27 C8 56 8F 6B 6C E4 B0 A2 F7 3E E8 B0 CA DF 89
+         : . . AF B1 FF 17 97 B1 09 11 9D BA 6D 1C 05 73 A9 18
+         : . . 65 18 32 26 8C 1E 97 8D B1 72 51 DE 06 37 7B 3A
+         : . . 75 C5 45 51 27 41 EB B8 3A E7 0D D4 F3 FC E8 C9
+    <02 81 80>
+ 928  128: . INTEGER
+         : . . 75 FB E3 90 77 11 CA 42 2D FD FC BB 5F B0 A5 16
+         : . . 2D 20 37 31 E8 CC 6C D7 83 EB 0B 6F 9A 6C 82 69
+         : . . 8F 0C 0C 23 B2 E2 10 1B C7 3F 8D 10 88 DF F9 E7
+         : . . 44 EF 6B E2 73 3F C9 C5 04 17 B6 B7 0E 7F 78 8E
+         : . . 80 8D 81 42 63 CC 0A 3A F4 37 18 43 69 60 C4 D4
+         : . . AC D8 B9 6C 65 1B E7 20 DB 03 BB 59 C5 D5 1B 77
+         : . . F1 FD CB B5 55 E6 EC 3A DD B2 A8 26 A3 A4 76 BB
+         : . . 04 A2 48 E9 B3 33 75 78 ED 4E 39 18 DF FE 3B 9D
+    <02 81 81>
+1059  129: . INTEGER
+         : . . 00 BB 65 AE 0D 0C 13 75 43 ED C4 D8 F3 8B 32 97
+         : . . 57 1C ED 77 69 93 E9 78 40 77 92 80 28 57 D2 CF
+         : . . 2E CD BB 18 7C 3F 36 2A 79 3A 3C A5 5B 01 B1 B8
+         : . . 91 8D 6F 90 91 2E 28 FB 12 A6 1F E6 12 31 59 E3
+         : . . E4 EE 26 8C B3 1C 04 C6 36 97 F3 0E 97 13 97 76
+         : . . 29 07 E8 7E 1E 8D E7 3E 72 CB 3F 21 6C C7 16 AB
+         : . . 98 A6 C9 E3 A5 57 E3 7A 72 B7 0D CC C7 F9 81 3E
+         : . . A5 3C 65 BA F1 ED 23 2B E1 B0 5C 43 C7 59 A4 3D
+         : . . BD
+         : . }
+
+0 warnings, 0 errors.
+
+```
