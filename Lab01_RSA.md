@@ -52,9 +52,9 @@ usage: genrsa [args] [numbits]
 
 ### Ejemplo 01.01: Generar clave RSA en formato `PEM` sin cifrar `(PKCS#1)`
 
->[Public-Key Cryptography Standards (PKCS)](https://web.archive.org/web/20061209135809/http://www.rsasecurity.com/rsalabs/node.asp?id=2124)
+>[Public-Key Cryptography Standards `(PKCS)` (RSA Laboratories - _ARCHIVO_)](https://web.archive.org/web/20061209135809/http://www.rsasecurity.com/rsalabs/node.asp?id=2124)
 
->[02 - PKCS #1: RSA Cryptography Standard](https://web.archive.org/web/20061210143154/http://www.rsasecurity.com/rsalabs/node.asp?id=2125)
+>[02 - PKCS #1: RSA Cryptography Standard (RSA Laboratories - _ARCHIVO_)](https://web.archive.org/web/20061210143154/http://www.rsasecurity.com/rsalabs/node.asp?id=2125)
 
 >[Wikipedia (ES) PKCS](https://es.wikipedia.org/wiki/PKCS)
 
@@ -103,9 +103,9 @@ PyFsxxarmKbJ46VX43pytw3Mx/mBPqU8Zbrx7SMr4bBcQ8dZpD29
 * [Wikipedia (ES) ASN.1](https://es.wikipedia.org/wiki/ASN.1)
 * [Wikipedia (EN) ASN.1](https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One)
 * [International Telecommunication Union (ITU) - Introduction to ASN.1​](http://www.itu.int/en/ITU-T/asn1/Pages/introduction.aspx)
-* [Reglas de codificación básicas](https://es.wikipedia.org/wiki/Reglas_de_codificaci%C3%B3n_b%C3%A1sicas)
-* [The standard ASN.1 encoding rules (Wikipedia EN) BER, CER, DER, XER](https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One#Encodings)
-* [PEM - Privacy-enhanced Electronic Mail (Wikipedia EN)](https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail)
+* [Reglas de codificación básicas `BER` (Basic Encoding Rules) (Wikipedia ES)](https://es.wikipedia.org/wiki/Reglas_de_codificaci%C3%B3n_b%C3%A1sicas)
+* [The standard ASN.1 encoding rules (Wikipedia EN) `BER`, `CER`, `DER`, `XER`, ...](https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One#Encodings)
+* [`PEM` - Privacy-enhanced Electronic Mail (Wikipedia EN)](https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail)
 * [ITU - X.690 : Information technology - ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)](https://www.itu.int/rec/T-REC-X.690/en)
 
 
