@@ -1052,3 +1052,123 @@ $ xxd -c 16 rsakeypair02_des3.der
 ```
 
 >Nota: Se trata de un archivo ASN.1 cifrado en triple DES y por lo tanto NO legible directamente como ASN.1 en claro. Veremos la diferencia al utilizar más adelante el formato `PKCS#8`
+
+
+### Ejemplo 01.04: Utilización del formato estandar `PKCS#8`
+
+>[PKCS #8: Private-Key Information Syntax Standard](https://web.archive.org/web/20061210143206/http://www.rsasecurity.com/rsalabs/node.asp?id=2130)
+
+>[PKCS#8 - Wikipedia (en)](https://en.wikipedia.org/wiki/PKCS_8)
+
+Cuando se requiere que los archivos contenedores de parejas de claves (`keypairs`) se encuentren en el formato que define el estandar `PKCS#8`, `openssl` cuenta con el comando `pkcs8` para ello. 
+
+#### Ayuda de `openssl pkcs8`
+
+```
+$ openssl pkcs8 --help
+Usage pkcs8 [options]
+where options are
+-in file        input file
+-inform X       input format (DER or PEM)
+-passin arg     input file pass phrase source
+-outform X      output format (DER or PEM)
+-out file       output file
+-passout arg    output file pass phrase source
+-topk8          output PKCS8 file
+-nooct          use (nonstandard) no octet format
+-embed          use (nonstandard) embedded DSA parameters format
+-nsdb           use (nonstandard) DSA Netscape DB format
+-noiter         use 1 as iteration count
+-nocrypt        use or expect unencrypted private key
+-v2 alg         use PKCS#5 v2.0 and cipher "alg"
+-v1 obj         use PKCS#5 v1.5 and cipher "alg"
+ -engine e       use engine e, possibly a hardware device.
+``` 
+
+#### Convertir un `keypair` en formato `PKCS#1` a formato `PKCS#8` (con el archivo resultante NO PROTEGIDO por clave) 
+
+>Notese la opción `-nocrypt`
+
+```
+openssl pkcs8 -topk8 -in rsakeypair01.pem -inform PEM -out rsakeypair01_pkcs8.pem -outform PEM -nocrypt
+```
+
+* ¿ Cómo son las cabeceras de ambos archivos `PEM` ?:
+
+```
+$ cat rsakeypair01.pem
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAq0ljou3ka2xX1yt4g6dg9sm8irnNajmPA26s9GbbYbJ9Agy/
+8XbPG5h4X2pIrn1zxlybp+T+TUsJRpwC2r+jTvYQiPJJKrzclxM6PPlNDejiAGub
+Hhovq+zb4to9LEO0qEmbZQ9N8No2fZVyUizTruNFkg4y8mBEtiqTBbLyqAULzhKI
+oJThpVvR+DHuN3ucCDgYSCAHamF4ZihTQt/5YMfcskiI0yden2046X+zbpv0auT8
+SrJg1kEWRUs2XOj0xajECaoF87l+QDrBWATlszbSGP5IZKh7JKzUv60ccaAgIIYX
+8BkDm/A7Q4+XDsGUgINYQYwD9JD2XyjaiLzM5QIDAQABAoIBAAQuhoAzzp/QxVQ7
+e3W7YGKmCjRY1OsC/LrYuOA+opx//w1NwmHixKunzUiHD78y0ODG4gX3UT4R1ugi
+Zu9wPkxvNXgicibY9Ym6rnFOpNLyHJJmDiNuADvyTGv9aADspjx1j5WoCf8XVL08
+KM5YydI7OjeWoSfJsePAplY9SC9R5frkCqgLo3zBY6JXnHCIG/5+ePezBMTPhS7+
+I3zR00xukfE4TKZXD+M8c9S01FkFh8Ed/8FyTIv9CvVDWKTNQxnr3b9A0nAlvcK/
+cHmJYtBxGKm37fU8WsRjzFXWNtb+8GmhiHWcilHDfXZcYRCgUg/62G2TdXrcCcMx
+0ghRUwECgYEA3HOeSGFjOmaKAcYPTYkV1wR9X6XcshCX8danoZ9Zwg0CLVJbOswh
+83rmEJil1uJFj8bBD2f10oAEF7kbPp7hsW1pTkRzCsOLUwrzJI5sIeKX+MjHk+Cu
+6P8UQbtuQufg/cliG169aR3elN51mB3VDbRdlnN2rCZMidrR7y8h2HMCgYEAxug1
+7GSWNUMoynqTdmscFeDGU85s28cuU5k2Dpr+hGf0BnLEr4ZtYdCiL893IgMTtX9h
+OcY/b+QQXOYPBcxxhMFfg1nseHkclV6wDo0jlrj0bp96mM8f+G2BaxMylN1NTwyW
+2iUJsc3HiKilm5SK0P1IQHUkNst24mZTheNO50cCgYBSQEEaOFvRelibeM5U24Tu
+iJpOiY/iUBahALnir5XJtRjO2B95vJgeRAh6wLl/h0T08+8sVFl/hIwCXeowXw9O
+J8hWj2ts5LCi9z7osMrfia+x/xeXsQkRnbptHAVzqRhlGDImjB6XjbFyUd4GN3s6
+dcVFUSdB67g65w3U8/zoyQKBgHX745B3EcpCLf38u1+wpRYtIDcx6Mxs14PrC2+a
+bIJpjwwMI7LiEBvHP40QiN/550Tva+JzP8nFBBe2tw5/eI6AjYFCY8wKOvQ3GENp
+YMTUrNi5bGUb5yDbA7tZxdUbd/H9y7VV5uw63bKoJqOkdrsEokjpszN1eO1OORjf
+/judAoGBALtlrg0ME3VD7cTY84syl1cc7Xdpk+l4QHeSgChX0s8uzbsYfD82Knk6
+PKVbAbG4kY1vkJEuKPsSph/mEjFZ4+TuJoyzHATGNpfzDpcTl3YpB+h+Ho3nPnLL
+PyFsxxarmKbJ46VX43pytw3Mx/mBPqU8Zbrx7SMr4bBcQ8dZpD29
+-----END RSA PRIVATE KEY-----
+$ cat rsakeypair01_pkcs8.pem
+-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCrSWOi7eRrbFfX
+K3iDp2D2ybyKuc1qOY8Dbqz0Ztthsn0CDL/xds8bmHhfakiufXPGXJun5P5NSwlG
+nALav6NO9hCI8kkqvNyXEzo8+U0N6OIAa5seGi+r7Nvi2j0sQ7SoSZtlD03w2jZ9
+lXJSLNOu40WSDjLyYES2KpMFsvKoBQvOEoiglOGlW9H4Me43e5wIOBhIIAdqYXhm
+KFNC3/lgx9yySIjTJ16fbTjpf7Num/Rq5PxKsmDWQRZFSzZc6PTFqMQJqgXzuX5A
+OsFYBOWzNtIY/khkqHskrNS/rRxxoCAghhfwGQOb8DtDj5cOwZSAg1hBjAP0kPZf
+KNqIvMzlAgMBAAECggEABC6GgDPOn9DFVDt7dbtgYqYKNFjU6wL8uti44D6inH//
+DU3CYeLEq6fNSIcPvzLQ4MbiBfdRPhHW6CJm73A+TG81eCJyJtj1ibqucU6k0vIc
+kmYOI24AO/JMa/1oAOymPHWPlagJ/xdUvTwozljJ0js6N5ahJ8mx48CmVj1IL1Hl
++uQKqAujfMFjoleccIgb/n5497MExM+FLv4jfNHTTG6R8ThMplcP4zxz1LTUWQWH
+wR3/wXJMi/0K9UNYpM1DGevdv0DScCW9wr9weYli0HEYqbft9TxaxGPMVdY21v7w
+aaGIdZyKUcN9dlxhEKBSD/rYbZN1etwJwzHSCFFTAQKBgQDcc55IYWM6ZooBxg9N
+iRXXBH1fpdyyEJfx1qehn1nCDQItUls6zCHzeuYQmKXW4kWPxsEPZ/XSgAQXuRs+
+nuGxbWlORHMKw4tTCvMkjmwh4pf4yMeT4K7o/xRBu25C5+D9yWIbXr1pHd6U3nWY
+HdUNtF2Wc3asJkyJ2tHvLyHYcwKBgQDG6DXsZJY1QyjKepN2axwV4MZTzmzbxy5T
+mTYOmv6EZ/QGcsSvhm1h0KIvz3ciAxO1f2E5xj9v5BBc5g8FzHGEwV+DWex4eRyV
+XrAOjSOWuPRun3qYzx/4bYFrEzKU3U1PDJbaJQmxzceIqKWblIrQ/UhAdSQ2y3bi
+ZlOF407nRwKBgFJAQRo4W9F6WJt4zlTbhO6Imk6Jj+JQFqEAueKvlcm1GM7YH3m8
+mB5ECHrAuX+HRPTz7yxUWX+EjAJd6jBfD04nyFaPa2zksKL3Puiwyt+Jr7H/F5ex
+CRGdum0cBXOpGGUYMiaMHpeNsXJR3gY3ezp1xUVRJ0HruDrnDdTz/OjJAoGAdfvj
+kHcRykIt/fy7X7ClFi0gNzHozGzXg+sLb5psgmmPDAwjsuIQG8c/jRCI3/nnRO9r
+4nM/ycUEF7a3Dn94joCNgUJjzAo69DcYQ2lgxNSs2LlsZRvnINsDu1nF1Rt38f3L
+tVXm7Drdsqgmo6R2uwSiSOmzM3V47U45GN/+O50CgYEAu2WuDQwTdUPtxNjzizKX
+Vxztd2mT6XhAd5KAKFfSzy7Nuxh8PzYqeTo8pVsBsbiRjW+QkS4o+xKmH+YSMVnj
+5O4mjLMcBMY2l/MOlxOXdikH6H4ejec+css/IWzHFquYpsnjpVfjenK3DczH+YE+
+pTxluvHtIyvhsFxDx1mkPb0=
+-----END PRIVATE KEY-----
+```
+
+* Se observan diferentes cabeceras:
+    * PKCS#1 ==> `-----BEGIN RSA PRIVATE KEY-----`
+    * PKCS#8 ==> `-----BEGIN PRIVATE KEY-----`
+
+Puede observarse que el estandar `PKCS#1` es específico para `RSA` mientras que el estandar `PKCS#8` prevé la persisntencia de otros tipos/algoritmos de claves asimétricas que se verán en siguinetes laboratorios (`DSA`, `EC`, ...) 
+
+* ¿ Cómo es la estructura interna `ASN.1` de ambos archivos ?:
+
+![PKCS#1 vs. PKCS#8](images/PKCS1vsPKCS8_image01.png "PKCS#1 vs. PKCS#8")
+
+### Ejemplo 01.04: Extraer la clave pública en formato `PKCS#1` del archivo de parejas de claves RSA obtenido anteriormente:
+
+Diferentes combinaciones del comando `rsa` pueden utilizarse para obtener un archivo conteniendo únicamente la `Clave Pública` dependiendo del formato de encoding (`PEM` / `DER`) de los archivos de origen y de destino, así cómo de si el archivo de origen está protegido mediante cifrado.
+
+ 
+
+
