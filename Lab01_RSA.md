@@ -23,6 +23,35 @@ $ pwd
 /home/devel1/labs/lab01_rsa
 
 ```
+## INTRODUCCION (breve) a `RSA Public Key scheme`
+
+>[RSA Wikipedia (es)](https://es.wikipedia.org/wiki/RSA)
+
+>[RSA (cryptosystem) Wikipedia (en)](https://en.wikipedia.org/wiki/RSA_(cryptosystem))
+
+>[RSA Calculator](https://www.cs.drexel.edu/~jpopyack/IntroCS/HW/RSAWorksheet.html) 
+
+Ejemplos de generación de un `Keypair RSA` y cifrado/descifrado de un mensaje con dicho Keypair:
+
+* Step 1
+
+![RSA Calculator - Step 1](images/RSA_Calulator_step1_image01.png "RSA Calculator - Step 1")
+
+
+* Step 2
+
+![RSA Calculator - Step 2](images/RSA_Calulator_step2_image01.png "RSA Calculator - Step 2")
+
+
+* Step 3
+
+![RSA Calculator - Step 3](images/RSA_Calulator_step3_image01.png "RSA Calculator - Step 3")
+
+
+* Step 4
+
+![RSA Calculator - Step 4](images/RSA_Calulator_step4_image01.png "RSA Calculator - Step 4")
+
 
 ## SECCION 01: Generación y manejo de claves RSA con `openssl`
 
@@ -1593,14 +1622,371 @@ $ dumpasn1 -adhl rsapubkey01_pkcs1.der
 ![PKCS#8 Public Key vs PKCS#1 Public Key](images/PKCS8vsPKCS1_image02.png "PKCS#8 Private Key vs Public Key")
 
 
-#### Conversion estandard `PKCS#8` desde un Keypair `RSA` en formato `PEM` encoded y estandard `PKCS#1`:
+#### **DIRECTAMENTE** en estandard `PKCS#1` desde un **Keypair** `RSA` en estandard `PKCS#8`:
 
->Nota: CABECERAS: 
+* Archivo de origen NO PROTEGIDO con clave:
+
+```
+$ openssl rsa -pubout -in rsakeypair01_pkcs8.pem -inform PEM -RSAPublicKey_out -out rsapubkey01b_pkcs1.pem -outform PEM
+writing RSA key
+$ cat rsapubkey01b_pkcs1.pem
+-----BEGIN RSA PUBLIC KEY-----
+MIIBCgKCAQEAq0ljou3ka2xX1yt4g6dg9sm8irnNajmPA26s9GbbYbJ9Agy/8XbP
+G5h4X2pIrn1zxlybp+T+TUsJRpwC2r+jTvYQiPJJKrzclxM6PPlNDejiAGubHhov
+q+zb4to9LEO0qEmbZQ9N8No2fZVyUizTruNFkg4y8mBEtiqTBbLyqAULzhKIoJTh
+pVvR+DHuN3ucCDgYSCAHamF4ZihTQt/5YMfcskiI0yden2046X+zbpv0auT8SrJg
+1kEWRUs2XOj0xajECaoF87l+QDrBWATlszbSGP5IZKh7JKzUv60ccaAgIIYX8BkD
+m/A7Q4+XDsGUgINYQYwD9JD2XyjaiLzM5QIDAQAB
+-----END RSA PUBLIC KEY-----
+```
+
+```
+$ openssl rsa -pubout -in rsakeypair01_pkcs8.pem -inform PEM -RSAPublicKey_out -out rsapubkey01b_pkcs1.der -outform DER
+writing RSA key
+$ dumpasn1 -adhl rsapubkey01b_pkcs1.der
+    <30 82 01 0A>
+  0 266: SEQUENCE {
+    <02 82 01 01>
+  4 257: . INTEGER
+       : . . 00 AB 49 63 A2 ED E4 6B 6C 57 D7 2B 78 83 A7 60
+       : . . F6 C9 BC 8A B9 CD 6A 39 8F 03 6E AC F4 66 DB 61
+       : . . B2 7D 02 0C BF F1 76 CF 1B 98 78 5F 6A 48 AE 7D
+       : . . 73 C6 5C 9B A7 E4 FE 4D 4B 09 46 9C 02 DA BF A3
+       : . . 4E F6 10 88 F2 49 2A BC DC 97 13 3A 3C F9 4D 0D
+       : . . E8 E2 00 6B 9B 1E 1A 2F AB EC DB E2 DA 3D 2C 43
+       : . . B4 A8 49 9B 65 0F 4D F0 DA 36 7D 95 72 52 2C D3
+       : . . AE E3 45 92 0E 32 F2 60 44 B6 2A 93 05 B2 F2 A8
+       : . . 05 0B CE 12 88 A0 94 E1 A5 5B D1 F8 31 EE 37 7B
+       : . . 9C 08 38 18 48 20 07 6A 61 78 66 28 53 42 DF F9
+       : . . 60 C7 DC B2 48 88 D3 27 5E 9F 6D 38 E9 7F B3 6E
+       : . . 9B F4 6A E4 FC 4A B2 60 D6 41 16 45 4B 36 5C E8
+       : . . F4 C5 A8 C4 09 AA 05 F3 B9 7E 40 3A C1 58 04 E5
+       : . . B3 36 D2 18 FE 48 64 A8 7B 24 AC D4 BF AD 1C 71
+       : . . A0 20 20 86 17 F0 19 03 9B F0 3B 43 8F 97 0E C1
+       : . . 94 80 83 58 41 8C 03 F4 90 F6 5F 28 DA 88 BC CC
+       : . . E5
+    <02 03>
+265   3: . INTEGER 65537
+       : . }
+
+0 warnings, 0 errors.
+```
+
+* Archivo de origen PROTEGIDO con clave:
+
+>Adviértase el parámetro `-passin`
+
+```
+$ openssl rsa -pubout -in rsakeypair02_aes256.pem -inform PEM -passin pass:changeit -RSAPublicKey_out -out rsapubkey01c_pkcs1.der -outform DER
+writing RSA key
+$ dumpasn1 -adhl rsapubkey01c_pkcs1.der
+    <30 82 01 0A>
+  0 266: SEQUENCE {
+    <02 82 01 01>
+  4 257: . INTEGER
+       : . . 00 D8 44 A6 B7 57 28 35 C9 72 0A EF 8B ED 8F 2A
+       : . . 33 85 A3 0A 8B B6 DE 59 82 22 66 B3 8B 3B D9 25
+       : . . DA F3 3C 29 81 43 62 0A 36 44 36 05 82 4B 76 0B
+       : . . 08 40 0F BF CE 8A 84 D7 32 4E 70 50 F2 C7 E7 38
+       : . . 6C 18 CE 78 1D 41 42 28 E7 D3 2A E9 51 D1 51 09
+       : . . F2 94 DF AC C5 9E 91 26 5C 46 8B E2 04 AD AE 56
+       : . . B7 E2 C1 E0 34 79 AC CE DA 0B 7E 98 E7 05 69 75
+       : . . BB FE 4A 65 EB CC 97 E7 B9 0A F4 AA 9C 63 BB 54
+       : . . EF 11 DD CC 39 A5 5B E1 9F E2 C6 6F 5A 3D 7B 9C
+       : . . 18 A0 28 C3 FE DE BB FF D4 04 D6 2C 90 6C BB 14
+       : . . 7F BD B3 8A 1B B4 BF 06 42 A2 1A 1A C1 7D 26 7E
+       : . . 6D A1 5D F5 74 81 F1 F6 75 D8 37 EC 49 18 7E 9B
+       : . . 81 F5 B2 8F EC 29 13 88 DE 07 80 BF 5B 2E 6D 92
+       : . . 95 4C 64 06 BD FC 6A D3 18 BC 04 B8 57 24 43 F7
+       : . . 02 55 4D DF F5 96 1F 7F 05 D4 02 1B 0B CE C5 D9
+       : . . 64 F0 9D FC B4 A6 B5 FB 3D CB 76 2C 4C 85 D9 12
+       : . . 21
+    <02 03>
+265   3: . INTEGER 65537
+       : . }
+
+0 warnings, 0 errors.
+```
+
+#### Conversión de una `clave pública RSA` en estandard `PKCS#1` a estandard `PKCS#8`:
+
+
+```
+$ openssl rsa -RSAPublicKey_in -in rsapubkey01b_pkcs1.pem -inform PEM -pubout
+writing RSA key
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ljou3ka2xX1yt4g6dg
+9sm8irnNajmPA26s9GbbYbJ9Agy/8XbPG5h4X2pIrn1zxlybp+T+TUsJRpwC2r+j
+TvYQiPJJKrzclxM6PPlNDejiAGubHhovq+zb4to9LEO0qEmbZQ9N8No2fZVyUizT
+ruNFkg4y8mBEtiqTBbLyqAULzhKIoJThpVvR+DHuN3ucCDgYSCAHamF4ZihTQt/5
+YMfcskiI0yden2046X+zbpv0auT8SrJg1kEWRUs2XOj0xajECaoF87l+QDrBWATl
+szbSGP5IZKh7JKzUv60ccaAgIIYX8BkDm/A7Q4+XDsGUgINYQYwD9JD2XyjaiLzM
+5QIDAQAB
+-----END PUBLIC KEY-----
+$ openssl rsa -RSAPublicKey_in -in rsapubkey01b_pkcs1.der -inform DER -pubout
+writing RSA key
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ljou3ka2xX1yt4g6dg
+9sm8irnNajmPA26s9GbbYbJ9Agy/8XbPG5h4X2pIrn1zxlybp+T+TUsJRpwC2r+j
+TvYQiPJJKrzclxM6PPlNDejiAGubHhovq+zb4to9LEO0qEmbZQ9N8No2fZVyUizT
+ruNFkg4y8mBEtiqTBbLyqAULzhKIoJThpVvR+DHuN3ucCDgYSCAHamF4ZihTQt/5
+YMfcskiI0yden2046X+zbpv0auT8SrJg1kEWRUs2XOj0xajECaoF87l+QDrBWATl
+szbSGP5IZKh7JKzUv60ccaAgIIYX8BkDm/A7Q4+XDsGUgINYQYwD9JD2XyjaiLzM
+5QIDAQAB
+-----END PUBLIC KEY-----
+```
+
+>Nota: obsérvese la cabecera `-----BEGIN PUBLIC KEY-----` **(PKCS#8)** en lugar de `-----BEGIN RSA PUBLIC KEY-----` **(PKCS#1)**
+
+```
+$ openssl rsa -RSAPublicKey_in -in rsapubkey01b_pkcs1.pem -inform PEM -pubout -out rsapubkey01b_pkcs8.pem -outform PEM
+writing RSA key
+$ cat rsapubkey01b_pkcs8.pem
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ljou3ka2xX1yt4g6dg
+9sm8irnNajmPA26s9GbbYbJ9Agy/8XbPG5h4X2pIrn1zxlybp+T+TUsJRpwC2r+j
+TvYQiPJJKrzclxM6PPlNDejiAGubHhovq+zb4to9LEO0qEmbZQ9N8No2fZVyUizT
+ruNFkg4y8mBEtiqTBbLyqAULzhKIoJThpVvR+DHuN3ucCDgYSCAHamF4ZihTQt/5
+YMfcskiI0yden2046X+zbpv0auT8SrJg1kEWRUs2XOj0xajECaoF87l+QDrBWATl
+szbSGP5IZKh7JKzUv60ccaAgIIYX8BkDm/A7Q4+XDsGUgINYQYwD9JD2XyjaiLzM
+5QIDAQAB
+-----END PUBLIC KEY-----
+```
+>Nota: obsérvese la cabecera `-----BEGIN PUBLIC KEY-----` **(PKCS#8)** en lugar de `-----BEGIN RSA PUBLIC KEY-----` **(PKCS#1)**
+```
+$ openssl rsa -RSAPublicKey_in -in rsapubkey01b_pkcs1.pem -inform PEM -pubout -out rsapubkey01b_pkcs8.der -outform DER
+writing RSA key
+$ dumpasn1 -adhl rsapubkey01b_pkcs8.der
+    <30 82 01 22>
+  0 290: SEQUENCE {
+    <30 0D>
+  4  13: . SEQUENCE {
+    <06 09>
+  6   9: . . OBJECT IDENTIFIER rsaEncryption (1 2 840 113549 1 1 1)
+       : . . . (PKCS #1)
+    <05 00>
+ 17   0: . . NULL
+       : . . }
+    <03 82 01 0F>
+ 19 271: . BIT STRING, encapsulates {
+    <30 82 01 0A>
+ 24 266: . . SEQUENCE {
+    <02 82 01 01>
+ 28 257: . . . INTEGER
+       : . . . . 00 AB 49 63 A2 ED E4 6B 6C 57 D7 2B 78 83 A7 60
+       : . . . . F6 C9 BC 8A B9 CD 6A 39 8F 03 6E AC F4 66 DB 61
+       : . . . . B2 7D 02 0C BF F1 76 CF 1B 98 78 5F 6A 48 AE 7D
+       : . . . . 73 C6 5C 9B A7 E4 FE 4D 4B 09 46 9C 02 DA BF A3
+       : . . . . 4E F6 10 88 F2 49 2A BC DC 97 13 3A 3C F9 4D 0D
+       : . . . . E8 E2 00 6B 9B 1E 1A 2F AB EC DB E2 DA 3D 2C 43
+       : . . . . B4 A8 49 9B 65 0F 4D F0 DA 36 7D 95 72 52 2C D3
+       : . . . . AE E3 45 92 0E 32 F2 60 44 B6 2A 93 05 B2 F2 A8
+       : . . . . 05 0B CE 12 88 A0 94 E1 A5 5B D1 F8 31 EE 37 7B
+       : . . . . 9C 08 38 18 48 20 07 6A 61 78 66 28 53 42 DF F9
+       : . . . . 60 C7 DC B2 48 88 D3 27 5E 9F 6D 38 E9 7F B3 6E
+       : . . . . 9B F4 6A E4 FC 4A B2 60 D6 41 16 45 4B 36 5C E8
+       : . . . . F4 C5 A8 C4 09 AA 05 F3 B9 7E 40 3A C1 58 04 E5
+       : . . . . B3 36 D2 18 FE 48 64 A8 7B 24 AC D4 BF AD 1C 71
+       : . . . . A0 20 20 86 17 F0 19 03 9B F0 3B 43 8F 97 0E C1
+       : . . . . 94 80 83 58 41 8C 03 F4 90 F6 5F 28 DA 88 BC CC
+       : . . . . E5
+    <02 03>
+289   3: . . . INTEGER 65537
+       : . . . }
+       : . . }
+       : . }
+
+0 warnings, 0 errors.
+```
+
+>Nota: obsérvese la **PRESENCIA** del `OBJECT IDENTIFIER rsaEncryption (1 2 840 113549 1 1 1)`
+
+>--------------------------------------------------------------------------
+>RESUMEN DE CABECERAS `PEM`: 
 >    * PKCS#1 Private Key ==> `-----BEGIN RSA PRIVATE KEY-----`
 >    * PKCS#1 Public Key ==> `-----BEGIN RSA PUBLIC KEY-----`
 >    * PKCS#8 Private Key ==> `-----BEGIN PRIVATE KEY-----`
 >    * PKCS#8 Public Key ==> `-----BEGIN PUBLIC KEY-----`
+>--------------------------------------------------------------------------
+>[Véase 'ASN.1 key structures in DER and PEM'](https://tls.mbed.org/kb/cryptography/asn1-key-structures-in-der-and-pem)
+>
+>--------------------------------------------------------------------------
+
+## SECCION 02: Generación y manejo de claves RSA con la herramienta `xca` 
+
+>[XCA - X Certificate and key management](http://xca.sourceforge.net/) (c) by Christian Hohnstädt, christian@hohnstaedt.de]
+
+* Creación Paso 1:
+
+![Generacion RSA Keypair con XCA - Paso 1](images/XCA_RSA_key_step1.png "Generacion RSA Keypair con XCA - Paso 1")
+
+* Creación Paso 2: 
+
+![Generacion RSA Keypair con XCA - Paso 2](images/XCA_RSA_key_step2.png "Generacion RSA Keypair con XCA - Paso 2")
+
+* Creación Paso 3: 
+
+![Generacion RSA Keypair con XCA - Paso 3](images/XCA_RSA_key_step3.png "Generacion RSA Keypair con XCA - Paso 3")
+
+* Exportación de las claves `privada` y `pública` en diferentes formatos y estándares:
+
+![Exportacion claves - 1](images/XCA_RSA_key_export_step1.png "Exportacion claves - 1")
+
+![Exportacion claves - 2](images/XCA_RSA_key_export_step2.png "Exportacion claves - 2")
+
+* Ejemplo 01: Exportación de la clave privada en `DER` encoding SIN PROTECCION DE CLAVE
+
+![Exportacion claves RSA DER - 1](images/XCA_RSA_key_export_step3.png "Exportacion claves RSA DER - 1")
+
+![Exportacion claves RSA DER - 1](images/XCA_RSA_key_export_step4.png "Exportacion claves RSA DER - 1")
+
+* Ejemplo 02: Exportación de la clave privada en `PEM` encoding CON PROTECCION DE CIFRADO y CLAVE `PBE - Password Based Encription`
+
+![Exportacion claves RSA PEM PKCS8 - 1](images/XCA_RSA_key_export_step5.png "Exportacion claves RSA PEM PKCS8 - 1")
+
+![Exportacion claves RSA PEM PKCS8 - PBE](images/XCA_RSA_key_export_step5a.png "Exportacion claves RSA PEM PKCS8 - PBE")
+
+```
+$ cat /home/devel1/tmp/sample/Nueva_clave_RSA.pk8 
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIIFDjBABgkqhkiG9w0BBQ0wMzAbBgkqhkiG9w0BBQwwDgQIAqwaAP8ysPACAggA
+MBQGCCqGSIb3DQMHBAg+YJjZ8cTDCASCBMi0XkbjgXR4j2eQOtdHBY9l0HGoxLHN
+H+YsyPaVtfZfjWVcU3Bz9It/tNETvUqr8aVp7uCVUTDLTQSZnvh+EYZO7z2Lmlks
+ZRWyq8NXm151bR9qDMyxNiQQZ/2njuwILXkvqKAgHEOXM+VlW2RQxSvoycmfAmdG
+rfLyBUdXXiQI9T3xkU3edRGICjzwAljpMwL5N5qV8PmTr6haS9Lxx2agO65b3DkM
+Kw83IPdPLdsMTP+5MI/OeXMK08z/QRf44kOE0p/G94VzQD0WcAGDPhgSnCDI+IRz
+/UJfikJg+CnoKNMlhTYoYSEJgEA/0PgnaoWI+LA9HwFhlqVZaSo/V9jwkAGpTe9H
+fld+BFsbYmSCu9mq8xTo8K8AGPBpmZZg0yIjDsbATDxL6u276FPwXgPJp47Q0/gw
+UxDClXMY6JxBPCtcD/ZrlUKVfSr9u48dkrcqPiKFrYmc3EH47G75pdkXCFPPauQV
+NA9bi1I3mixla0DWHyv8+PpuiOVdnjeY3NNQTwoJWflkhvRmOaOB0OrNjQlndiRF
+TWUofWyLB4nK5btuYeIZqSTHWB2vSS+EdhQ0Ww4HnJy1P5gH5A3MGZ3nPIgpQ9ux
+3RXBFG1I+5vsTPCjNmfGnt3jRRvwC2Osa4cQwVoPjcUN6VNiJhypr/f3DxKFNUVJ
+V1BjV3DdnAKNzjzyv5O0BUVFriufkLnjQ781L8ut2xhnn6wUTdaVYFiJn55obzaA
+eJ5l7P6Olpl8glDVwUl7iFR4Ibi++Nhsd3NoW/I1t7XbEgmBvyZYvNoysXYWf2VJ
+o9eYHlZpzXeSeseYDc0QvbRTHNk/GT4aWYCCGkCXnpJREshiPrmcyahIg/G26Y/A
+eC3b81yWtgIh5asii+K9CHWBZnwLjJabcvxsDDUYiQu+hoOV6rDSw1Ve1KHiwER3
+qNaW2Pkh+nOyMIh1gbhBrC5489TJmJgLfrac7CFlbm8HgiIrzFqRDpL7/Lo2IlYd
+sImpPVOhanxCreTC6CbQAahLf28r4PKlbMsjVCmQkrxLegi3DaGcoqIk/qTixwK7
+5OK5D/Uj0w//np5OMoKK20E9IWFADW7La8E6P8mJh4HfE9/BcKhAcn+OFBv2QUMF
+heq/8mCudBii2Jqm/QgRZJlL01EwIYaCoa3vjyxOyUK4pyTUN+VHciutrUJbQR0s
+gwo+vlG3AbVGHH7Hi4bJwzNDKRoY3nGPxqWLHfTrutHpG5pjnpYHTLGK7IG5QJk9
+SkEfEhV3Mjpyo0x67WxOE9/Tl3L1D7t4W4vO7mW10EBahD1fvy9oJub2oVQoKdDq
+dPocKt10K6bxcZblN+G5DY3ogs2mH0gZLDgUCo1r2p/OYyLXwI3SFg+/RuynP5sp
+ZFyXgCWiAS3Zt1Lrdb1d9+Sx9tcQXF9zDQz5dysCAXzUng7Rv3oENs1mXHg6pVSq
+X0l3gQwyL0Z+bQjHFCIDOBckj0qih2C4T3GSQaOx24VeMbFnnEPOcE88LFv0H3IE
+3XcozHGHpUTvFqM5hozZ6dqfo6Kl6aPCCQnPT1ep+SkZy9OHnMj2v2VIwhRr98ET
+jCe9ePhhgxZVQJ5k3mbUOmQcYC7UQi9OhliOno3dqj4PjNPwWq2elCHYFG2a8h8C
+3DI=
+-----END ENCRYPTED PRIVATE KEY-----
+```
+
+![Exportacion claves RSA PEM PKCS8 - 2](images/XCA_RSA_key_export_step6.png "Exportacion claves RSA PEM PKCS8 - 2")
+
+>[Reference record for OID 1.2.840.113549.1.5.13](http://oidref.com/1.2.840.113549.1.5.13) _'PBES2 encryption scheme (This OID describes a key derivation Algorithm and an encryption Scheme for private keys different from old identifiers)'_
+
+>[Ver OID 1.2.840.113549.1.5.13 en oid-info.com](http://oid-info.com/get/1.2.840.113549.1.5.13) _'Password-Based Encryption Scheme 2 (PBES2). See IETF RFC 8018.'_ 
+
+>[PKCS #5: Password-Based Cryptography Specification - Version 2.1](https://tools.ietf.org/html/rfc8018)
+
+>[Passphrase Based Key Derived Key Function Scheme 2 (PBKDF2): Ver PKCS #5: Password-Based Cryptography Specification - Version 2.1](https://tools.ietf.org/html/rfc8018#section-5.2)
+
+>[Password-Based Encryption Scheme 2 (PBES2): Ver PKCS #5: Password-Based Cryptography Specification - Version 2.1](https://tools.ietf.org/html/rfc8018#section-6.2) _'PBES2 combines a password-based key derivation function, which shall be PBKDF2 (Section 5.2) for this version of PKCS #5, with an underlying encryption scheme.  The key length and any other parameters for the underlying encryption scheme depend on the scheme. PBES2 is recommended for new applications.'_
+
+>[PBKDF2 (Password-Based Key Derivation Function 2) Wikipedia (en)](https://en.wikipedia.org/wiki/PBKDF2)
+
+## SECCION 03: Ejemplos de cifrado y descifrado mediante el uso de `Keypairs RSA` con `openssl rsautl`
+
+>[Public – Private key encryption using OpenSSL](https://www.devco.net/archives/2006/02/13/public_-_private_key_encryption_using_openssl.php)
+
+### Ayuda de `openssl rsautl`
+
+```
+$ openssl rsautl --help
+Usage: rsautl [options]
+-in file        input file
+-out file       output file
+-inkey file     input key
+-keyform arg    private key format - default PEM
+-pubin          input is an RSA public
+-certin         input is a certificate carrying an RSA public key
+-ssl            use SSL v2 padding
+-raw            use no padding
+-pkcs           use PKCS#1 v1.5 padding (default)
+-oaep           use PKCS#1 OAEP
+-sign           sign with private key
+-verify         verify with public key
+-encrypt        encrypt with public key
+-decrypt        decrypt with private key
+-hexdump        hex dump output
+-engine e       use engine e, possibly a hardware device.
+-passin arg    pass phrase source
+
+```
+
+### Cifrado y descifrado: Vamos a crear un archivo de texto, calcular su hash SHA256 y vamos a tomar como ejemplo el cifrado y descifrado de dicho hash con `openssl rsautl`
+
+* Tomamos un archivo de texto de ejemplo tomando como contenido cinco párrafos de `'Loem Ipsum ...'`:
 
  
 
+>[Lorem Ipsum: ¿Que es? y Generador](https://es.lipsum.com/)
+
+```
+$ vim loremipsum5.txt
+$ cat loremipsum5.txt 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at erat nibh. Aliquam ante felis, vestibulum eget est sit amet, eleifend porta risus. Sed sit amet fermentum mi. Nulla pharetra dignissim nunc a placerat. Suspendisse eget sapien mi. Sed aliquet elementum sapien, non porta lectus elementum nec. Vivamus euismod venenatis augue. Nullam vulputate ornare dui eu ultrices. Aliquam erat volutpat. Aenean gravida mi vitae urna maximus, ac semper ligula malesuada.
+
+Pellentesque varius ex justo, vel volutpat erat feugiat ultricies. Etiam sagittis, elit nec mattis bibendum, dolor mauris sollicitudin sapien, id ullamcorper magna purus quis lorem. Nam in convallis velit. Nulla pellentesque turpis a erat lobortis, a semper augue egestas. Suspendisse at mauris sem. Nullam eleifend eros sed finibus fringilla. Quisque dictum orci eget ex sollicitudin, eget fermentum ipsum ullamcorper. Morbi semper tortor sit amet mauris consequat, non faucibus ante consequat. Sed sit amet lectus at lacus accumsan imperdiet ac vestibulum magna. Duis convallis lorem sit amet justo vestibulum finibus. Aliquam id eleifend massa, vel fringilla nisl. Nam eget pulvinar nunc, vel tristique nulla. Cras eu sem consectetur risus malesuada fermentum sed a diam. Nam arcu justo, congue sed ultrices quis, commodo eget tortor. Donec luctus leo vel elit vehicula vulputate.
+
+Suspendisse efficitur sem ut ipsum euismod, in commodo risus mollis. Donec at egestas dui. Aliquam erat risus, tristique ac arcu sit amet, tincidunt vulputate metus. Quisque sodales scelerisque pretium. Donec quis est et nulla mattis ultricies ac sed dui. Aenean mollis condimentum arcu vel vestibulum. Nunc vitae augue vitae nunc iaculis porttitor. Aliquam sagittis nisl at risus elementum, nec tempor augue interdum. Integer tempor est tortor, vitae volutpat diam tristique vel. Fusce eu vehicula velit, eget aliquam orci. Etiam vulputate turpis eget interdum gravida. Nunc porttitor massa ac semper tempus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent non consequat ex, at dictum nisl. Quisque ligula felis, pretium vitae justo ac, dictum pretium mi. Ut in leo dui.
+
+Fusce finibus elementum sapien. Maecenas in justo consequat, tristique nulla id, malesuada eros. Donec viverra massa purus, at laoreet augue malesuada vel. Praesent congue, eros vehicula tristique varius, libero risus mollis nulla, vel laoreet dolor velit quis dolor. Proin cursus viverra dolor id interdum. Praesent vel est ac massa finibus fringilla. Aliquam quis mauris quis leo viverra consectetur. Fusce non aliquam ex. Mauris suscipit sollicitudin ligula. Fusce fringilla augue a faucibus rhoncus. Vivamus nec placerat erat. Nullam mattis risus nec urna rhoncus tempus.
+
+Integer et sagittis elit. Nunc ex justo, vulputate id massa vel, rhoncus ultrices felis. Morbi semper, dui quis consequat accumsan, massa eros scelerisque magna, vel tincidunt lectus urna vitae nibh. Donec dolor erat, vulputate nec ex ultrices, porttitor efficitur risus. Quisque in massa vitae est placerat euismod eu a nulla. Curabitur malesuada condimentum dui, nec pellentesque ligula euismod in. Duis ac leo nec erat elementum bibendum eu sit amet odio. Quisque feugiat tempor tellus quis fermentum. Mauris aliquam laoreet sollicitudin.
+```
+
+* calculamos su `huella digital` como `Hash SHA-256`:
+
+Alternativa 1:
+```
+$ sha256sum loremipsum5.txt | awk '{print $1}' 1>loremipsum5.sha256 2>/dev/null
+$ cat loremipsum5.sha256 
+9ef5c1ad6b4f48aa6115c36640890fe2e604547949b5dc82927a341dc8c301ab
+```
+
+Alternativa 2:
+```
+$ openssl dgst -sha256 -hex loremipsum5.txt | awk '{print $2}' 1>loremipsum5.sha256 2>/dev/null
+$ cat loremipsum5.sha256 
+9ef5c1ad6b4f48aa6115c36640890fe2e604547949b5dc82927a341dc8c301ab
+```
+
+
+* Ciframos con la `clave publica RSA` usando `openssl rsautl` y luego desciframos con la `clave privada RSA`:
+
+```
+$ openssl rsautl -encrypt -inkey rsapubkey01b_pkcs8.pem -pubin -in loremipsum5.sha256 -out loremipsum5_sha256.crypted
+$ xxd -c 16 loremipsum5_sha256.crypted 
+00000000: 243b c09d 97e7 16fd 0161 ae45 ea98 02bb  $;.......a.E....
+00000010: 5445 cef7 6dc5 38f2 73d8 a0f7 06bc bf55  TE..m.8.s......U
+00000020: 2d8e 0e2c a2a9 0ac4 d8f6 6d00 909e 683c  -..,......m...h<
+00000030: 2ef8 7d96 55d2 ddbd b627 6d45 790e 88b0  ..}.U....'mEy...
+00000040: ccc9 7d48 fcd0 72e6 5c0a adaf 013c 1328  ..}H..r.\....<.(
+00000050: fa87 d2f1 f8a3 42ea 4930 6f27 a900 de26  ......B.I0o'...&
+00000060: 7630 3fe6 32a1 31aa 7cad 8be6 b779 064c  v0?.2.1.|....y.L
+00000070: 9d6b 7c0e 1926 8f92 ae6c dd05 9841 c18e  .k|..&...l...A..
+00000080: 111e 622f 3f6c 46eb 8415 923a 0956 d7fa  ..b/?lF....:.V..
+00000090: 808d 30e8 3557 6b91 a100 1b25 8b6d eb15  ..0.5Wk....%.m..
+000000a0: d205 fdc1 d37a ea8e 4dd7 d962 d4c9 27d3  .....z..M..b..'.
+000000b0: e439 e252 f927 a44c d9f4 3f24 9c2d 7521  .9.R.'.L..?$.-u!
+000000c0: cd06 7a05 8aad 2f7d 145d 7a60 4e2e 4e2f  ..z.../}.]z`N.N/
+000000d0: 3918 1d04 baf7 1c04 06cf b55f 07b8 9d63  9.........._...c
+000000e0: 088c 3232 5ebc cdf2 51fa 55ce bca2 953a  ..22^...Q.U....:
+000000f0: 19f7 7d2d ff7b e469 bc0d c336 6d8a a856  ..}-.{.i...6m..V
+$ openssl rsautl -decrypt -inkey rsakeypair01.pem -in loremipsum5_sha256.crypted -out loremipsum5_sha256.clear
+$ cat loremipsum5_sha256.clear 
+9ef5c1ad6b4f48aa6115c36640890fe2e604547949b5dc82927a341dc8c301ab
+$ cat loremipsum5.sha256
+9ef5c1ad6b4f48aa6115c36640890fe2e604547949b5dc82927a341dc8c301ab
+```
 
