@@ -107,7 +107,7 @@ PyFsxxarmKbJ46VX43pytw3Mx/mBPqU8Zbrx7SMr4bBcQ8dZpD29
 * [The standard ASN.1 encoding rules (Wikipedia EN) `BER`, `CER`, `DER`, `XER`, ...](https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One#Encodings)
 * [`PEM` - Privacy-enhanced Electronic Mail (Wikipedia EN)](https://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail)
 * [ITU - X.690 : Information technology - ASN.1 encoding rules: Specification of Basic Encoding Rules (BER), Canonical Encoding Rules (CER) and Distinguished Encoding Rules (DER)](https://www.itu.int/rec/T-REC-X.690/en)
-
+* [ASN.1 key structures in DER and PEM](https://tls.mbed.org/kb/cryptography/asn1-key-structures-in-der-and-pem)
 
 #### Visualizacion del contenido del archivo de clave generado con `openssl rsa`:
 
@@ -1053,6 +1053,163 @@ $ xxd -c 16 rsakeypair02_des3.der
 
 >Nota: Se trata de un archivo ASN.1 cifrado en triple DES y por lo tanto NO legible directamente como ASN.1 en claro. Veremos la diferencia al utilizar más adelante el formato `PKCS#8`
 
+#### Cambio del algoritmo de cifrado desde `des3 - 'Triple DES` a un cifrado `aes256 - 'AES 256'` (ambos con `PBE - Password Based Encription`)
+
+```
+$ openssl rsa -in rsakeypair02_des3.pem -inform PEM -out rsakeypair02_aes256.pem -outform PEM -aes256 -passin pass:changeit -passout pass:changeit
+writing RSA key
+$ cat rsakeypair02_aes256.pem
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-256-CBC,A0D1824B3EEF78FAE3B13EDED8431A3B
+
+NGMd91eVchYPB4vn9VZfVJmA2vnuexMGTAX97Vm6UlrCsTysAkjl4FYCzClmoFv3
+0W7D4YG2mavPITxlwl5WfpeUBQzcW/1ZRGh2JyHIf+gmFx20OTpKgbscjPM6hGux
+ZOK6sV7VxaUawpBcMLDe1avELfjAte4SZQvw0VilWJmeX3VLQDPW2vQtx6Fv17bx
+dmPiWLg2Wja3WqIXK1n2GuuWYtdov+uTWtVD8Wa8oRpXobQZlV+VIjCMkEIHsZg7
+EeMXLdc2FfJkfRUGHEDbBCvdbSUslloRc0RciyUpOGjkvfXyEbKgI43Fp9G4o1oM
+AnQoRJpxC507yGg2WlwlIyfGCfcJZ2VI8pjNxfHLktA8NCn5E5SaXOOY3HmsR8Yq
+xemushrwVv3z2rWDkkNkCr4zHexlRoqBjUZSWGtKR+w6hYLZxrRT7QNLjTe2kwAI
+QhxjbXyFPev4QtfpXj8OwP636YGXHt+6H3cq+089Nv+gacrCa9JleLsQW3PFIlpV
+VXld44pyyo9bmuScuIOFXQm/Ut3AxSUMHk2fxNuiZf+RDPtJDJ/2NYSwrIoJcYK9
+vBJx4w7zio8wiSACXbnGfftm7MbcCmRWP0M2DQvib2el3UeKu83rppkpGp41AnH0
+2i6NAAUsz2Si0KRcSA6E5si8JFROzdet/zlcmt+TLW6l6KqZ4fu0FLrqtL+2IW13
+CM7cojAkSDTi81jMKHGCtw+JvBPbHp3tNqhicc1LqT+IzY9rjW1Gchma0vNaOMZ6
+1XZNrXS22A5rUvzKPuTbRCpgwziNC+NG5Y6HXhF5yyT1GMhrT7gfpuEqX/Xi06x+
+pNDAb9KjShvYNzqimXsfxsUVxWEOZqAA5a6NZC3+5zwCukasy/CyNBozBRBlCVXz
+41bmNlhZ3h7DCGVqR4PwpDkjYMPCRccVrVw9k6buxe2opI3N0IyMlW7PV6mDTy3f
+XdJ+W4dw4OA6iWf1qE2lpjiijEiKxZ7eTA6FhnOapN/JstnbC2TTX5+gSqo1aLST
+jGGAXQpNUVP60yihdogM+VdnM9aC2P4+qbFqbgd26VkbRYowKf5lDPuC23aSGY/D
+8x2CiCuNZD4UICned7XMbrf0qhDUy02w8ZDpRvX5A106WDcenOBLUe7j5hnuBgjn
+K+OiO1BwasMw89qs9qzXfdnUN1jzthGHeKIP8nykelV0T6LXx6vrpEvPYcfFPBJA
+IJbRyK4wrEMFMNpLPRzelJFX/A5qcsSqF6IMl5ni6MHPC7Zr8b22MalKoFfSjMfq
+qZldnGVxF9dP5vw9yeql2B+Z9CWIKlHJ9yoz1cDUTQ16p6OfRQiTyauO1RhKIFuR
+qgObyZI/kegp+GV/QBsj+H5I7bhbdCJYkkxsg6O9swzKH3/YDr1Gg9kBE3mK9VkZ
+h08zPmzB08CwdLqFQge/oB4DDjPrAU0GK2Mc4XdvFWWr2gjoZjC+QiHm3pNMncEL
+V+XpeWBtOEHO3yWlSOrTYPj+ti3kH+MyVAHLj2pNZjZ9c5m6DE7sBxiQHdczSsD7
+Azszqi4YUWyy5qH0T+fsR2qNOis+VTBlzTRV+3n5WPJm+KKmDYsrR/OjucdDDUwW
+-----END RSA PRIVATE KEY-----
+$ openssl rsa -in rsakeypair02_aes256.pem -inform PEM -text -passin pass:changeit
+Private-Key: (2048 bit)
+modulus:
+    00:d8:44:a6:b7:57:28:35:c9:72:0a:ef:8b:ed:8f:
+    2a:33:85:a3:0a:8b:b6:de:59:82:22:66:b3:8b:3b:
+    d9:25:da:f3:3c:29:81:43:62:0a:36:44:36:05:82:
+    4b:76:0b:08:40:0f:bf:ce:8a:84:d7:32:4e:70:50:
+    f2:c7:e7:38:6c:18:ce:78:1d:41:42:28:e7:d3:2a:
+    e9:51:d1:51:09:f2:94:df:ac:c5:9e:91:26:5c:46:
+    8b:e2:04:ad:ae:56:b7:e2:c1:e0:34:79:ac:ce:da:
+    0b:7e:98:e7:05:69:75:bb:fe:4a:65:eb:cc:97:e7:
+    b9:0a:f4:aa:9c:63:bb:54:ef:11:dd:cc:39:a5:5b:
+    e1:9f:e2:c6:6f:5a:3d:7b:9c:18:a0:28:c3:fe:de:
+    bb:ff:d4:04:d6:2c:90:6c:bb:14:7f:bd:b3:8a:1b:
+    b4:bf:06:42:a2:1a:1a:c1:7d:26:7e:6d:a1:5d:f5:
+    74:81:f1:f6:75:d8:37:ec:49:18:7e:9b:81:f5:b2:
+    8f:ec:29:13:88:de:07:80:bf:5b:2e:6d:92:95:4c:
+    64:06:bd:fc:6a:d3:18:bc:04:b8:57:24:43:f7:02:
+    55:4d:df:f5:96:1f:7f:05:d4:02:1b:0b:ce:c5:d9:
+    64:f0:9d:fc:b4:a6:b5:fb:3d:cb:76:2c:4c:85:d9:
+    12:21
+publicExponent: 65537 (0x10001)
+privateExponent:
+    00:ca:5e:6b:16:92:42:f9:19:b8:52:4d:57:45:83:
+    3a:bd:1d:66:b4:3e:8a:6e:c3:99:07:31:cc:fe:13:
+    91:9d:5f:a5:4d:7d:95:0c:85:98:02:b1:8f:4f:56:
+    5d:e0:66:70:60:e9:9b:d4:dc:3f:73:d3:0a:1d:05:
+    52:39:06:bf:00:3f:b2:2c:29:4b:e0:69:c0:8c:13:
+    d2:62:12:18:df:d3:13:c5:bd:b8:ea:28:ee:99:58:
+    16:1a:f7:bf:c1:ac:39:c3:c1:21:58:59:27:00:24:
+    7e:af:06:ca:de:80:91:7f:c9:72:ba:ae:8c:32:f4:
+    cd:6d:58:06:b1:f2:8c:df:ea:5f:96:bb:2e:63:44:
+    c3:71:48:15:6c:52:64:0e:13:ed:ab:e9:ea:c9:fc:
+    67:f2:07:29:bf:0f:01:4f:18:0d:49:19:1d:ae:2e:
+    b5:2f:d1:6b:8c:12:e4:82:36:a4:7f:f2:5b:a8:36:
+    0e:5e:7e:ea:32:86:1e:08:9b:87:3c:64:fc:da:f1:
+    3f:60:a4:a2:4e:6a:cf:cc:83:9a:4e:4b:b1:98:98:
+    7a:ca:46:8f:5a:74:39:19:97:b2:a2:71:d8:f4:68:
+    83:cc:7a:4d:ff:12:4d:0c:7f:5b:1c:1e:61:13:ae:
+    a3:5a:f7:24:eb:f6:7e:71:82:fc:05:38:78:3f:57:
+    6a:85
+prime1:
+    00:ff:7f:e9:7f:f8:22:53:17:3a:47:6a:27:d6:a6:
+    07:96:cb:bd:ff:58:b8:84:59:c0:4e:6e:fe:d4:bf:
+    00:7e:b9:cd:7c:40:86:56:90:f2:6f:81:a8:e7:1c:
+    f4:1b:29:5d:fd:8c:1b:ce:5c:15:a5:d7:c3:9f:69:
+    74:1a:5c:19:05:cc:26:8a:28:37:9a:fe:ec:a9:fa:
+    de:d1:ab:29:f7:7d:c5:b9:11:2c:43:b6:df:d7:73:
+    90:8d:b4:a6:7c:ec:1f:5d:cb:15:f0:e7:71:5b:ee:
+    b5:8e:1a:c9:fb:cd:81:ac:02:77:4e:82:17:d4:d9:
+    8d:3a:8a:57:aa:12:2b:7a:5b
+prime2:
+    00:d8:b1:12:4c:13:f6:5b:71:32:06:91:72:9a:87:
+    73:5a:be:a8:3f:39:85:28:6a:0c:2a:7e:91:bd:56:
+    f3:d1:dc:2b:81:cc:f8:2d:21:bf:67:15:be:ce:9b:
+    79:e0:1a:62:9b:ff:a0:f5:07:de:b5:4a:a6:f3:60:
+    cc:9e:8e:64:df:d7:40:36:6e:94:49:cf:3a:f9:18:
+    9b:c0:36:1d:92:95:46:0a:83:9d:f2:27:ff:94:76:
+    e8:82:23:bc:42:6c:22:21:4a:04:09:93:d3:15:bb:
+    99:a2:a5:08:ca:a2:26:31:28:2e:c1:1e:b5:fe:1b:
+    4d:0c:66:c7:8e:e3:09:b6:33
+exponent1:
+    00:9d:06:aa:25:42:05:26:78:02:13:5e:04:ba:01:
+    34:6c:d3:2f:24:3e:0c:b9:1a:c7:fb:ec:6f:a5:a4:
+    f5:d2:ec:b2:83:88:cc:87:6b:71:f4:62:05:c2:74:
+    a2:fa:06:84:83:8d:96:91:4f:3a:e6:c0:22:b4:58:
+    85:48:a6:0d:a2:e8:83:4f:29:c4:72:f7:f5:cf:ca:
+    25:23:4b:44:f1:9c:54:e6:96:cd:53:98:93:1d:c1:
+    22:b8:54:ac:75:de:50:b0:be:5d:ef:be:ee:86:87:
+    c1:01:63:29:7c:1e:23:71:e9:da:15:60:12:f1:77:
+    fb:3a:5d:47:df:78:67:4c:3d
+exponent2:
+    07:5c:2c:54:ed:30:a6:f6:77:4e:85:ce:30:b5:7d:
+    13:8d:fa:44:fb:7d:2c:5c:3d:c1:8b:bf:03:81:5a:
+    92:bc:39:b6:14:f2:31:06:3e:6c:0f:ef:05:31:7e:
+    b8:3f:ed:2d:83:47:42:4b:5c:23:28:3f:f7:70:48:
+    42:f2:6f:36:b3:26:f9:32:54:53:15:78:d9:51:1e:
+    a9:2e:ad:5e:77:37:83:cf:e8:a3:7a:fc:51:5c:a0:
+    95:1b:05:9f:f3:f0:4c:d5:28:c1:f2:85:6e:ed:8a:
+    50:5d:ee:a8:83:4d:6c:ca:02:9c:88:a0:81:db:07:
+    88:ee:4c:c4:eb:ad:3e:c5
+coefficient:
+    15:99:5e:f9:ab:d5:83:62:97:bb:7e:35:9a:d2:cf:
+    eb:92:2f:2e:0c:7f:5f:4d:65:78:be:00:b2:f2:fb:
+    38:ca:44:55:c5:36:74:3a:ec:0c:1b:88:ea:36:e5:
+    bb:f4:06:af:60:1f:5b:ca:58:24:8a:33:3c:c0:4d:
+    83:79:ba:be:59:5d:b1:0c:59:f7:bd:d8:8e:ff:bf:
+    18:88:2f:3e:60:86:0c:19:44:7b:5c:26:0e:8b:b7:
+    09:37:ec:a4:58:84:08:16:00:5f:56:90:b2:45:68:
+    8c:5f:4d:66:5a:fd:85:de:25:15:ac:d6:2a:5c:33:
+    ce:9a:9c:20:a9:ed:b5:48
+writing RSA key
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA2ESmt1coNclyCu+L7Y8qM4WjCou23lmCImazizvZJdrzPCmB
+Q2IKNkQ2BYJLdgsIQA+/zoqE1zJOcFDyx+c4bBjOeB1BQijn0yrpUdFRCfKU36zF
+npEmXEaL4gStrla34sHgNHmsztoLfpjnBWl1u/5KZevMl+e5CvSqnGO7VO8R3cw5
+pVvhn+LGb1o9e5wYoCjD/t67/9QE1iyQbLsUf72zihu0vwZCohoawX0mfm2hXfV0
+gfH2ddg37EkYfpuB9bKP7CkTiN4HgL9bLm2SlUxkBr38atMYvAS4VyRD9wJVTd/1
+lh9/BdQCGwvOxdlk8J38tKa1+z3LdixMhdkSIQIDAQABAoIBAQDKXmsWkkL5GbhS
+TVdFgzq9HWa0Popuw5kHMcz+E5GdX6VNfZUMhZgCsY9PVl3gZnBg6ZvU3D9z0wod
+BVI5Br8AP7IsKUvgacCME9JiEhjf0xPFvbjqKO6ZWBYa97/BrDnDwSFYWScAJH6v
+BsregJF/yXK6rowy9M1tWAax8ozf6l+Wuy5jRMNxSBVsUmQOE+2r6erJ/GfyBym/
+DwFPGA1JGR2uLrUv0WuMEuSCNqR/8luoNg5efuoyhh4Im4c8ZPza8T9gpKJOas/M
+g5pOS7GYmHrKRo9adDkZl7Kicdj0aIPMek3/Ek0Mf1scHmETrqNa9yTr9n5xgvwF
+OHg/V2qFAoGBAP9/6X/4IlMXOkdqJ9amB5bLvf9YuIRZwE5u/tS/AH65zXxAhlaQ
+8m+BqOcc9BspXf2MG85cFaXXw59pdBpcGQXMJoooN5r+7Kn63tGrKfd9xbkRLEO2
+39dzkI20pnzsH13LFfDncVvutY4ayfvNgawCd06CF9TZjTqKV6oSK3pbAoGBANix
+EkwT9ltxMgaRcpqHc1q+qD85hShqDCp+kb1W89HcK4HM+C0hv2cVvs6beeAaYpv/
+oPUH3rVKpvNgzJ6OZN/XQDZulEnPOvkYm8A2HZKVRgqDnfIn/5R26IIjvEJsIiFK
+BAmT0xW7maKlCMqiJjEoLsEetf4bTQxmx47jCbYzAoGBAJ0GqiVCBSZ4AhNeBLoB
+NGzTLyQ+DLkax/vsb6Wk9dLssoOIzIdrcfRiBcJ0ovoGhIONlpFPOubAIrRYhUim
+DaLog08pxHL39c/KJSNLRPGcVOaWzVOYkx3BIrhUrHXeULC+Xe++7oaHwQFjKXwe
+I3Hp2hVgEvF3+zpdR994Z0w9AoGAB1wsVO0wpvZ3ToXOMLV9E436RPt9LFw9wYu/
+A4Fakrw5thTyMQY+bA/vBTF+uD/tLYNHQktcIyg/93BIQvJvNrMm+TJUUxV42VEe
+qS6tXnc3g8/oo3r8UVyglRsFn/PwTNUowfKFbu2KUF3uqINNbMoCnIiggdsHiO5M
+xOutPsUCgYAVmV75q9WDYpe7fjWa0s/rki8uDH9fTWV4vgCy8vs4ykRVxTZ0OuwM
+G4jqNuW79AavYB9bylgkijM8wE2Debq+WV2xDFn3vdiO/78YiC8+YIYMGUR7XCYO
+i7cJN+ykWIQIFgBfVpCyRWiMX01mWv2F3iUVrNYqXDPOmpwgqe21SA==
+-----END RSA PRIVATE KEY-----
+
+```
 
 ### Ejemplo 01.04: Utilización del formato estandar `PKCS#8`
 
@@ -1159,15 +1316,290 @@ pTxluvHtIyvhsFxDx1mkPb0=
     * PKCS#1 ==> `-----BEGIN RSA PRIVATE KEY-----`
     * PKCS#8 ==> `-----BEGIN PRIVATE KEY-----`
 
-Puede observarse que el estandar `PKCS#1` es específico para `RSA` mientras que el estandar `PKCS#8` prevé la persisntencia de otros tipos/algoritmos de claves asimétricas que se verán en siguinetes laboratorios (`DSA`, `EC`, ...) 
+Puede observarse que el estandar `PKCS#1` es específico para `RSA` mientras que el estandar `PKCS#8` prevé la persistencia de otros tipos/algoritmos de claves asimétricas que se verán en siguinetes laboratorios (`DSA`, `EC`, ...) 
 
 * ¿ Cómo es la estructura interna `ASN.1` de ambos archivos ?:
 
 ![PKCS#1 vs. PKCS#8](images/PKCS1vsPKCS8_image01.png "PKCS#1 vs. PKCS#8")
 
-### Ejemplo 01.04: Extraer la clave pública en formato `PKCS#1` del archivo de parejas de claves RSA obtenido anteriormente:
+Puede observarse en la estructura interna `ASN.1` del archivo en formato  estandar `PKCS#8` indica **expresamanente** el tipo/algoritmo de clave asimétrica que contiene mediante la inclusión de un `OBJECT IDENTIFIER (oid)` específico: `OBJECT IDENTIFIER 1.2.840.113549.1.1.1 rsaEncryption (PKCS #1)`
 
-Diferentes combinaciones del comando `rsa` pueden utilizarse para obtener un archivo conteniendo únicamente la `Clave Pública` dependiendo del formato de encoding (`PEM` / `DER`) de los archivos de origen y de destino, así cómo de si el archivo de origen está protegido mediante cifrado.
+>[What is an OID?](http://www.oid-info.com/#oid)
+
+>[Object Identifier (OID) Repository](http://www.oid-info.com/)
+
+>[Reference record for OID 1.2.840.113549.1.1.1](http://oidref.com/1.2.840.113549.1.1.1) Rivest, Shamir and Adleman (RSA) encryption (and signing).
+
+>[Ver OID 1.2.840.113549.1.1.1 en oid-info.com](http://oid-info.com/get/1.2.840.113549.1.1.1) _'Description: Rivest, Shamir and Adleman (RSA) encryption (and signing) Information: Defined in IETF RFC 2313, IETF RFC 2437. See also IETF RFC 3370. See also the equivalent but deprecated OID [{joint-iso-itu-t(2) ds(5) algorithm(8) encryptionAlgorithm(1) rsa(1)}](http://oid-info.com/get/2.5.8.1.1).'_ 
+
+>[RedIRIS - Registro de OIDs - RID](https://www.rediris.es/rid/oid/)
+
+
+#### Convertir un `keypair` en formato `PKCS#1` a formato `PKCS#8`, esta vez en formato `DER`y con el archivo resultante PROTEGIDO por clave
+
+```
+$ openssl pkcs8 -topk8 -in rsakeypair01.pem -inform PEM -out rsakeypair01_pkcs8.der -outform DER -passout pass:changeit
+``` 
+
+* visualización:
+
+![rsakeypair01_pkcs8.der](images/rsakeypair01_pkcs8_der_image01.png "rsakeypair01_pkcs8.der")
+
+>[Reference record for OID 1.2.840.113549.1.5.3](http://oidref.com/1.2.840.113549.1.5.3) _'Password Based Encryption Algorithm. 
+Uses Data Encryption Standard in Cipher Block Chaining Mode (DES-CBC). 
+Uses MD5 to hash a password & salt to get Key and IV.'_ [Ver OID 1.2.840.113549.1.5.3 en oid-info.com](http://oid-info.com/get/1.2.840.113549.1.5.3)
+
+```
+$ dumpasn1 -adhl rsakeypair01_pkcs8.der
+    <30 82 04 E9>
+   0 1257: SEQUENCE {
+    <30 1B>
+   4   27: . SEQUENCE {
+    <06 09>
+   6    9: . . OBJECT IDENTIFIER pbeWithMD5AndDES-CBC (1 2 840 113549 1 5 3)
+         : . . . (PKCS #5)
+    <30 0E>
+  17   14: . . SEQUENCE {
+    <04 08>
+  19    8: . . . OCTET STRING 4B 8F 6F 58 02 13 39 7B
+    <02 02>
+  29    2: . . . INTEGER 2048
+         : . . . }
+         : . . }
+    <04 82 04 C8>
+  33 1224: . OCTET STRING
+         : . . 4A 40 D9 4A 22 91 0D 5D 88 DE 15 D8 EE 59 E0 D6
+         : . . B0 50 02 92 67 B9 15 39 B8 B1 60 C2 8B 53 89 83
+         : . . 42 A1 B5 39 F2 C5 42 A5 88 6D 24 87 0B 82 FD DA
+         : . . 3F 00 1C 7D B5 15 91 9A B3 A6 14 67 3A A5 CD 75
+         : . . 5D 50 34 B4 82 98 B5 F1 8E E4 EB AD 2A D6 F9 0D
+         : . . 1A 84 3E B7 AB 78 E7 AB 05 11 FD 74 F8 3F 59 14
+         : . . 23 7D 4C 5E 20 B8 C6 FF 38 FD 15 7E D7 67 11 2B
+         : . . BE ED AC BD 6C 0C D5 0E 07 D1 11 AD E6 BF 6D 27
+         : . . 3D 99 B6 62 10 6F FC 0F 78 F3 1D 8A 3B 92 56 24
+         : . . 72 26 C8 77 D1 17 02 B1 81 C1 33 B8 66 F9 EC 44
+         : . . E2 72 97 27 80 34 28 CA F5 4C E6 58 97 BD BA 46
+         : . . 35 21 17 56 47 68 32 88 AF 35 A9 9A BF 52 E0 A7
+         : . . B1 4F BB 90 2A 91 7D B1 77 82 79 A7 E2 A2 A1 75
+         : . . 9E 0B E0 36 1C DF 14 5E 63 C7 1C F7 7B F9 D7 AC
+         : . . 03 00 1A 1A 73 14 5A 77 43 31 F6 86 A3 38 74 33
+         : . . CA 56 04 D9 5C E6 97 08 F3 50 E6 5E 0C 5A 3B E5
+         : . . 40 8A 39 4A 9D F3 B6 23 23 26 EA F6 4D 10 F7 6B
+         : . . 30 1E C6 07 B9 F5 DE 39 4E 80 C8 13 AA 2C 0E 00
+         : . . C1 3C F3 82 97 F5 CF E4 02 85 CE E4 8B 99 59 D9
+         : . . A1 85 3B 84 3C 7A F7 F3 C9 7E 96 31 AE 99 79 07
+         : . . C6 81 8B D6 6B A6 EA CA D5 50 72 4D 1F 35 AA 39
+         : . . 90 D6 19 2B FA AD D2 45 1E 0E 3E C0 9F C1 3E 6A
+         : . . 0E D7 76 87 75 5F DE C6 70 4F 13 F5 EF 96 00 6F
+         : . . AD C2 33 57 85 13 90 5F D2 B0 6E 62 36 3B 21 F3
+         : . . 48 DE 66 4E DD 05 87 2A FC B1 F4 EC CA 94 CB FE
+         : . . 21 E2 20 86 63 B8 98 87 39 12 72 A6 45 3A D7 E9
+         : . . AD 58 5F 8A 7C E6 45 75 2D 76 CF 22 3A 6E 86 29
+         : . . B2 7E 28 C6 B3 BF 42 95 DB 75 AD 47 F4 D7 63 07
+         : . . 69 97 30 9D 9A 3E F7 30 5D 2D DC 36 A2 A0 6C C0
+         : . . 74 47 73 79 30 EE 96 63 8E 56 5C B7 3E 03 26 B8
+         : . . 9D 4B 1D 29 F0 E0 DF C3 D9 5A CF B4 74 C4 7E 22
+         : . . EA D0 A2 07 C4 9F 61 27 49 CF F2 C3 94 21 24 2B
+         : . . 9B 61 92 9C FF F7 0A BB E5 78 F5 41 45 29 0C 1D
+         : . . C6 2F 92 19 79 2B 13 4A C4 1A F7 38 79 6A 8A 7A
+         : . . 91 1B A5 C6 04 FD AA 34 D0 62 81 18 3D 14 A0 05
+         : . . 74 5B AC 35 F4 70 91 31 B5 95 BF 47 B4 11 6E 4C
+         : . . 1D 23 65 73 4A A2 F5 BB 4B 24 1A 33 D1 11 0F 73
+         : . . D0 AC 81 6C DF 03 60 6D 29 ED 6F 4F 20 F6 50 F3
+         : . . 54 F0 51 BA EC 0F 1F BA F1 41 AC 14 C1 95 50 24
+         : . . AC 7F 0C 68 CD 51 7C 13 C3 8F 9B AC DC F1 AF 1B
+         : . . 5E A0 DB C9 0A 16 23 2B 60 30 FE 9F 3B E3 28 45
+         : . . 26 4D D3 58 C5 B7 C0 9D 31 70 28 1F 8A FE B7 C1
+         : . . 17 90 0F DE 21 BD 21 27 F8 16 84 BE 78 2D 73 03
+         : . . 98 16 DF 90 11 B1 61 E5 2B 67 A0 E0 77 FA 6B AF
+         : . . 9D 14 C5 03 48 C6 00 F7 1B 0E 19 C3 8F 27 3F D4
+         : . . E7 D8 E0 F9 FC 76 40 46 A9 51 98 95 FA 87 A7 B0
+         : . . C8 AA F0 43 8E 08 4A 40 D4 24 23 77 DD CD 07 E6
+         : . . F9 E9 89 9D 0D FE 19 3B 7B 52 A1 51 5A 12 38 B4
+         : . . 6B CE 0F 0B DE 48 84 55 90 98 35 8F 10 5B BA 92
+         : . . 68 D3 78 5A EF D1 62 42 C3 6A 36 91 A0 8B D7 53
+         : . . E3 93 AD C4 5D EB 7D F7 6A 68 79 C1 2F 68 9B C5
+         : . . D4 42 AF 98 F3 6C A9 A1 BA 70 BC A0 13 89 D3 42
+         : . . B4 36 1F 7B 46 35 56 AA C9 A0 0A 85 33 99 C4 6B
+         : . . 30 DD C1 B1 14 2C 0A 12 A5 27 78 8D 3F A1 7D 73
+         : . . 4C 6C 8E 36 96 C2 15 43 23 D1 09 40 BE 2C 64 A3
+         : . . 91 88 DD 9D 6D FC 02 80 58 31 B6 A2 85 84 5F 6D
+         : . . 92 05 93 42 C8 83 B6 B0 DB DB FA F0 D6 86 E2 E7
+         : . . A1 4B 08 44 24 5B 39 89 12 ED AE 84 F8 2C 89 C2
+         : . . 8C F2 9D 9C E6 4D 37 ED 49 C8 0E FD A2 6B D5 15
+         : . . D3 EF 20 A3 98 B2 DE D4 F2 B2 7B E8 FF F8 C4 19
+         : . . E2 C2 FE 9F 57 90 73 4D EA 75 29 28 39 A0 4C 25
+         : . . FE 16 11 D4 16 F6 F1 E6 F3 C3 72 3F F0 CE 57 C7
+         : . . 94 C4 0F 30 73 CF 45 E6 4A F7 A6 F5 48 F4 35 66
+         : . . 35 AA 37 C8 FE 17 5B 01 71 8D C5 62 26 41 C3 92
+         : . . CD 8D 4E 9B 95 F5 8F 53 65 41 1F 38 97 1F 29 FC
+         : . . 44 29 4B F1 71 E5 2D BA 79 4A 47 37 C5 09 A0 4D
+         : . . A6 74 DE DB ED 73 15 74 AE AE 91 DB 2C F8 5D 66
+         : . . 28 E9 1B 1D 83 07 5A BF 79 8F 5F F2 9F 0B 93 9C
+         : . . 96 2A 0C 0C 0C 0D 98 5B EE 66 A6 9E 7C 20 B4 4D
+         : . . 79 20 B2 0C 12 D7 AC E2 F5 6A 21 7E E9 EA FB CA
+         : . . F5 E5 C6 6A F8 C3 09 64 14 63 DB 8A 26 5A E6 49
+         : . . BF 69 5D 78 6E E8 0C D1 A3 7E 1C 39 5B AC CF 02
+         : . . 4E DC 55 AB DA E5 65 6D FE CE 31 EB 18 C2 63 6D
+         : . . 40 80 97 67 16 2A 41 61 53 97 25 BE 17 53 32 D5
+         : . . D9 34 B7 E0 A7 06 FF 4A 20 52 15 5B 36 84 CF 3C
+         : . . 98 53 9C 29 F5 EB 47 D4 66 F4 87 BF E7 59 3B CC
+         : . . 4C 0B 3F 16 01 00 B2 E2
+         : . }
+
+```
+
+### Ejemplo 01.05: Extracción de la Clave Pública RSA en diferentes formatos:
+
+#### Formato `PEM` encoded y estandard `PKCS#8` desde un Keypair `RSA` en formato `PEM` encoded y estandard `PKCS#1`:
+```
+$ openssl rsa -in rsakeypair01.pem -inform PEM -pubout -out rsapubkey01_pkcs8.pem -outform PEM
+writing RSA key
+$ cat rsapubkey01_pkcs8.pem
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq0ljou3ka2xX1yt4g6dg
+9sm8irnNajmPA26s9GbbYbJ9Agy/8XbPG5h4X2pIrn1zxlybp+T+TUsJRpwC2r+j
+TvYQiPJJKrzclxM6PPlNDejiAGubHhovq+zb4to9LEO0qEmbZQ9N8No2fZVyUizT
+ruNFkg4y8mBEtiqTBbLyqAULzhKIoJThpVvR+DHuN3ucCDgYSCAHamF4ZihTQt/5
+YMfcskiI0yden2046X+zbpv0auT8SrJg1kEWRUs2XOj0xajECaoF87l+QDrBWATl
+szbSGP5IZKh7JKzUv60ccaAgIIYX8BkDm/A7Q4+XDsGUgINYQYwD9JD2XyjaiLzM
+5QIDAQAB
+-----END PUBLIC KEY-----
+
+```
+
+>Nota: adviértase que estamos hemos estado utilizando `openssl rsa`
+
+* visualización:
+
+![PKCS#8 Private Key vs Public Key](images/rsapubkey01_image02.png "PKCS#8 Private Key vs Public Key")
+
+
+#### Formato `DER` encoded:
+```
+$ openssl rsa -in rsakeypair01.pem -inform PEM -pubout -out rsapubkey01_pkcs8.der -outform DER
+writing RSA key
+$ dumpasn1 -adhl rsapubkey01_pkcs8.der
+    <30 82 01 22>
+  0 290: SEQUENCE {
+    <30 0D>
+  4  13: . SEQUENCE {
+    <06 09>
+  6   9: . . OBJECT IDENTIFIER rsaEncryption (1 2 840 113549 1 1 1)
+       : . . . (PKCS #1)
+    <05 00>
+ 17   0: . . NULL
+       : . . }
+    <03 82 01 0F>
+ 19 271: . BIT STRING, encapsulates {
+    <30 82 01 0A>
+ 24 266: . . SEQUENCE {
+    <02 82 01 01>
+ 28 257: . . . INTEGER
+       : . . . . 00 AB 49 63 A2 ED E4 6B 6C 57 D7 2B 78 83 A7 60
+       : . . . . F6 C9 BC 8A B9 CD 6A 39 8F 03 6E AC F4 66 DB 61
+       : . . . . B2 7D 02 0C BF F1 76 CF 1B 98 78 5F 6A 48 AE 7D
+       : . . . . 73 C6 5C 9B A7 E4 FE 4D 4B 09 46 9C 02 DA BF A3
+       : . . . . 4E F6 10 88 F2 49 2A BC DC 97 13 3A 3C F9 4D 0D
+       : . . . . E8 E2 00 6B 9B 1E 1A 2F AB EC DB E2 DA 3D 2C 43
+       : . . . . B4 A8 49 9B 65 0F 4D F0 DA 36 7D 95 72 52 2C D3
+       : . . . . AE E3 45 92 0E 32 F2 60 44 B6 2A 93 05 B2 F2 A8
+       : . . . . 05 0B CE 12 88 A0 94 E1 A5 5B D1 F8 31 EE 37 7B
+       : . . . . 9C 08 38 18 48 20 07 6A 61 78 66 28 53 42 DF F9
+       : . . . . 60 C7 DC B2 48 88 D3 27 5E 9F 6D 38 E9 7F B3 6E
+       : . . . . 9B F4 6A E4 FC 4A B2 60 D6 41 16 45 4B 36 5C E8
+       : . . . . F4 C5 A8 C4 09 AA 05 F3 B9 7E 40 3A C1 58 04 E5
+       : . . . . B3 36 D2 18 FE 48 64 A8 7B 24 AC D4 BF AD 1C 71
+       : . . . . A0 20 20 86 17 F0 19 03 9B F0 3B 43 8F 97 0E C1
+       : . . . . 94 80 83 58 41 8C 03 F4 90 F6 5F 28 DA 88 BC CC
+       : . . . . E5
+    <02 03>
+289   3: . . . INTEGER 65537
+       : . . . }
+       : . . }
+       : . }
+
+0 warnings, 0 errors.
+
+```
+
+#### Conversion de la clave `RSA pública` obtenida desde el estandar `PKCS#8` a estandard `PKCS#1`:
+
+```
+$ openssl rsa -pubin -in rsapubkey01_pkcs8.pem -inform PEM -RSAPublicKey_out
+writing RSA key
+-----BEGIN RSA PUBLIC KEY-----
+MIIBCgKCAQEAq0ljou3ka2xX1yt4g6dg9sm8irnNajmPA26s9GbbYbJ9Agy/8XbP
+G5h4X2pIrn1zxlybp+T+TUsJRpwC2r+jTvYQiPJJKrzclxM6PPlNDejiAGubHhov
+q+zb4to9LEO0qEmbZQ9N8No2fZVyUizTruNFkg4y8mBEtiqTBbLyqAULzhKIoJTh
+pVvR+DHuN3ucCDgYSCAHamF4ZihTQt/5YMfcskiI0yden2046X+zbpv0auT8SrJg
+1kEWRUs2XOj0xajECaoF87l+QDrBWATlszbSGP5IZKh7JKzUv60ccaAgIIYX8BkD
+m/A7Q4+XDsGUgINYQYwD9JD2XyjaiLzM5QIDAQAB
+-----END RSA PUBLIC KEY-----
+```
+
+>Nota: obsérvese la cabecera `-----BEGIN RSA PUBLIC KEY-----`
+
+```
+$ openssl rsa -pubin -in rsapubkey01_pkcs8.pem -inform PEM -RSAPublicKey_out -out rsapubkey01_pkcs1.pem -outform PEM
+writing RSA key
+$ cat rsapubkey01_pkcs1.pem
+-----BEGIN RSA PUBLIC KEY-----
+MIIBCgKCAQEAq0ljou3ka2xX1yt4g6dg9sm8irnNajmPA26s9GbbYbJ9Agy/8XbP
+G5h4X2pIrn1zxlybp+T+TUsJRpwC2r+jTvYQiPJJKrzclxM6PPlNDejiAGubHhov
+q+zb4to9LEO0qEmbZQ9N8No2fZVyUizTruNFkg4y8mBEtiqTBbLyqAULzhKIoJTh
+pVvR+DHuN3ucCDgYSCAHamF4ZihTQt/5YMfcskiI0yden2046X+zbpv0auT8SrJg
+1kEWRUs2XOj0xajECaoF87l+QDrBWATlszbSGP5IZKh7JKzUv60ccaAgIIYX8BkD
+m/A7Q4+XDsGUgINYQYwD9JD2XyjaiLzM5QIDAQAB
+-----END RSA PUBLIC KEY-----
+```
+
+>Nota: obsérvese la cabecera `-----BEGIN RSA PUBLIC KEY-----`
+
+```
+$ openssl rsa -pubin -in rsapubkey01_pkcs8.pem -inform PEM -RSAPublicKey_out -out rsapubkey01_pkcs1.der -outform DER
+writing RSA key
+$ dumpasn1 -adhl rsapubkey01_pkcs1.der
+    <30 82 01 0A>
+  0 266: SEQUENCE {
+    <02 82 01 01>
+  4 257: . INTEGER
+       : . . 00 AB 49 63 A2 ED E4 6B 6C 57 D7 2B 78 83 A7 60
+       : . . F6 C9 BC 8A B9 CD 6A 39 8F 03 6E AC F4 66 DB 61
+       : . . B2 7D 02 0C BF F1 76 CF 1B 98 78 5F 6A 48 AE 7D
+       : . . 73 C6 5C 9B A7 E4 FE 4D 4B 09 46 9C 02 DA BF A3
+       : . . 4E F6 10 88 F2 49 2A BC DC 97 13 3A 3C F9 4D 0D
+       : . . E8 E2 00 6B 9B 1E 1A 2F AB EC DB E2 DA 3D 2C 43
+       : . . B4 A8 49 9B 65 0F 4D F0 DA 36 7D 95 72 52 2C D3
+       : . . AE E3 45 92 0E 32 F2 60 44 B6 2A 93 05 B2 F2 A8
+       : . . 05 0B CE 12 88 A0 94 E1 A5 5B D1 F8 31 EE 37 7B
+       : . . 9C 08 38 18 48 20 07 6A 61 78 66 28 53 42 DF F9
+       : . . 60 C7 DC B2 48 88 D3 27 5E 9F 6D 38 E9 7F B3 6E
+       : . . 9B F4 6A E4 FC 4A B2 60 D6 41 16 45 4B 36 5C E8
+       : . . F4 C5 A8 C4 09 AA 05 F3 B9 7E 40 3A C1 58 04 E5
+       : . . B3 36 D2 18 FE 48 64 A8 7B 24 AC D4 BF AD 1C 71
+       : . . A0 20 20 86 17 F0 19 03 9B F0 3B 43 8F 97 0E C1
+       : . . 94 80 83 58 41 8C 03 F4 90 F6 5F 28 DA 88 BC CC
+       : . . E5
+    <02 03>
+265   3: . INTEGER 65537
+       : . }
+
+0 warnings, 0 errors.	
+```
+
+>Nota: obsérvese la **AUSENCIA** del `OBJECT IDENTIFIER rsaEncryption (1 2 840 113549 1 1 1)`
+
+![PKCS#8 Public Key vs PKCS#1 Public Key](images/PKCS8vsPKCS1_image02.png "PKCS#8 Private Key vs Public Key")
+
+
+#### Conversion estandard `PKCS#8` desde un Keypair `RSA` en formato `PEM` encoded y estandard `PKCS#1`:
+
+>Nota: CABECERAS: 
+>    * PKCS#1 Private Key ==> `-----BEGIN RSA PRIVATE KEY-----`
+>    * PKCS#1 Public Key ==> `-----BEGIN RSA PUBLIC KEY-----`
+>    * PKCS#8 Private Key ==> `-----BEGIN PRIVATE KEY-----`
+>    * PKCS#8 Public Key ==> `-----BEGIN PUBLIC KEY-----`
 
  
 
