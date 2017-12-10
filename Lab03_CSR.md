@@ -1653,13 +1653,370 @@ Utilice "keytool -command_name -help" para la sintaxis de nombre_comando
 
 >Nota: en la máquina virtual Ubuntu 17.10 ya se halla instalado tanto el OpenJDK 
 
+## Paso 1: Creación de un archivo `JKS` que almacenará el `Key pair RSA` que usaremos en la generación del `CSR`
+
+>Concepto de `JKS - Java Key Store` ( [Tomado de https://stackoverflow.com/questions/23202046/what-is-keystore](https://stackoverflow.com/questions/23202046/what-is-keystore) )
+>
+>Keystore in Java can refer to three things, depending on the context. (They're all closely related but subtly different.)
+>
+>A keystore can be a repository where private keys, certificates and symmetric keys can be stored. This is typically a file, but the storage can also be handled in different ways (e.g. cryptographic token or using the OS's own mechanism.)
+>
+>KeyStore is also a class which is part of the standard API. It is essentially a way to load, save and generally interact with one of the "physical" keystores as described above. A KeyStore can also be purely in memory, if you just need the API abstraction for your application.
+>
+>How to load and handle such a KeyStore instance depends on the format of the keystore file (or other storage system) that backs it. Multiple formats are available. Some of the most common are JKS and PKCS#12 (.p12).
+>
+>"keystore" can also be used as the counterpart of "truststore". This is where it can get confusing, since both "keystore" and "truststore" are keystores, they're just used for different purposes. You can find more details in this answer. The keystore is used to initialise the key manager, whereas the truststore is used to initialise the trust manager. 
+>
+>From the JSSE reference guide:
+>
+>A TrustManager determines whether the remote authentication credentials (and thus the connection) should be trusted.
+>A KeyManager determines which authentication credentials to send to the remote host.
+>
+>Essentially, a keystore used as a truststore will contain a number of (CA) certificates that you're willing to trust: those are the trust anchors you are going to use to verify remote certificates you don't already know and trust. In contrast, a keystore used as a keystore will contain your own certificate and its private key: this is what you're going to use to authenticate yourself to a remote party (when required).
+>
+>There is a default truststore bundled with the JRE (/lib/security/cacerts). There isn't a default keystore, since it's usually a more explicit step for the user.
+>
+>In the context of SSL/TLS, a keystore (keystore used as a keystore) will be where a server stores its certificate and private key (or, when client-certificate authentication is used, where the client stores its certifcate and private key). A truststore (keystore used as a truststore) will be where the client stores the CA certificates of the CAs it is willing to trust, so as to be able to verify the server certificate when making a connection to an SSL/TLS server (similarly, on the server side, this is also where the CA certificates used to verify the client certificates are stored).
+>
+>Typically, the error you're getting ("ValidatorException: PKIX path building failed") happens when the certificate of the server you're connecting to cannot be verified using any certificate in the truststore you're using. You would generally need to have in your truststore either the server certificate directly in your truststore (which is only manageable on a small scale) or the CA certificate of the CA used to issue that server certificate (or one of the certificates in the chain it presents, when there is a chain).
+> 
+
+```
+$ keytool -genkey -alias labtik122017_keypair \
+> -keyalg RSA -keysize 2048 -storetype JKS \
+> -validity 99999 -keypass changeit \
+> -storepass changeit -keystore labtik122017_private.jks \
+> -dname "CN=labtik122017.techedgegroup.es, OU=Admin Lab Demo Servers, O=TIK Techedge Institute of Knowledge, L=Madrid, S=Madrid, C=ES"
+
+Warning:
+El almacén de claves JKS utiliza un formato propietario. Se recomienda migrar a PKCS12, que es un formato estándar del sector que utiliza "keytool -importkeystore -srckeystore labtik122017_private.jks -destkeystore labtik122017_private.jks -deststoretype pkcs12".
+```
+
+>**ADVIERTASE** que este procedimiento permite _Asociar_ el `Key pair RSA` con un `DN - Distinguised Name` y almacenar dicha _asociación_ en un archivo `JKS`
+
+## Paso 2: Generación del `CSR`
+
+```
+$ keytool -certreq -keyalg SHA2withRSA -alias labtik122017_keypair \
+> -validity 1095 \
+> -storetype JKS -keypass changeit -storepass changeit -keystore labtik122017_private.jks \
+> -dname "CN=labtik122017.techedgegroup.es, OU=Admin Lab Demo Servers, O=TIK Techedge Institute of Knowledge, L=Madrid, S=Madrid, C=ES" \
+> -ext SAN=DNS:labtik122017.techedgegroup.es,DNS:labtik122017,IP:127.0.0.1 \
+> -file CSR_labtik122017_keytool.pem
+
+Warning:
+El almacén de claves JKS utiliza un formato propietario. Se recomienda migrar a PKCS12, que es un formato estándar del sector que utiliza "keytool -importkeystore -srckeystore labtik122017_private.jks -destkeystore labtik122017_private.jks -deststoretype pkcs12".
+
+
+$ cat CSR_labtik122017_keytool.pem
+-----BEGIN NEW CERTIFICATE REQUEST-----
+MIIDWjCCAkICAQAwgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIEwZNYWRyaWQxDzAN
+BgNVBAcTBk1hZHJpZDEsMCoGA1UEChMjVElLIFRlY2hlZGdlIEluc3RpdHV0ZSBv
+ZiBLbm93bGVkZ2UxHzAdBgNVBAsTFkFkbWluIExhYiBEZW1vIFNlcnZlcnMxJjAk
+BgNVBAMTHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIBIjANBgkqhkiG
+9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlaUO/1bynhaBDxSHdbet39CUGBf67tT9/ZcP
+qrikarjGBaOi2jEuZEfQLycKnoj5N74iWuvlIwXJbARtNEpAJRAJm2Bt7KweuB+0
+9aXefSrq1cYee2kFqV8kV4j+jQUzCzo2IAo/obYYotaBphXA9AybHTjtVxTnMO2J
+UX8ZOnW5d9ENRib0ONdDgdBClSfTTUeA2kxZ4MA/uN6jIBuQMGKF1TQQd1ZBL9cX
+xhsWG51hGzaCY3LrGVIMM0lDAd6+rpuuItJkg2GuvY0ULvLH0d1/GRxznA03QQVA
+jw47CuYymYpTl0KnCdass/XrI3+bInVK0P4ClUasOLHEjiwzYQIDAQABoG4wbAYJ
+KoZIhvcNAQkOMV8wXTA8BgNVHREENTAzgh1sYWJ0aWsxMjIwMTcudGVjaGVkZ2Vn
+cm91cC5lc4IMbGFidGlrMTIyMDE3hwR/AAABMB0GA1UdDgQWBBQJ/J7CAV6j+ZO7
+wUe7kYeKDPIcRjANBgkqhkiG9w0BAQsFAAOCAQEAQn5WSKDRtF7VMe8fRou6x+ag
+ULTs5SqTKuDaY7hp9RqjnVLZD3e3U6iN+Th9wTh3Dn/qYsU3BkPW4yKSAYTBXrV2
+YC3+u8JDwyBOVLYGIICDC5aJLN6tsGKT9iDXTognrDynZ8tyH6KwqWWHBqYhGV9C
++9B2S4E0QmCGZJFzDb14LCVmg2oUMubvQhtsbhaEuIDFH/N3Al33P1TmcBtzeTD9
+e+PSSjyf66N99/eUiaebvjbZNyXod56GXdy9QeeTc7e0wiRJYWijPtvOjHI1E1q0
++6TqKjkEnPlsfENY9LViFNcX35LlrjrSLXgHH/HNFkYdB0QnrXJy6tdWCwa0ZQ==
+-----END NEW CERTIFICATE REQUEST-----
+```
+>**OBSERVESE** cómo en el `CSR` se ha incluido la _solicitud_ que se desea una validez de 3 años para el certificado X.509 a generar por la `CA` (1095 = 3 x 365).
+
+* Visualización utilizando el mismo comando `openssl req` con la opción `-text`:
+
+```
+$ openssl req -text -in CSR_labtik122017_keytool.pem -inform PEM
+$ openssl req -text -in CSR_labtik122017_keytool.pem -inform PEM
+Certificate Request:
+    Data:
+        Version: 0 (0x0)
+        Subject: C=ES, ST=Madrid, L=Madrid, O=TIK Techedge Institute of Knowledge, OU=Admin Lab Demo Servers, CN=labtik122017.techedgegroup.es
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:95:a5:0e:ff:56:f2:9e:16:81:0f:14:87:75:b7:
+                    ad:df:d0:94:18:17:fa:ee:d4:fd:fd:97:0f:aa:b8:
+                    a4:6a:b8:c6:05:a3:a2:da:31:2e:64:47:d0:2f:27:
+                    0a:9e:88:f9:37:be:22:5a:eb:e5:23:05:c9:6c:04:
+                    6d:34:4a:40:25:10:09:9b:60:6d:ec:ac:1e:b8:1f:
+                    b4:f5:a5:de:7d:2a:ea:d5:c6:1e:7b:69:05:a9:5f:
+                    24:57:88:fe:8d:05:33:0b:3a:36:20:0a:3f:a1:b6:
+                    18:a2:d6:81:a6:15:c0:f4:0c:9b:1d:38:ed:57:14:
+                    e7:30:ed:89:51:7f:19:3a:75:b9:77:d1:0d:46:26:
+                    f4:38:d7:43:81:d0:42:95:27:d3:4d:47:80:da:4c:
+                    59:e0:c0:3f:b8:de:a3:20:1b:90:30:62:85:d5:34:
+                    10:77:56:41:2f:d7:17:c6:1b:16:1b:9d:61:1b:36:
+                    82:63:72:eb:19:52:0c:33:49:43:01:de:be:ae:9b:
+                    ae:22:d2:64:83:61:ae:bd:8d:14:2e:f2:c7:d1:dd:
+                    7f:19:1c:73:9c:0d:37:41:05:40:8f:0e:3b:0a:e6:
+                    32:99:8a:53:97:42:a7:09:d6:ac:b3:f5:eb:23:7f:
+                    9b:22:75:4a:d0:fe:02:95:46:ac:38:b1:c4:8e:2c:
+                    33:61
+                Exponent: 65537 (0x10001)
+        Attributes:
+        Requested Extensions:
+            X509v3 Subject Alternative Name: 
+                DNS:labtik122017.techedgegroup.es, DNS:labtik122017, IP Address:127.0.0.1
+            X509v3 Subject Key Identifier: 
+                09:FC:9E:C2:01:5E:A3:F9:93:BB:C1:47:BB:91:87:8A:0C:F2:1C:46
+    Signature Algorithm: sha256WithRSAEncryption
+         42:7e:56:48:a0:d1:b4:5e:d5:31:ef:1f:46:8b:ba:c7:e6:a0:
+         50:b4:ec:e5:2a:93:2a:e0:da:63:b8:69:f5:1a:a3:9d:52:d9:
+         0f:77:b7:53:a8:8d:f9:38:7d:c1:38:77:0e:7f:ea:62:c5:37:
+         06:43:d6:e3:22:92:01:84:c1:5e:b5:76:60:2d:fe:bb:c2:43:
+         c3:20:4e:54:b6:06:20:80:83:0b:96:89:2c:de:ad:b0:62:93:
+         f6:20:d7:4e:88:27:ac:3c:a7:67:cb:72:1f:a2:b0:a9:65:87:
+         06:a6:21:19:5f:42:fb:d0:76:4b:81:34:42:60:86:64:91:73:
+         0d:bd:78:2c:25:66:83:6a:14:32:e6:ef:42:1b:6c:6e:16:84:
+         b8:80:c5:1f:f3:77:02:5d:f7:3f:54:e6:70:1b:73:79:30:fd:
+         7b:e3:d2:4a:3c:9f:eb:a3:7d:f7:f7:94:89:a7:9b:be:36:d9:
+         37:25:e8:77:9e:86:5d:dc:bd:41:e7:93:73:b7:b4:c2:24:49:
+         61:68:a3:3e:db:ce:8c:72:35:13:5a:b4:fb:a4:ea:2a:39:04:
+         9c:f9:6c:7c:43:58:f4:b5:62:14:d7:17:df:92:e5:ae:3a:d2:
+         2d:78:07:1f:f1:cd:16:46:1d:07:44:27:ad:72:72:ea:d7:56:
+         0b:06:b4:65
+-----BEGIN CERTIFICATE REQUEST-----
+MIIDWjCCAkICAQAwgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIEwZNYWRyaWQxDzAN
+BgNVBAcTBk1hZHJpZDEsMCoGA1UEChMjVElLIFRlY2hlZGdlIEluc3RpdHV0ZSBv
+ZiBLbm93bGVkZ2UxHzAdBgNVBAsTFkFkbWluIExhYiBEZW1vIFNlcnZlcnMxJjAk
+BgNVBAMTHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIBIjANBgkqhkiG
+9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlaUO/1bynhaBDxSHdbet39CUGBf67tT9/ZcP
+qrikarjGBaOi2jEuZEfQLycKnoj5N74iWuvlIwXJbARtNEpAJRAJm2Bt7KweuB+0
+9aXefSrq1cYee2kFqV8kV4j+jQUzCzo2IAo/obYYotaBphXA9AybHTjtVxTnMO2J
+UX8ZOnW5d9ENRib0ONdDgdBClSfTTUeA2kxZ4MA/uN6jIBuQMGKF1TQQd1ZBL9cX
+xhsWG51hGzaCY3LrGVIMM0lDAd6+rpuuItJkg2GuvY0ULvLH0d1/GRxznA03QQVA
+jw47CuYymYpTl0KnCdass/XrI3+bInVK0P4ClUasOLHEjiwzYQIDAQABoG4wbAYJ
+KoZIhvcNAQkOMV8wXTA8BgNVHREENTAzgh1sYWJ0aWsxMjIwMTcudGVjaGVkZ2Vn
+cm91cC5lc4IMbGFidGlrMTIyMDE3hwR/AAABMB0GA1UdDgQWBBQJ/J7CAV6j+ZO7
+wUe7kYeKDPIcRjANBgkqhkiG9w0BAQsFAAOCAQEAQn5WSKDRtF7VMe8fRou6x+ag
+ULTs5SqTKuDaY7hp9RqjnVLZD3e3U6iN+Th9wTh3Dn/qYsU3BkPW4yKSAYTBXrV2
+YC3+u8JDwyBOVLYGIICDC5aJLN6tsGKT9iDXTognrDynZ8tyH6KwqWWHBqYhGV9C
++9B2S4E0QmCGZJFzDb14LCVmg2oUMubvQhtsbhaEuIDFH/N3Al33P1TmcBtzeTD9
+e+PSSjyf66N99/eUiaebvjbZNyXod56GXdy9QeeTc7e0wiRJYWijPtvOjHI1E1q0
++6TqKjkEnPlsfENY9LViFNcX35LlrjrSLXgHH/HNFkYdB0QnrXJy6tdWCwa0ZQ==
+-----END CERTIFICATE REQUEST-----
+```
+**ADVIERTASE** el fragmento:
+```
+... ... ... ...
+        Requested Extensions:
+            X509v3 Subject Alternative Name: 
+                DNS:labtik122017.techedgegroup.es, DNS:labtik122017, IP Address:127.0.0.1
+            X509v3 Subject Key Identifier: 
+                09:FC:9E:C2:01:5E:A3:F9:93:BB:C1:47:BB:91:87:8A:0C:F2:1C:46
+... ... ... ...  
+```
+
+* Visualización con la herramienta en-línea >[CSR Decoder and Certificate Decoder (Red Krestel)(new)](https://redkestrel.co.uk/products/decoder/)
+
+![https://redkestrel.co.uk/products/decoder/](images/CSR_Decoder05_Keytool_img01.png "https://redkestrel.co.uk/products/decoder/")
+
+
+* Visualización del CSR con `openssl asn1parse`
+
+```
+$ openssl asn1parse -i -dump -in CSR_labtik122017_keytool.pem -inform PEM
+    0:d=0  hl=4 l= 858 cons: SEQUENCE          
+    4:d=1  hl=4 l= 578 cons:  SEQUENCE          
+    8:d=2  hl=2 l=   1 prim:   INTEGER           :00
+   11:d=2  hl=3 l= 166 cons:   SEQUENCE          
+   14:d=3  hl=2 l=  11 cons:    SET               
+   16:d=4  hl=2 l=   9 cons:     SEQUENCE          
+   18:d=5  hl=2 l=   3 prim:      OBJECT            :countryName
+   23:d=5  hl=2 l=   2 prim:      PRINTABLESTRING   :ES
+   27:d=3  hl=2 l=  15 cons:    SET               
+   29:d=4  hl=2 l=  13 cons:     SEQUENCE          
+   31:d=5  hl=2 l=   3 prim:      OBJECT            :stateOrProvinceName
+   36:d=5  hl=2 l=   6 prim:      PRINTABLESTRING   :Madrid
+   44:d=3  hl=2 l=  15 cons:    SET               
+   46:d=4  hl=2 l=  13 cons:     SEQUENCE          
+   48:d=5  hl=2 l=   3 prim:      OBJECT            :localityName
+   53:d=5  hl=2 l=   6 prim:      PRINTABLESTRING   :Madrid
+   61:d=3  hl=2 l=  44 cons:    SET               
+   63:d=4  hl=2 l=  42 cons:     SEQUENCE          
+   65:d=5  hl=2 l=   3 prim:      OBJECT            :organizationName
+   70:d=5  hl=2 l=  35 prim:      PRINTABLESTRING   :TIK Techedge Institute of Knowledge
+  107:d=3  hl=2 l=  31 cons:    SET               
+  109:d=4  hl=2 l=  29 cons:     SEQUENCE          
+  111:d=5  hl=2 l=   3 prim:      OBJECT            :organizationalUnitName
+  116:d=5  hl=2 l=  22 prim:      PRINTABLESTRING   :Admin Lab Demo Servers
+  140:d=3  hl=2 l=  38 cons:    SET               
+  142:d=4  hl=2 l=  36 cons:     SEQUENCE          
+  144:d=5  hl=2 l=   3 prim:      OBJECT            :commonName
+  149:d=5  hl=2 l=  29 prim:      PRINTABLESTRING   :labtik122017.techedgegroup.es
+  180:d=2  hl=4 l= 290 cons:   SEQUENCE          
+  184:d=3  hl=2 l=  13 cons:    SEQUENCE          
+  186:d=4  hl=2 l=   9 prim:     OBJECT            :rsaEncryption
+  197:d=4  hl=2 l=   0 prim:     NULL              
+  199:d=3  hl=4 l= 271 prim:    BIT STRING        
+      0000 - 00 30 82 01 0a 02 82 01-01 00 95 a5 0e ff 56 f2   .0............V.
+      0010 - 9e 16 81 0f 14 87 75 b7-ad df d0 94 18 17 fa ee   ......u.........
+      0020 - d4 fd fd 97 0f aa b8 a4-6a b8 c6 05 a3 a2 da 31   ........j......1
+      0030 - 2e 64 47 d0 2f 27 0a 9e-88 f9 37 be 22 5a eb e5   .dG./'....7."Z..
+      0040 - 23 05 c9 6c 04 6d 34 4a-40 25 10 09 9b 60 6d ec   #..l.m4J@%...`m.
+      0050 - ac 1e b8 1f b4 f5 a5 de-7d 2a ea d5 c6 1e 7b 69   ........}*....{i
+      0060 - 05 a9 5f 24 57 88 fe 8d-05 33 0b 3a 36 20 0a 3f   .._$W....3.:6 .?
+      0070 - a1 b6 18 a2 d6 81 a6 15-c0 f4 0c 9b 1d 38 ed 57   .............8.W
+      0080 - 14 e7 30 ed 89 51 7f 19-3a 75 b9 77 d1 0d 46 26   ..0..Q..:u.w..F&
+      0090 - f4 38 d7 43 81 d0 42 95-27 d3 4d 47 80 da 4c 59   .8.C..B.'.MG..LY
+      00a0 - e0 c0 3f b8 de a3 20 1b-90 30 62 85 d5 34 10 77   ..?... ..0b..4.w
+      00b0 - 56 41 2f d7 17 c6 1b 16-1b 9d 61 1b 36 82 63 72   VA/.......a.6.cr
+      00c0 - eb 19 52 0c 33 49 43 01-de be ae 9b ae 22 d2 64   ..R.3IC......".d
+      00d0 - 83 61 ae bd 8d 14 2e f2-c7 d1 dd 7f 19 1c 73 9c   .a............s.
+      00e0 - 0d 37 41 05 40 8f 0e 3b-0a e6 32 99 8a 53 97 42   .7A.@..;..2..S.B
+      00f0 - a7 09 d6 ac b3 f5 eb 23-7f 9b 22 75 4a d0 fe 02   .......#.."uJ...
+      0100 - 95 46 ac 38 b1 c4 8e 2c-33 61 02 03 01 00 01      .F.8...,3a.....
+  474:d=2  hl=2 l= 110 cons:   cont [ 0 ]        
+  476:d=3  hl=2 l= 108 cons:    SEQUENCE          
+  478:d=4  hl=2 l=   9 prim:     OBJECT            :Extension Request
+  489:d=4  hl=2 l=  95 cons:     SET               
+  491:d=5  hl=2 l=  93 cons:      SEQUENCE          
+  493:d=6  hl=2 l=  60 cons:       SEQUENCE          
+  495:d=7  hl=2 l=   3 prim:        OBJECT            :X509v3 Subject Alternative Name
+  500:d=7  hl=2 l=  53 prim:        OCTET STRING      
+      0000 - 30 33 82 1d 6c 61 62 74-69 6b 31 32 32 30 31 37   03..labtik122017
+      0010 - 2e 74 65 63 68 65 64 67-65 67 72 6f 75 70 2e 65   .techedgegroup.e
+      0020 - 73 82 0c 6c 61 62 74 69-6b 31 32 32 30 31 37 87   s..labtik122017.
+      0030 - 04 7f 00 00 01                                    .....
+  555:d=6  hl=2 l=  29 cons:       SEQUENCE          
+  557:d=7  hl=2 l=   3 prim:        OBJECT            :X509v3 Subject Key Identifier
+  562:d=7  hl=2 l=  22 prim:        OCTET STRING      
+      0000 - 04 14 09 fc 9e c2 01 5e-a3 f9 93 bb c1 47 bb 91   .......^.....G..
+      0010 - 87 8a 0c f2 1c 46                                 .....F
+  586:d=1  hl=2 l=  13 cons:  SEQUENCE          
+  588:d=2  hl=2 l=   9 prim:   OBJECT            :sha256WithRSAEncryption
+  599:d=2  hl=2 l=   0 prim:   NULL              
+  601:d=1  hl=4 l= 257 prim:  BIT STRING        
+      0000 - 00 42 7e 56 48 a0 d1 b4-5e d5 31 ef 1f 46 8b ba   .B~VH...^.1..F..
+      0010 - c7 e6 a0 50 b4 ec e5 2a-93 2a e0 da 63 b8 69 f5   ...P...*.*..c.i.
+      0020 - 1a a3 9d 52 d9 0f 77 b7-53 a8 8d f9 38 7d c1 38   ...R..w.S...8}.8
+      0030 - 77 0e 7f ea 62 c5 37 06-43 d6 e3 22 92 01 84 c1   w...b.7.C.."....
+      0040 - 5e b5 76 60 2d fe bb c2-43 c3 20 4e 54 b6 06 20   ^.v`-...C. NT.. 
+      0050 - 80 83 0b 96 89 2c de ad-b0 62 93 f6 20 d7 4e 88   .....,...b.. .N.
+      0060 - 27 ac 3c a7 67 cb 72 1f-a2 b0 a9 65 87 06 a6 21   '.<.g.r....e...!
+      0070 - 19 5f 42 fb d0 76 4b 81-34 42 60 86 64 91 73 0d   ._B..vK.4B`.d.s.
+      0080 - bd 78 2c 25 66 83 6a 14-32 e6 ef 42 1b 6c 6e 16   .x,%f.j.2..B.ln.
+      0090 - 84 b8 80 c5 1f f3 77 02-5d f7 3f 54 e6 70 1b 73   ......w.].?T.p.s
+      00a0 - 79 30 fd 7b e3 d2 4a 3c-9f eb a3 7d f7 f7 94 89   y0.{..J<...}....
+      00b0 - a7 9b be 36 d9 37 25 e8-77 9e 86 5d dc bd 41 e7   ...6.7%.w..]..A.
+      00c0 - 93 73 b7 b4 c2 24 49 61-68 a3 3e db ce 8c 72 35   .s...$Iah.>...r5
+      00d0 - 13 5a b4 fb a4 ea 2a 39-04 9c f9 6c 7c 43 58 f4   .Z....*9...l|CX.
+      00e0 - b5 62 14 d7 17 df 92 e5-ae 3a d2 2d 78 07 1f f1   .b.......:.-x...
+      00f0 - cd 16 46 1d 07 44 27 ad-72 72 ea d7 56 0b 06 b4   ..F..D'.rr..V...
+      0100 - 65                                                e
+
+```
 
 # Seccion 03 - Ejemplos de utilización de `XCA` para generar `CSR - Certificate Signing Requests'
 
+## 03.01 Pestaña `Certificate Signing Requests`
+
+![CSR_XCA_GEN_img01.png](images/CSR_XCA_GEN_img01.png "CSR_XCA_GEN_img01.png")
 
 ## 03.02 `CSR` de `Usuario`  
+
+* Paso Previo: Generar el `Key Pair` apropiado que se desea utilizar en la generación del `CSR`
+
+![XCA_CSR_Client_step0.png](images/XCA_CSR_Client_step0.png "XCA_CSR_Client_step0.png")
+
+* Pestaña `Source`:
+
+![XCA_CSR_Client_step01.png](images/XCA_CSR_Client_step01.png "XCA_CSR_Client_step01.png")
+
+>**AVISO** No pulsar _todavía_ el botón `Aceptar`. Esto sólo se debe hacer al final cuando se haya navegado por TODAS las pestañas. Simplemente pulsar sobre la _pestaña siguiente_.
+
+![XCA_CSR_Client_step01a.png](images/XCA_CSR_Client_step01a.png "XCA_CSR_Client_step01a.png")
+
+>**AVISO** No olvidar, antes de seguir con la siguiente pestaña el pulsar el botón `Apply All` para asegurarse que se _Apliquen TODAS las extensiones por defecto para un perfil de CSR de Usuario/Persona_.
+
+* Pestaña `Sujeto`
+
+![XCA_CSR_Client_step02.png](images/XCA_CSR_Client_step02.png "XCA_CSR_Client_step02.png")
+
+* Pestaña `Extensions`
+
+![XCA_CSR_Client_step03.png](images/XCA_CSR_Client_step03.png "XCA_CSR_Client_step03.png")
+
+* Pestaña `Key Usage`
+
+![XCA_CSR_Client_step04.png](images/XCA_CSR_Client_step04.png "XCA_CSR_Client_step04.png")
+
+* Pestaña `Netscape`
+
+![XCA_CSR_Client_step05.png](images/XCA_CSR_Client_step05.png "XCA_CSR_Client_step05.png")
+
+* Pestaña `Advanced`
+
+![XCA_CSR_Client_step06.png](images/XCA_CSR_Client_step06.png "XCA_CSR_Client_step06.png")
+
+* FINALIZAR:
+
+Revisar y pulsar `Aceptar`
+
+![XCA_CSR_Client_step07.png](images/XCA_CSR_Client_step07.png "XCA_CSR_Client_step07.png")
+
+* EXPORTAR:
+
+![XCA_CSR_Client_step08.png](images/XCA_CSR_Client_step08.png "XCA_CSR_Client_step08.png")
+
+![XCA_CSR_Client_step09.png](images/XCA_CSR_Client_step09.png "XCA_CSR_Client_step09.png")
 
 
 ## 03.03 `CSR` de `Dominio` (de `Servidor`)  
 
+* Paso Previo: Generar el `Key Pair` apropiado que se desea utilizar en la generación del `CSR`
 
+![XCA_CSR_Server_step0.png](images/XCA_CSR_Server_step0.png "XCA_CSR_Server_step0.png")
+
+* Pestaña `Source`:
+
+![XCA_CSR_Server_step01.png](images/XCA_CSR_Server_step01.png "XCA_CSR_Server_step01.png")
+
+>**AVISO** No pulsar _todavía_ el botón `Aceptar`. Esto sólo se debe hacer al final cuando se haya navegado por TODAS las pestañas. Simplemente pulsar sobre la _pestaña siguiente_.
+
+![XCA_CSR_Server_step01a.png](images/XCA_CSR_Server_step01a.png "XCA_CSR_Server_step01a.png")
+
+>**AVISO** No olvidar, antes de seguir con la siguiente pestaña el pulsar el botón `Apply All` para asegurarse que se _Apliquen TODAS las extensiones por defecto para un perfil de CSR de Usuario/Persona_.
+
+* Pestaña `Sujeto`
+
+![XCA_CSR_Server_step02.png](images/XCA_CSR_Server_step02.png "XCA_CSR_Server_step02.png")
+
+* Pestaña `Extensions`
+
+![XCA_CSR_Server_step03.png](images/XCA_CSR_Server_step03.png "XCA_CSR_Server_step03.png")
+
+* Pestaña `Key Usage`
+
+![XCA_CSR_Server_step04.png](images/XCA_CSR_Server_step04.png "XCA_CSR_Server_step04.png")
+
+* Pestaña `Netscape`
+
+![XCA_CSR_Server_step05.png](images/XCA_CSR_Server_step05.png "XCA_CSR_Server_step05.png")
+
+* Pestaña `Advanced`
+
+![XCA_CSR_Server_step06.png](images/XCA_CSR_Server_step06.png "XCA_CSR_Server_step06.png")
+
+* FINALIZAR:
+
+Revisar y pulsar `Aceptar`
+
+![XCA_CSR_Server_step07.png](images/XCA_CSR_Server_step07.png "XCA_CSR_Server_step07.png")
+
+* EXPORTAR:
+
+![XCA_CSR_Server_step08.png](images/XCA_CSR_Server_step08.png "XCA_CSR_Server_step08.png")
+
+![XCA_CSR_Server_step09.png](images/XCA_CSR_Server_step09.png "XCA_CSR_Server_step09.png")
