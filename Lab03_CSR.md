@@ -772,8 +772,8 @@ Tipos de certificados:
 
 Además, existen otros tipos de certificado digital utilizados en entornos más técnicos:
 
-* Certificado de servidor seguro, utilizado en los servidores web que quieren proteger ante terceros el intercambio de información con los usuarios.
-* Certificado de firma de código, para garantizar la autoría y la no modificación del código de aplicaciones informáticas.
+* **Certificado de servidor seguro**, utilizado en los servidores web que quieren proteger ante terceros el intercambio de información con los usuarios.
+* **Certificado de firma de código**, para garantizar la autoría y la no modificación del código de aplicaciones informáticas.
 
 ### Paso 1. Generación del `Key Pair` (O utilización de uno que haya sido generado/almacenado prevamente)
 
@@ -1539,21 +1539,122 @@ $ openssl asn1parse -i -dump -in CSR_labtik122017_SAN.pem -inform PEM
       0100 - 01 
 ```
 
-# Seccion 02 - Ejemplos de utilización de `Java Keytool` para generar `CSR - Certificate Signing Requests'
+# Seccion 02 - Ejemplo de utilización de `Java Keytool` para generar `CSR - Certificate Signing Requests'
+
+Nos centraremos en este ejemplo en la creación de un `CSR` de `Dominio / Servidor` pero puede servir de ejemplo-guía para la generación de `CSR` de `Usuarios / Personas` igualmente
+
+## Paso Inicial: Asegurar la existencia de un `JDK` de Java para poder hacer uso de la herramienta `keytool`
+
+Ejemplo en Ubuntu 17.10:
+
+```
+$ sudo apt-cache search openjdk-8-jdk
+default-jdk - Kit de desarrollo de Java estándar o Java compatible
+openjdk-8-jdk - Conjunto de desarrollo OpenJDK (JDK)
+openjdk-8-jdk-headless - OpenJDK Development Kit (JDK) (headless)
+default-jdk-headless - Standard Java or Java compatible Development Kit (headless)
+
+$ sudo apt-get install openjdk-8-jdk
+Leyendo lista de paquetes... Hecho
+Creando árbol de dependencias       
+Leyendo la información de estado... Hecho
+... ... ... ... ...
+
+$ which keytool | xargs ls -la
+lrwxrwxrwx 1 root root 25 nov 26 20:36 /usr/bin/keytool -> /etc/alternatives/keytool
+
+$ man keytool
+keytool(1)                                                                     Security Tools                                                                    keytool(1)
+NAME
+       keytool - Manages a keystore (database) of cryptographic keys, X.509 certificate chains, and trusted certificates.
+SYNOPSIS
+       keytool [commands]
+       commands
+              See Commands. These commands are categorized by task as follows:
+              · Create or Add Data to the Keystore
+                · -gencert
+                · -genkeypair
+                · -genseckey
+                · -importcert
+                · -importpassword
+              · Import Contents From Another Keystore
+                · -importkeystore
+              · Generate Certificate Request
+                · -certreq
+              · Export Data
+                · -exportcert
+              · Display Data
+                · -list
+SYNOPSIS
+       keytool [commands]
+       commands
+              See Commands. These commands are categorized by task as follows:
+              · Create or Add Data to the Keystore
+                · -gencert
+                · -genkeypair
+                · -genseckey
+                · -importcert
+                · -importpassword
+              · Import Contents From Another Keystore
+                · -importkeystore
+              · Generate Certificate Request
+                · -certreq
+              · Export Data
+                · -exportcert
+              · Display Data
+                · -list
+                · -printcert
+                · -printcertreq
+                · -printcrl
+              · Manage the Keystore
+                · -storepasswd
+                · -keypasswd
+                · -delete
+                · -changealias
+              · Get Help
+                · -help
+DESCRIPTION
+       The keytool command is a key and certificate management utility. It enables users to administer their own public/private key pairs and associated certificates for
+       use in self-authentication (where the user authenticates himself or herself to other users and services) or data integrity and authentication services, using
+       digital signatures. The keytool command also enables users to cache the public keys (in the form of certificates) of their communicating peers.
+       A certificate is a digitally signed statement from one entity (person, company, and so on.), that says that the public key (and some other information) of some
+       other entity has a particular value. (See Certificate.) When data is digitally signed, the signature can be verified to check the data integrity and authenticity.
+       Integrity means that the data has not been modified or tampered with, and authenticity means the data comes from whoever claims to have created and signed it.
+       The keytool command also enables users to administer secret keys and passphrases used in symmetric encryption and decryption (DES).
+       The keytool command stores the keys and certificates in a keystore. See KeyStore aliases.
+
+... ... ... ... 
+
+$ keytool
+Herramienta de Gestión de Certificados y Claves
+
+Comandos:
+
+ -certreq            Genera una solicitud de certificado
+ -changealias        Cambia un alias de entrada
+ -delete             Suprime una entrada
+ -exportcert         Exporta el certificado
+ -genkeypair         Genera un par de claves
+ -genseckey          Genera un clave secreta
+ -gencert            Genera un certificado a partir de una solicitud de certificado
+ -importcert         Importa un certificado o una cadena de certificados
+ -importpass         Importa una contraseña
+ -importkeystore     Importa una o todas las entradas desde otro almacén de claves
+ -keypasswd          Cambia la contraseña de clave de una entrada
+ -list               Enumera las entradas de un almacén de claves
+ -printcert          Imprime el contenido de un certificado
+ -printcertreq       Imprime el contenido de una solicitud de certificado
+ -printcrl           Imprime el contenido de un archivo CRL
+ -storepasswd        Cambia la contraseña de almacén de un almacén de claves
+
+Utilice "keytool -command_name -help" para la sintaxis de nombre_comando
+```
 
 
-## 02.02 `CSR` de `Usuario`  
+>Nota: en la máquina virtual Ubuntu 17.10 ya se halla instalado tanto el OpenJDK 
 
 
-## 02.03 `CSR` de `Dominio` (de `Servidor`)  
-
-
-## 02.04 `CSR` de `Usuario` EXTENDIDO 
-
-
-## 02.05 `CSR` de `Dominio` (de `Servidor`) EXTENDIDO 
-
-# Seccion 03 - Ejemplos de utilización de `Java Keytool` para generar `CSR - Certificate Signing Requests'
+# Seccion 03 - Ejemplos de utilización de `XCA` para generar `CSR - Certificate Signing Requests'
 
 
 ## 03.02 `CSR` de `Usuario`  
