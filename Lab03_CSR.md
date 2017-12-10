@@ -765,6 +765,22 @@ $ openssl asn1parse -i -dump -inform PEM -in CSR_User01.pem
 
 ## 01.03 `CSR` de `Dominio` (de `Servidor`)  
 
+Cuando nos referimos a `CSR de Dominio` nos estamos refiriendo en realidad a un `CSR` que identifica a un `Dominio DNS`, habitualmente en la forma de la dirección `DNS` de un servidor `HTTPS` ó `FTPS`, y en general un servidor que expone su acceso a través de `TLS/SSL`:
+
+Tipos de certificados: 
+>(fuente: [Wikipedia (es) >> Infraestructura de clave pública: Tipos de Certificado]
+
+Además, existen otros tipos de certificado digital utilizados en entornos más técnicos:
+
+* Certificado de servidor seguro, utilizado en los servidores web que quieren proteger ante terceros el intercambio de información con los usuarios.
+* Certificado de firma de código, para garantizar la autoría y la no modificación del código de aplicaciones informáticas.
+
+### Paso 1. Generación del `Key Pair` (O utilización de uno que haya sido generado/almacenado prevamente)
+
+>Nota: usaremos el mismo `Key Pair RSA` que el generado en el ejemplo `01.01` anterior
+
+### Paso 2. Generación del `CSR - Certificate Signing Request`
+
 * Generación del CSR:
 
 ```
@@ -996,6 +1012,14 @@ $ openssl asn1parse -i -dump -in CSR_labtik122017.pem -inform PEM
 
 ## 01.04 `CSR` de `Usuario` EXTENDIDO 
 
+### Paso 1. Generación del `Key Pair` (O utilización de uno que haya sido generado/almacenado prevamente)
+
+>Nota: usaremos el mismo `Key Pair RSA` que el generado en el ejemplo `01.01` anterior
+
+### Paso 2. Generación del `CSR - Certificate Signing Request`
+
+* Adaptación del archivo de configuración de OpenSSL
+
 Cuando se requiere _ampliar_ el numero de elementos del `DN - Distinguish Name` para que el `prompt` de `openssl req` lo incluya es preciso _ampliar_ la sección `[ req_distinguished_name ]` del archivo de configuración `/etc/ssl/openssl.cnf`  
 
 ```
@@ -1043,7 +1067,9 @@ serialNumber                    = Serial Number (NIF)
 serialNumber_max                = 10
 ```
 
-* Veamos el efecto sobre el `prompt` ampliado de `openssl req` al _ampliar_ la sección `[ req_distinguished_name ]` del archivo de configuración `/etc/ssl/openssl.cnf`
+* Generación del CSR con el elemento `Serial Number` incluido en el `DN - Distinguished Name` que utilizaremos pra almacenar el `NIF` de la Persona/Usuario Subject Alternative Names`
+
+>**OBSERVESE** el efecto sobre el `prompt` ampliado de `openssl req` al _ampliar_ la sección `[ req_distinguished_name ]` del archivo de configuración `/etc/ssl/openssl.cnf`
 
 ```
 $ openssl req -new -utf8 -sha256 -key rsakeypair01.pem -passin pass:changeit -out CSR_User01_NIF.pem
@@ -1161,8 +1187,125 @@ $ gcr-viewer CSR_User01_NIF.pem
 
 ![https://redkestrel.co.uk/products/decoder/](images/CSR_Decoder03_img02.png "https://redkestrel.co.uk/products/decoder/")
 
+### INTERLUDIO: ATRIBUTOS POSIBLES EN UN `DN - Distinguished Name`
+
+>Ver [LDAP DNs and RDNs](https://www.ldap.com/ldap-dns-and-rdns)
+
+>Ver [Oracle - Understanding the LDAP Binding Component](https://docs.oracle.com/cd/E19182-01/820-6573/ghusi/index.html)
+
+>[Reference record for OID 2.5.4](http://oidref.com/2.5.4)  _'Attribute type. For more information, see Rec. ITU-T X.501 | ISO/IEC 9594-2.'_
+
+>[Ver OID 2.5.4 en oid-info.com](http://oid-info.com/get/2.5.4) _'Attribute type. For more information, see Rec. ITU-T X.501 | ISO/IEC 9594-2.'_
+
+|OID|Name|Description|
+|---|----|-----------|
+|2.5.4.0|objectClass|Object classes|
+|2.5.4.1|aliasedEntryName|Attribute type "Aliased entry name"|
+|2.5.4.2|knowledgeInformation|knowledgeInformation attribute type|
+|2.5.4.3|commonName|Common name|
+|2.5.4.4|surname|Attribute "surname"|
+|2.5.4.5|serialNumber|Serial number attribute type|
+|2.5.4.6|countryName|Country name|
+|2.5.4.7|localityName|Locality Name|
+|2.5.4.8|stateOrProvinceName|State or Province name|
+|2.5.4.9|streetAddress|Street address|
+|2.5.4.10|organizationName|Organization name|
+|2.5.4.11|organizationUnitName|Organization unit name|
+|2.5.4.12|title|Title attribute type|
+|2.5.4.13|description|Description attribute type|
+|2.5.4.14|searchGuide|Search guide attribute type|
+|2.5.4.15|businessCategory|Business category attribute type|
+|2.5.4.16|postalAddress|Postal address attribute type|
+|2.5.4.17|postalCode|Postal code attribute type|
+|2.5.4.18|postOfficeBox|Post office box attribute type|
+|2.5.4.19|physicalDeliveryOfficeName|physicalDeliveryOfficeName attribute type|
+|2.5.4.20|telephoneNumber|Telephone number attribute type|
+|2.5.4.21|telexNumber|Telex number attribute type|
+|2.5.4.22|teletexTerminalIdentifier|Teletex terminal identifier attribute type|
+|2.5.4.23|facsimileTelephoneNumber|Facsimile telephone number attribute type|
+|2.5.4.24|x121Address|X121 address attribute type|
+|2.5.4.25|internationalISDNNumber|International ISDN (Integrated Services Digital Network) number attribute type|
+|2.5.4.26|registeredAddress|Registered address attribute type|
+|2.5.4.27|destinationIndicator|Destination indicator attribute type|
+|2.5.4.28|preferredDeliveryMethod|Preferred delivery method attribute type|
+|2.5.4.29|presentationAddress|Presentation address attribute type|
+|2.5.4.30|supportedApplicationContext|Supported application context attribute type|
+|2.5.4.31|member|Member attribute type|
+|2.5.4.32|owner|Owner attribute type|
+|2.5.4.33|roleOccupant|Role occupant attribute type|
+|2.5.4.34|seeAlso|seeAlso attribute type|
+|2.5.4.35|userPassword|userPassword attribute type|
+|2.5.4.36|userCertificate|userCertificate attribute type|
+|2.5.4.37|cACertificate|cAcertificate attribute type|
+|2.5.4.38|authorityRevocationList|authorityRevocationList attribute type|
+|2.5.4.39|certificateRevocationList|certificateRevocationList attribute type|
+|2.5.4.40|crossCertificatePair|crossCertificatePair attribute type|
+|2.5.4.41|name|Name attribute type|
+|2.5.4.42|givenName|Given name attribute type|
+|2.5.4.43|initials|Initials attribute type|
+|2.5.4.44|generationQualifier|generationQualifier attribute type|
+|2.5.4.45|uniqueIdentifier|uniqueIdentifier attribute type|
+|2.5.4.46|dnQualifier|dnQualifier attribute type|
+|2.5.4.47|enhancedSearchGuide|enhancedSearchGuide attribute type|
+|2.5.4.48|protocolInformation|protocolInformation attribute type|
+|2.5.4.49|distinguishedName|distinguishedName attribute type|
+|2.5.4.50|uniqueMember|uniqueMember attribute type|
+|2.5.4.51|houseIdentifier|houseIdentifier attribute type|
+|2.5.4.52|supportedAlgorithms|supportedAlgorithms attribute type|
+|2.5.4.53|deltaRevocationList|deltaRevocationList attribute type|
+|2.5.4.54|dmdName|DMD Name attribute type|
+|2.5.4.55|clearance|Attribute type "Clearance"|
+|2.5.4.56|defaultDirQop|Attribute type "Default Dir Qop"|
+|2.5.4.57|attributeIntegrityInfo|Attribute type "Attribute integrity info"|
+|2.5.4.58|attributeCertificate|attributeCertificate attribute type|
+|2.5.4.59|attributeCertificateRevocationList|attributeCertificateRevocationList attribute type|
+|2.5.4.60|confKeyInfo|Attribute type "Conf key info"|
+|2.5.4.61|aACertificate|aACertificate attribute type|
+|2.5.4.62|attributeDescriptorCertificate|attributeDescriptorCertificate attribute type|
+|2.5.4.63|attributeAuthorityRevocationList|attributeAuthorityRevocationList attribute type|
+|2.5.4.64|family-information|Family-information attribute type|
+|2.5.4.65|pseudonym|Pseudonym attribute type|
+|2.5.4.66|communicationsService|communicationsService attribute type|
+|2.5.4.67|communicationsNetwork|communicationsNetwork attribute type|
+|2.5.4.68|certificationPracticeStmt|certificationPracticeStmt attribute type (Certification practice statement attribute)|
+|2.5.4.69|certificatePolicy|certificatePolicy attribute type|
+|2.5.4.70|pkiPath|pkiPath attribute type|
+|2.5.4.71|privPolicy|privPolicy attribute type|
+|2.5.4.72|role|role attribute type|
+|2.5.4.73|delegationPath|delegationPath attribute type|
+|2.5.4.74|protPrivPolicy|protPrivPolicy ATTRIBUTE ::= {|
+|2.5.4.75|xMLPrivilegeInfo|xmlPrivilegeInfo ATTRIBUTE ::= {|
+|2.5.4.76|xmlPrivPolicy|None|
+|2.5.4.77|uuidpair|uUIDPair|
+|2.5.4.78|tagOid|tagOid ATTRIBUTE ::= {|
+|2.5.4.79|uiiFormat|uiiFormat ATTRIBUTE ::= {|
+|2.5.4.80|uiiInUrh|uiiInUrn ATTRIBUTE ::= {|
+|2.5.4.81|contentUrl|contentUrl ATTRIBUTE ::= {|
+|2.5.4.82|permission|permission ATTRIBUTE ::= {|
+|2.5.4.83|uri|uri ATTRIBUTE ::= {|
+|2.5.4.84|pwdAttribute|pwdAttribute ATTRIBUTE ::= {|
+|2.5.4.85|userPwd|userPwd ATTRIBUTE ::= {|
+|2.5.4.86|urn|urn ATTRIBUTE ::= {|
+|2.5.4.87|url|url ATTRIBUTE ::= {|
+|2.5.4.88|utmCoordinates|utmCoordinates ATTRIBUTE ::= {|
+|2.5.4.89|urnC|urnC ATTRIBUTE ::= {|
+|2.5.4.90|uii|uii ATTRIBUTE ::= {|
+|2.5.4.91|epc|epc ATTRIBUTE ::= {|
+|2.5.4.92|tagAfi|tagAfi ATTRIBUTE ::= {|
+|2.5.4.93|epcFormat|epcFormat ATTRIBUTE ::= {|
+|2.5.4.94|epcInUrn|epcInUrn ATTRIBUTE ::= {|
+|2.5.4.95|ldapUrl|ldapUrl ATTRIBUTE ::= {|
+|2.5.4.96|ldapUrl|tagLocation ATTRIBUTE ::= {|
+|2.5.4.97|organizationIdentifier|organizationIdentifier ATTRIBUTE ::= {|
+
 
 ## 01.05 `CSR` de `Dominio` (de `Servidor`) EXTENDIDO 
+
+### Paso 1. Generación del `Key Pair` (O utilización de uno que haya sido generado/almacenado prevamente)
+
+>Nota: usaremos el mismo `Key Pair RSA` que el generado en el ejemplo `01.01` anterior
+
+### Paso 2. Generación del `CSR - Certificate Signing Request`
 
 En ocasiones necesitamos incluir en el CSR algunos `atributos extendidos` como es el caso de un `Subject Alternative Names` para poder indicar `Nombres Alternativos` del dominio/servidor que se desean queden cubiertos en el futuro Certificado X.509.
 
