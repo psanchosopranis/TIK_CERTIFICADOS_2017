@@ -781,3 +781,43 @@ $ openssl asn1parse -i -dump -in ec_privatekey_secp256k1_pkcs8_aes256PBE.pem -in
       0070 - 44 5a 91 7a 58 8c 64 ec-8c 41 1d 36 2c 2f 0d f1   DZ.zX.d..A.6,/..
       0080 - b9 70 6a fe 5c bf aa d4-                          .pj.\...
 ```
+
+### Sección 02. Ejemplos de generación y exportación de `Keypairs`  `DSA` y `EC` con `XCA`
+
+>[XCA - X Certificate and key management](http://xca.sourceforge.net/) (c) by Christian Hohnstädt, christian@hohnstaedt.de]
+
+#### Creación de un nuevo `Keypair` `DSA`: 
+
+![XCA New DSA Key](images/XCA_NEW_KEYS.png "XCA New DSA Key")
+
+![XCA New DSA Key](images/XCA_NEW_DSA_2048.png "XCA New DSA Key")
+
+#### Visualización de las propiedades del nuevo `Keypair` `DSA` generado: 
+
+![XCA New DSA Key Properties](images/XCA_NEW_DSA_2048_Details.png "XCA New DSA Key Properties")
+
+#### Formatos de persistencia (_Export_) disponibles para el nuevo `Keypair` `DSA` generado: 
+
+![XCA New Key Persistence modes](images/XCA_NEW_DSA_2048_Export.png "XCA New Key Persistence modes")
+
+#### Creación de un nuevo `Keypair` `EC`:
+
+![XCA New EC Key](images/"XCA New EC Key")
+
+![XCA New EC Key](images/XCA_NEW_EC_Home.png "XCA New EC Key")
+
+#### Selección de la curva `semilla` para la generación del nuevo `Keypair` `EC` a generar: 
+
+![XCA New EC Key Curve Selection](images/XCA_NEW_EC_Curves.png "XCA New EC Key Curve Selection")
+
+![XCA New EC Key Curve Selection](images/XCA_NEW_EC_Sample.png "XCA New EC Key Curve Selection")
+
+![XCA New EC Key Curve Selection](images/XCC_NEW_EC_SampleOK.png "XCA New EC Key Curve Selection")
+
+#### Visualización de las propiedades del nuevo `Keypair` `EC` generado: 
+ 
+![XCA New EC Key Properties](images/XCA_NEW_EC_Details.png "XCA New EC Key Properties")
+
+#### Formatos de persistencia (_Export_) disponibles para el nuevo `Keypair` `EC` generado: 
+
+![XCA New Key Persistence modes](images/XCA_NEW_EC_Export.png "XCA New Key Persistence modes")
