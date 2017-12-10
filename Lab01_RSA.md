@@ -3,12 +3,13 @@
 
 ### TOOLS
 
->[CSR Decoder and Certificate Decoder (Red Krestel)(new)](https://redkestrel.co.uk/products/decoder/)
-
->[CSR Decoder And Certificate Decoder(Red Krestel)(old)](https://certlogik.com/decoder/)
-
 >[ASN.1 JavaScript decoder](https://lapo.it/asn1js/)
 
+>[Openssl](https://www.openssl.org/)
+
+>[DumpASN1 - ASN.1 object dump/syntax check program](http://manpages.ubuntu.com/manpages/xenial/man1/dumpasn1.1.html) del autor [Peter Gutmann](https://www.cs.auckland.ac.nz/~pgut001/)
+
+>[XCA - X Certificate and key management](http://xca.sourceforge.net/) (c) by Christian Hohnstädt, christian@hohnstaedt.de]
 
 ### Preparación del laboratorio
 
