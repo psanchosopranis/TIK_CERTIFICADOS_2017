@@ -91,7 +91,7 @@ usage: genrsa [args] [numbits]
 
 
 ```
-$ openssl genrsa -out rsakeypair01.pem 
+$ openssl genrsa -out rsakeypair01.pem 2048
 Generating RSA private key, 2048 bit long modulus
 ...+++
 ..............+++
