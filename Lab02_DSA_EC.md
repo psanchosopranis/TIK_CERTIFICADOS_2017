@@ -16,12 +16,11 @@
 Creacion del directorio de trabajo del lab:
 
 ```
-$ mkdir -pv labs/lab02_dsa_ec
-mkdir: se ha creado el directorio 'labs/lab02_dsa_ec'
-$ cd labs/lab02_dsa_ec
+$ mkdir -pv $HOME/labs/lab02_dsa_ec
+mkdir: se ha creado el directorio '/home/devel1/labs/lab02_dsa_ec'
+$ cd $HOME/labs/lab02_dsa_ec
 $ pwd
 /home/devel1/labs/lab02_dsa_ec
-
 ```
 ## FUENTES DE DOCUMENTACION:
 

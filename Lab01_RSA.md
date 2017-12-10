@@ -16,13 +16,12 @@
 Creacion del directorio de trabajo del lab:
 
 ```
-$ mkdir -pv labs/lab01_rsa
-mkdir: se ha creado el directorio 'labs'
-mkdir: se ha creado el directorio 'labs/lab01_rsa'
-$ cd labs/lab01_rsa/
+$ mkdir -pv $HOME/labs/lab01_rsa
+mkdir: se ha creado el directorio '/home/devel1/labs'
+mkdir: se ha creado el directorio '/home/devel1/labs/lab01_rsa'
+$ cd $HOME/labs/lab01_rsa/
 $ pwd
 /home/devel1/labs/lab01_rsa
-
 ```
 ## INTRODUCCION (breve) a `RSA Public Key scheme`
 
