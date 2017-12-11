@@ -496,7 +496,7 @@ Formato `PEM` y extensión `.crt`:
 gcr-viewer labtik122017.techedgegroup.es.crt
 ```
 
-![TIKDemoCA_img15_CRT_Viewer.png](images/TIKDemoCA_img15_CRT_Viewer.png  "TIKDemoCA_img15_CRT_Viewer.png")
+![TIKDemoCA_img15_CRT_Viewer.png](images/TIKDemoCA_img15_CRT_Viewer.png "TIKDemoCA_img15_CRT_Viewer.png")
 
 Formato `DER` y extensión `.cer`:
 
@@ -509,34 +509,34 @@ Formato `PEM` con la `Cadena de Certificados en formato PEM`:
 ```
 $ cat labtik122017.techedgegroup.es_CHAIN.pem
 -----BEGIN CERTIFICATE-----
-MIIFLzCCBBegAwIBAgIBAzANBgkqhkiG9w0BAQsFADCCASExCzAJBgNVBAYTAkVT
+MIIFLzCCBBegAwIBAgIBBjANBgkqhkiG9w0BAQsFADCCASExCzAJBgNVBAYTAkVT
 MQ8wDQYDVQQIEwZNYWRyaWQxDzANBgNVBAcTBk1hZHJpZDEoMCYGA1UEChMfVGVj
 aGVkZ2UgSW5zdGl0dXRlIE9mIEtub3dsZWRnZTEkMCIGA1UECxMbRGVtbyBJbnRl
 cm1lZGlhdGUgU2VydmVyIENBMRswGQYDVQQDExJUSUsgRGVtbyBTZXJ2ZXIgQ0Ex
 JDAiBgkqhkiG9w0BCQEWFXN1cHBvcnQuZGVtb2NhQHRpay5lczE9MDsGA1UEDRM0
 RGVtbyBkZSBJbnRlcm1lZGlhdGUgU2VydmVyIENBIFRJSyBkZSBEaWNpZW1icmUg
-MjAxNzEeMBwGA1UELRMVMjAxNzEyMTFTQUxBVElLU2VydmVyMB4XDTE3MTIxMTAw
-MDAwMFoXDTE5MTIxMDIzNTk1OVowgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIEwZN
-YWRyaWQxDzANBgNVBAcTBk1hZHJpZDEsMCoGA1UEChMjVElLIFRlY2hlZGdlIElu
-c3RpdHV0ZSBvZiBLbm93bGVkZ2UxHzAdBgNVBAsTFkFkbWluIExhYiBEZW1vIFNl
-cnZlcnMxJjAkBgNVBAMTHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIB
-IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlaUO/1bynhaBDxSHdbet39CU
-GBf67tT9/ZcPqrikarjGBaOi2jEuZEfQLycKnoj5N74iWuvlIwXJbARtNEpAJRAJ
-m2Bt7KweuB+09aXefSrq1cYee2kFqV8kV4j+jQUzCzo2IAo/obYYotaBphXA9Ayb
-HTjtVxTnMO2JUX8ZOnW5d9ENRib0ONdDgdBClSfTTUeA2kxZ4MA/uN6jIBuQMGKF
-1TQQd1ZBL9cXxhsWG51hGzaCY3LrGVIMM0lDAd6+rpuuItJkg2GuvY0ULvLH0d1/
-GRxznA03QQVAjw47CuYymYpTl0KnCdass/XrI3+bInVK0P4ClUasOLHEjiwzYQID
-AQABo4HpMIHmMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFAn8nsIBXqP5k7vBR7uR
-h4oM8hxGMAsGA1UdDwQEAwIF4DATBgNVHSUEDDAKBggrBgEFBQcDATARBglghkgB
+MjAxNzEeMBwGA1UELRMVMjAxNzEyMTFTQUxBVElLU2VydmVyMB4XDTE3MTIxMTE1
+MDgwMFoXDTE5MTIxMTE1MDgwMFowgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIDAZN
+YWRyaWQxDzANBgNVBAcMBk1hZHJpZDEsMCoGA1UECgwjVElLIFRlY2hlZGdlIElu
+c3RpdHV0ZSBvZiBLbm93bGVkZ2UxHzAdBgNVBAsMFkFkbWluIExhYiBEZW1vIFNl
+cnZlcnMxJjAkBgNVBAMMHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuZ2cuF1uFrjpKNyHhw/9iAM6
+XA0cn7qjWBb2PDFJL1D1mIyAIzVOib56tn/IzUX/unGslcvcqS2KFkQbghLxdfTS
+HF9SoKybh/tZDckc4Im6XqNhVArQYLMwKaIRObk+HeOfD3+MeB9R+pIKY2YOK89/
+2RjoRb5BKzYnlxxhqPJdugrzW8dFrUXEzV6Kvd8eA7EOpQm/QTU6VMjVwfvARd2l
+1M9UDBJA27oqUhJmVQzAgJPlwtuVLMMO2UudxfAiSLWW4FnZk7RGzaUncBo3q/8f
+M35yktvk4TMqMzeH3PNHkrUYvebqCaI6CJ+9AiaJIMcZGgmlf2/gbIRPmWJlWwID
+AQABo4HpMIHmMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFHCZHe5bk6MOuFx7x6kO
+Hw8Y1UXGMAsGA1UdDwQEAwIF4DATBgNVHSUEDDAKBggrBgEFBQcDATARBglghkgB
 hvhCAQEEBAMCBkAwRAYJYIZIAYb4QgENBDcWNUNFUlRJRklDQURPIERFIERFTU8u
-IFNJTiBWQUxPUiBMRUdBTCBPIFJFUFJFU0VOVEFUSVZPMDwGA1UdEQQ1MDOCHWxh
-YnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzggxsYWJ0aWsxMjIwMTeHBH8AAAEw
-DQYJKoZIhvcNAQELBQADggEBAFfu/zeVk1l9HInJ9bA0VZyd3CsOC3QPGOg6waHI
-AY5xfmYQ+OXXsJD71Fbl/zhEJRH6emplq2pfFDBBvWWTPErJ1YMehRGL1CDecmg4
-XEhePdVEinHmhxiKyYdpVX7rQ6kJD/StLQ0CqIWv34Swb1EEsLmxw7P8x7M7HSN6
-bQWthw+pbUvsTUKWWXv+cOH81FZzHUec96J6YJeNAqCuI/bpN3xCmVM/EqSl6ktw
-1sVToul5d2WaIhGZf9i5BJa4bZ2aKh17cxHUvfpO/K5NKBdZGQEcv8smkK9UCwO6
-8u3FOM70uAwEoegH0HUYmY5CBMS960kJzNKNFuUKFrmCE68=
+IFNJTiBWQUxPUiBMRUdBUiBPIFJFUFJFU0VOVEFUSVZPMDwGA1UdEQQ1MDOCDGxh
+YnRpazEyMjAxN4IdbGFidGlrMTIyMDE3LnRlY2hlZGdlZ3JvdXAuZXOHBH8AAAEw
+DQYJKoZIhvcNAQELBQADggEBACFwKTuSaFZFxhwUk4E0NUXfomTx43wiTWqnstFx
+R3cptWbBcMmjh2sSinraJ3sJd5FJ8V+SAHRhPKIh9XGLxOpORfl3dYK5A3lMWnaM
+E62YrgKtWBTSZAv8u2kMG0uiMiQhvB3Smde8BnSUJ2NvjTTleSUJs43oBue+u0pl
+cPbODNv0Np0Rox2YCp0PfOd11Su8qa6MQCPYEWJUNDIYzj3WFQBMQugCmvD8SwqD
+xb8Wq9VInN+p57LORUzItkihTCURy4OMKeXiALRdSGvGYHtxJ0Y3tuihmwaSEV1f
+pQ8lzX2LucRyVdV34S0nwsUVFo+g3HnB73LUpWjlVfVSfN4=
 -----END CERTIFICATE-----
 -----BEGIN CERTIFICATE-----
 MIIFPjCCBCagAwIBAgIBAjANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
@@ -599,6 +599,7 @@ vy611o6AHBpj8/5o2fJMcwgPAlU1Kg3ouihVoKePzzTPmQV78pTpeh6SsHQO3y5q
 /zNhZAAmcndVOAhIyEEOs3ZWyBTfKmylLBhaqpqjjk5PgZl7CE8HRwDfFGZ3hEI9
 PNHrv96O6wHdE055D3Xa
 -----END CERTIFICATE-----
+
 ```
 ```
 gcr-viewer labtik122017.techedgegroup.es_CHAIN.pem
@@ -619,3 +620,20 @@ gcr-viewer labtik122017.techedgegroup.es.p7b
 ### Paso 4. Hacer disponible al `SOLICITANTE` el certificado generado junto con los certíficados X.509 de `Cadena de Certificación` con la que se firmó:
 
 
+Dependiendo de la 
+
+
+Recordar:
+
+```
+  openssl pkcs7 -in labtik122017.techedgegroup.es.p7b -out TIK_CA_chain.pem -inform DER -outform PEM -print_certs
+
+  subl TIK_CA_chain.pem  (Dejar solo, y en orden,los certificados de la CA)
+
+  openssl pkcs12 -export -out labtik122017.techedgegroup.es.p12 -inkey labtik122017_privkey.pem -name labtik122017.techedgegroup.es -in labtik122017.techedgegroup.es.crt -CAfile TIK_CA_chain.pem -certfile TIK_CA_chain.pem -passin pass:changeit -passout pass:changeit
+
+  openssl pkcs12 -info -in labtik122017.techedgegroup.es.p12 
+
+  keytool -importkeystore -srckeystore labtik122017.techedgegroup.es.p12 -srcstoretype pkcs12 -srcalias labtik122017.techedgegroup.es -srcstorepass changeit -destkeystore labtik122017.techedgegroup.es.jks -deststoretype jks -deststorepass changeit -destalias labtik122017.techedgegroup.es
+
+```
