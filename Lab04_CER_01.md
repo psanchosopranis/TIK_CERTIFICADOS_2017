@@ -1,4 +1,4 @@
-# Lab 03 CSR Certificate Signing Request 
+# Lab 04 CER Certificates (Part 01)  
 ##### Apuntes para TIK sobre certificados (Dic 2017)
 
 ### TOOLS
@@ -16,6 +16,8 @@
 >[CSR Decoder And Certificate Decoder(Red Krestel)(old)](https://certlogik.com/decoder/)
 
 >[MMC - Microsoft Management Console](https://msdn.microsoft.com/en-us/library/bb742441.aspx)
+
+>[KeyStore Explorer](http://keystore-explorer.org/downloads.html) KeyStore Explorer is an open source GUI replacement for the Java command-line utilities keytool and jarsigner. KeyStore Explorer presents their functionality, and more, via an intuitive graphical user interface.
 
 ### Preparación del laboratorio
 
@@ -67,6 +69,20 @@ Certificado de firma de código, para garantizar la autoría y la no modificaci�
 
 >[X.509 - Structure_of_a_certificate - Wikipedia (en)](https://en.wikipedia.org/wiki/X.509#Structure_of_a_certificate)
 
+>**Common fields** (tomado de [X.509 - Structure_of_a_certificate - Wikipedia (en)](https://en.wikipedia.org/wiki/X.509#Structure_of_a_certificate) ) 
+>
+>These are some of the most common fields in certificates. Most certificates contain a number of fields not listed here. Note that in terms of a certificate's X.509 representation, a certificate is not "flat" but contains these fields nested in various structures within the certificate:
+>* **Serial Number**: Used to uniquely identify the certificate within a CA's systems. In particular this is used to track revocation information.
+>* **Subject**: The entity a certificate belongs to: a machine, an individual, or an organization.
+>* **Issuer**: The entity that verified the information and signed the certificate.
+>* **Not Before**: The earliest time and date on which the certificate is valid. Usually set to a few hours or days prior to the moment the certificate was issued, to avoid clock skew problems.
+>* **Not After**: The time and date past which the certificate is no longer valid.
+>* **Key Usage**: The valid cryptographic uses of the certificate's public key. Common values include **digital signature validation**, **key encipherment**, and **certificate signing**.
+**Extended Key Usage**: The applications in which the certificate may be used. Common values include **TLS server authentication**, **email protection**, and **code signing**.
+>* **Public Key**: A public key belonging to the certificate subject.
+>* **Signature Algorithm**: The algorithm used to sign the public key certificate.
+>* **Signature**: A signature of the certificate body by the issuer's private key.
+
 >**Certificate filename extensions** (tomado de [X.509 - Structure_of_a_certificate - Wikipedia (en)](https://en.wikipedia.org/wiki/X.509#Structure_of_a_certificate) ):
 >
 >There are several commonly used filename extensions for X.509 certificates. Unfortunately, some of these extensions are also used for other data such as private keys.
@@ -103,6 +119,8 @@ Certificado de firma de código, para garantizar la autoría y la no modificaci�
 >[NetContractor Blog » Certificate Enrollment Process](http://www.netcontractor.pl/blog/wp-content/uploads/2014/11/Certificate-Enrollment-Process.ppsx)
 
 >[IETF - RFC5280 Internet X.509 Public Key Infrastructure Certificate - and Certificate Revocation List (CRL) Profile](https://tools.ietf.org/html/rfc5280)
+
+>[Understanding Certification Path Construction (PDF)](http://www.oasis-pki.org/pdfs/Understanding_Path_construction-DS2.pdf)
 
 ## PKCS
 
@@ -286,6 +304,10 @@ Warning:
 El almacén de claves JKS utiliza un formato propietario. Se recomienda migrar a PKCS12, que es un formato estándar del sector que utiliza "keytool -importkeystore -srckeystore labtik122017_privkey.jks -destkeystore labtik122017_privkey.jks -deststoretype pkcs12".
 ```
 
+Visualizado con Keytool Explorer:
+
+![labtik122017_keypair](images/kse-531-image01.png "labtik122017_keypair")
+
 ####  Generación del `CSR - Certificate Signing Request`
 
 ```
@@ -306,6 +328,10 @@ Comprobación:
 ```
 openssl req -text -in CSR_labtik122017_SAN_keytool.pem -inform PEM
 ```
+
+Visualizado con Keytool Explorer:
+
+![labtik122017_CSR](images/kse-531-image02.png "labtik122017_CSR")
 
 Bitácora:
 ```
@@ -392,4 +418,204 @@ alPlm4XU7B5Jthd3212U7/MoRNrGd46dZwBpoqYabl6FA/ordtlESZNiBmnVXA==
 
 ```
 
-![XCA_CSR_Server_step09.png](images/XCA_CSR_Server_step09.png "XCA_CSR_Server_step09.png")
+## 01.02 Del lado de la `CA - Certification Authority`
+
+Para simular este proceso utilizaremos la herramienta [XCA - X Certificate and key management](http://xca.sourceforge.net/) (c) by Christian Hohnstädt, christian@hohnstaedt.de]
+
+Para ello, se ha creado una `Base de Datos` de certificados que soportará una _ficticia_ `CA Raiz` (CA Root) (Entidad Certificadora Raiz) que, a su vez, dispone de dos `CA Subsidiarias` (o `Entidades de Certificación Intermedias`), una para la emisión de **certificados personales** y la otra, para la emisión de **certificados de dominio/servidor**:
+
+Dicha `Base de datos` puede [descargarse](https://github.com/psanchosopranis/TIK_CERTIFICADOS_2017/blob/master/LabCA/TIKDemoCA.xdb) desde este mismo repositorio. Está protegida por la contraseña `'changeit`'.
+
+![TIKDemoCA_img01.png](images/TIKDemoCA_img01.png "labtik122017_CSRTIKDemoCA_img01.png")
+
+![TIKDemoCA_img02.png](images/TIKDemoCA_img02.png "labtik122017_CSRTIKDemoCA_img02.png")
+
+
+>**Certificate chains and cross-certification** (tomado de: [X.509 - Structure_of_a_certificate - Wikipedia (en)](https://en.wikipedia.org/wiki/X.509#Structure_of_a_certificate) )
+>
+>A **certificate chain** (see the equivalent concept of `"certification path"` defined by [RFC 5280](http://tools.ietf.org/html/rfc5280#page-71)) is a list of certificates (usually starting with an end-entity certificate) followed by one or more CA certificates (usually the last one being a self-signed certificate), with the following properties:
+>
+>* The Issuer of each certificate (except the last one) matches the Subject of the next certificate in the list.
+>
+>* Each certificate (except the last one) is supposed to be signed by the secret key corresponding to the next certificate in the chain (i.e. the signature of one certificate can be verified using the public key contained in the following certificate).
+>
+>* The last certificate in the list is a trust anchor: a certificate that you trust because it was delivered to you by some trustworthy procedure.
+>
+>Certificate chains are used in order to check that the public key (PK) contained in a target certificate (the first certificate in the chain) and other data contained in it effectively belongs to its subject. In order to ascertain this, the signature on the target certificate is verified by using the PK contained in the following certificate, whose signature is verified using the next certificate, and so on until the last certificate in the chain is reached. As the last certificate is a trust anchor, successfully reaching it will prove that the target certificate can be trusted.
+>
+>The description in the preceding paragraph is a simplified view on the certification path validation process as defined by [RFC 5280](http://tools.ietf.org/html/rfc5280#page-71), which involves additional checks, such as verifying validity dates on certificates, looking up CRLs, etc.
+
+
+### Paso 1. Importación del CSR
+
+![TIKDemoCA_img03.png](images/TIKDemoCA_img03.png "TIKDemoCA_img03.png")
+
+#### Visualizando sus propiedades:
+
+![TIKDemoCA_img04.png](images/TIKDemoCA_img04.png "TIKDemoCA_img04.png")
+
+### Paso 2. Firma del `CSR` y generación del `Certificado X.509`:
+
+![TIKDemoCA_img05.png](images/TIKDemoCA_img05.png "TIKDemoCA_img05.png")
+
+![TIKDemoCA_img06.png](images/TIKDemoCA_img06.png "TIKDemoCA_img06.png")
+
+>**AVISO** No pulsar _todavía_ el botón `Aceptar`. Esto sólo se debe hacer al final cuando se haya navegado por TODAS las pestañas. Simplemente pulsar sobre la _pestaña siguiente_.
+
+![TIKDemoCA_img07.png](images/TIKDemoCA_img07.png "TIKDemoCA_img07.png")
+
+>**AVISO** No olvidar, antes de seguir con la siguiente pestaña el pulsar el botón `Apply Extensions` para asegurarse que se _Apliquen TODAS las extensiones del CSR_.
+
+![TIKDemoCA_img08.png](images/TIKDemoCA_img08.png "TIKDemoCA_img08.png")
+
+![TIKDemoCA_img09.png](images/TIKDemoCA_img09.png "TIKDemoCA_img09.png")
+
+![TIKDemoCA_img10.png](images/TIKDemoCA_img10.png "TIKDemoCA_img10.png")
+
+Revisar y pulsar `Aceptar`:
+
+![TIKDemoCA_img11.png](images/TIKDemoCA_img11.png "TIKDemoCA_img11.png")
+
+![TIKDemoCA_img12.png](images/TIKDemoCA_img12.png "TIKDemoCA_img12.png")
+
+### Paso 3. Revisar detalles del `Certificado X.509` y exportarlo para hacerlo disponible al `SOLICITANTE`:
+
+Visualización:
+
+![TIKDemoCA_img13.png](images/TIKDemoCA_img13.png "TIKDemoCA_img13.png")
+
+Exportación:
+
+![TIKDemoCA_img14.png](images/TIKDemoCA_img14.png "TIKDemoCA_img14.png")
+
+Formato `PEM` y extensión `.crt`:
+
+![TIKDemoCA_img15_CRT.png](images/TIKDemoCA_img15_CRT.png "TIKDemoCA_img15_CRT.png")
+
+```
+gcr-viewer labtik122017.techedgegroup.es.crt
+```
+
+![TIKDemoCA_img15_CRT_Viewer.png](images/TIKDemoCA_img15_CRT_Viewer.png  "TIKDemoCA_img15_CRT_Viewer.png")
+
+Formato `DER` y extensión `.cer`:
+
+![TIKDemoCA_img15_CER.png](images/TIKDemoCA_img15_CER.png "TIKDemoCA_img15_CER.png")
+
+Formato `PEM` con la `Cadena de Certificados en formato PEM`:
+
+![TIKDemoCA_img15_PEM_CHAIN.png](images/TIKDemoCA_img15_PEM_CHAIN.png "TIKDemoCA_img15_PEM_CHAIN.png")
+
+```
+$ cat labtik122017.techedgegroup.es_CHAIN.pem
+-----BEGIN CERTIFICATE-----
+MIIFLzCCBBegAwIBAgIBAzANBgkqhkiG9w0BAQsFADCCASExCzAJBgNVBAYTAkVT
+MQ8wDQYDVQQIEwZNYWRyaWQxDzANBgNVBAcTBk1hZHJpZDEoMCYGA1UEChMfVGVj
+aGVkZ2UgSW5zdGl0dXRlIE9mIEtub3dsZWRnZTEkMCIGA1UECxMbRGVtbyBJbnRl
+cm1lZGlhdGUgU2VydmVyIENBMRswGQYDVQQDExJUSUsgRGVtbyBTZXJ2ZXIgQ0Ex
+JDAiBgkqhkiG9w0BCQEWFXN1cHBvcnQuZGVtb2NhQHRpay5lczE9MDsGA1UEDRM0
+RGVtbyBkZSBJbnRlcm1lZGlhdGUgU2VydmVyIENBIFRJSyBkZSBEaWNpZW1icmUg
+MjAxNzEeMBwGA1UELRMVMjAxNzEyMTFTQUxBVElLU2VydmVyMB4XDTE3MTIxMTAw
+MDAwMFoXDTE5MTIxMDIzNTk1OVowgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIEwZN
+YWRyaWQxDzANBgNVBAcTBk1hZHJpZDEsMCoGA1UEChMjVElLIFRlY2hlZGdlIElu
+c3RpdHV0ZSBvZiBLbm93bGVkZ2UxHzAdBgNVBAsTFkFkbWluIExhYiBEZW1vIFNl
+cnZlcnMxJjAkBgNVBAMTHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlaUO/1bynhaBDxSHdbet39CU
+GBf67tT9/ZcPqrikarjGBaOi2jEuZEfQLycKnoj5N74iWuvlIwXJbARtNEpAJRAJ
+m2Bt7KweuB+09aXefSrq1cYee2kFqV8kV4j+jQUzCzo2IAo/obYYotaBphXA9Ayb
+HTjtVxTnMO2JUX8ZOnW5d9ENRib0ONdDgdBClSfTTUeA2kxZ4MA/uN6jIBuQMGKF
+1TQQd1ZBL9cXxhsWG51hGzaCY3LrGVIMM0lDAd6+rpuuItJkg2GuvY0ULvLH0d1/
+GRxznA03QQVAjw47CuYymYpTl0KnCdass/XrI3+bInVK0P4ClUasOLHEjiwzYQID
+AQABo4HpMIHmMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFAn8nsIBXqP5k7vBR7uR
+h4oM8hxGMAsGA1UdDwQEAwIF4DATBgNVHSUEDDAKBggrBgEFBQcDATARBglghkgB
+hvhCAQEEBAMCBkAwRAYJYIZIAYb4QgENBDcWNUNFUlRJRklDQURPIERFIERFTU8u
+IFNJTiBWQUxPUiBMRUdBTCBPIFJFUFJFU0VOVEFUSVZPMDwGA1UdEQQ1MDOCHWxh
+YnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzggxsYWJ0aWsxMjIwMTeHBH8AAAEw
+DQYJKoZIhvcNAQELBQADggEBAFfu/zeVk1l9HInJ9bA0VZyd3CsOC3QPGOg6waHI
+AY5xfmYQ+OXXsJD71Fbl/zhEJRH6emplq2pfFDBBvWWTPErJ1YMehRGL1CDecmg4
+XEhePdVEinHmhxiKyYdpVX7rQ6kJD/StLQ0CqIWv34Swb1EEsLmxw7P8x7M7HSN6
+bQWthw+pbUvsTUKWWXv+cOH81FZzHUec96J6YJeNAqCuI/bpN3xCmVM/EqSl6ktw
+1sVToul5d2WaIhGZf9i5BJa4bZ2aKh17cxHUvfpO/K5NKBdZGQEcv8smkK9UCwO6
+8u3FOM70uAwEoegH0HUYmY5CBMS960kJzNKNFuUKFrmCE68=
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIFPjCCBCagAwIBAgIBAjANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIIBITELMAkGA1UEBhMC
+RVMxDzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9U
+ZWNoZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMSQwIgYDVQQLExtEZW1vIElu
+dGVybWVkaWF0ZSBTZXJ2ZXIgQ0ExGzAZBgNVBAMTElRJSyBEZW1vIFNlcnZlciBD
+QTEkMCIGCSqGSIb3DQEJARYVc3VwcG9ydC5kZW1vY2FAdGlrLmVzMT0wOwYDVQQN
+EzREZW1vIGRlIEludGVybWVkaWF0ZSBTZXJ2ZXIgQ0EgVElLIGRlIERpY2llbWJy
+ZSAyMDE3MR4wHAYDVQQtExUyMDE3MTIxMVNBTEFUSUtTZXJ2ZXIwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDyFZNRhb7eKFx1HMzi0MoHRsgXmCCfKkDn
+HfJ6XEonjvaA/wQZovbPd2UwPQ6wFW5sWqALdbekSBrYvA3El83gS/yF0P1kuQqS
+XdOG1iyMKJA2JGB3Uf658WTrcUtKQBftoExIBpNGoC/9nP23T2paLqJjkAfd/wez
+BcGBxDhcBdRZmVHNh9siRJwS5IkkBj8S4huOUPL5CdU8qMapCt7vlFrChSRnFlX6
+71Yq+GUAXaDM90WGLTDAQeqMvYVFhmaiyKwEzdhqVG+MvOTjoRx/ufBqFVMDRIbH
+18FUmaPtQVC3jQPmW5VZlCZ69KZJ8dyyzj9zoEh808LOkphV8l7hAgMBAAGjgZ8w
+gZwwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQULVVmcQKYw/LIoi9dCtPWsZs6
+aEIwCwYDVR0PBAQDAgEGMBEGCWCGSAGG+EIBAQQEAwIABzBKBglghkgBhvhCAQ0E
+PRY7RGVtbyBSb290IENBIFBhcmEgVFJBSU5JTkcgc2luIFZBTE9SIExFR0FMIE8g
+UkVQUkVTRU5UQVRJVk8wDQYJKoZIhvcNAQELBQADggEBAHUx+x8v1YhEHNssl1aZ
++EvyQB04tmuouhlLjA5d4zLXcCzCKvXyNr9l/DKhWhyr+NV6HBzwDdhC3MnP6bg4
+tdB/zc50FlSjlnpDZ7GA9u0z33lH2lZrWCYWtScwcXTe9xU9/sPalYVHmrTs6VH6
+W749dpq5pJyeMltS728YA+NDXLvij5sbMRWiVIhNVSToanmuRZVv38BtNK6vtgG4
+hk0wo9lJ6dHDOJwuUiMaqe8w7mKXXozOmIWY0nWmrjY5MSMdYUSOP/5y3pBflxyL
+YlWbeFRDJJRue8qM8KDr25G/287OJqty/TRnANKr2vDK2Bz323aKGOo2iL40knbd
+4IQ=
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+MIIFGzCCBAOgAwIBAgIBATANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIH/MQswCQYDVQQGEwJF
+UzEPMA0GA1UECBMGTWFkcmlkMQ8wDQYDVQQHEwZNYWRyaWQxKDAmBgNVBAoTH1Rl
+Y2hlZGdlIEluc3RpdHV0ZSBPZiBLbm93bGVkZ2UxFTATBgNVBAsTDERlbW8gUm9v
+dCBDQTEZMBcGA1UEAxMQVElLIERlbW8gUm9vdCBDQTEkMCIGCSqGSIb3DQEJARYV
+c3VwcG9ydC5kZW1vY2FAdGlrLmVzMS4wLAYDVQQNEyVEZW1vIGRlIFJvb3QgQ0Eg
+VElLIGRlIERpY2llbWJyZSAyMDE3MRwwGgYDVQQtExMyMDE3MTIxMVNBTEFUSUtS
+b290MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwlydq+Uabqodfod3
+I+Nsr5l13uBhBqPM+4/j4RbCzk08t7fczOspYR9Du5Q7WwaGE9M6mHrR303aeznL
+GQbDFXZIsrIO/EzJorvUu2uKRGo0LLu6+Hfezybkn34GtvPES5ItPFeeI1/aCQfZ
+tDNltQUMAOIZL0YMnTC9yF/4P072Hd5WlafhEa/JnIqkNueuI/c4T+8FAqBMEWCL
+4v1vN9xcuDBd/8AQiW7QcTkilbYVil+R9GcKpmA00Mj25rMXnEM7w8Htdicpcahe
+PsjFCTb+NsEAjQ/HYqb9LqH5b9n7aerpWykD6xb7qRK69oNr8LuSiAR5fWJfT6KT
+Gn9WHwIDAQABo4GfMIGcMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFLH51RwF
+J82kjyKlwjK2UREkIfnPMAsGA1UdDwQEAwIBBjARBglghkgBhvhCAQEEBAMCAAcw
+SgYJYIZIAYb4QgENBD0WO0RlbW8gUm9vdCBDQSBQYXJhIFRSQUlOSU5HIHNpbiBW
+QUxPUiBMRUdBTCBPIFJFUFJFU0VOVEFUSVZPMA0GCSqGSIb3DQEBCwUAA4IBAQBw
+TYsgty6WTSlrv79klmm4xwqYpTMCp9YvrD2/mLETAXEYOWOHDdVqXEdhmtTUlFkm
+e6VkjrGz1kXHXFhTb7ZIptiBD/VBCLisJUju8RFIz46sIVXLLlwkHmqqSNSR/WN8
+rw3yOc4tXY/Rz3+IxaCCtR8sPSme9KLsKiPm9orBEF7/OXZgSUSQpCmURQq1CBRM
+vy611o6AHBpj8/5o2fJMcwgPAlU1Kg3ouihVoKePzzTPmQV78pTpeh6SsHQO3y5q
+/zNhZAAmcndVOAhIyEEOs3ZWyBTfKmylLBhaqpqjjk5PgZl7CE8HRwDfFGZ3hEI9
+PNHrv96O6wHdE055D3Xa
+-----END CERTIFICATE-----
+```
+```
+gcr-viewer labtik122017.techedgegroup.es_CHAIN.pem
+```
+![TIKDemoCA_img15_PEM_CHAIN_Viewer.png](images/TIKDemoCA_img15_PEM_CHAIN_Viewer.png "TIKDemoCA_img15_PEM_CHAIN_Viewer.png")
+
+
+Formato `DER` con la `Cadena de Certificados en formato PKCS#7` y extensión `.p7b`:
+
+![TIKDemoCA_img15_PKCS7.png](images/TIKDemoCA_img15_PKCS7.png "TIKDemoCA_img15_PKCS7.png")
+
+```
+gcr-viewer labtik122017.techedgegroup.es.p7b
+```
+
+![TIKDemoCA_img15_PKCS7_viewer.png](images/TIKDemoCA_img15_PKCS7_viewer.png "TIKDemoCA_img15_PKCS7_viewer.png")
+
+### Paso 4. Hacer disponible al `SOLICITANTE` el certificado generado junto con los certíficados X.509 de `Cadena de Certificación` con la que se firmó:
+
+

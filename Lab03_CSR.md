@@ -11,11 +11,13 @@
 
 >[XCA - X Certificate and key management](http://xca.sourceforge.net/) (c) by Christian Hohnstädt, christian@hohnstaedt.de]
 
-Dos nuevas herramientas:
+Tres nuevas herramientas:
 
 >[CSR Decoder and Certificate Decoder (Red Krestel)(new)](https://redkestrel.co.uk/products/decoder/)
 
 >[CSR Decoder And Certificate Decoder(Red Krestel)(old)](https://certlogik.com/decoder/)
+
+>[KeyStore Explorer](http://keystore-explorer.org/downloads.html) KeyStore Explorer is an open source GUI replacement for the Java command-line utilities keytool and jarsigner. KeyStore Explorer presents their functionality, and more, via an intuitive graphical user interface.
 
 ### Preparación del laboratorio
 
@@ -1693,6 +1695,10 @@ El almacén de claves JKS utiliza un formato propietario. Se recomienda migrar a
 ```
 
 >**ADVIERTASE** que este procedimiento permite _Asociar_ el `Key pair RSA` con un `DN - Distinguised Name` y almacenar dicha _asociación_ en un archivo `JKS`
+
+Visualizado con Keytool Explorer:
+
+![labtik122017_keypair](images/kse-531-image01.png "labtik122017_keypair")
 
 ## Paso 2: Generación del `CSR`
 
