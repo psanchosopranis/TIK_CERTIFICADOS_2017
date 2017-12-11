@@ -51,6 +51,20 @@ $ pwd
 >
 >The **most common format for public key certificates** is defined by **X.509**. Because X.509 is very general, the format is **further constrained by profiles** defined for certain use cases, such as **Public Key Infrastructure (X.509) as defined in RFC 5280**.
 
+>**Tipos de certificados**: [ver Infraestructura de clave pública - Wikipedia (es)](https://es.wikipedia.org/wiki/Infraestructura_de_clave_p%C3%BAblica)
+>
+>Existen diferentes **tipos** de **certificado digital**, en función de la información que contiene cada uno y a nombre de quién se emite el certificado:
+>
+>* **Certificado personal**, que acredita la identidad del titular.
+>* **Certificado de pertenencia a empresa**, que además de la identidad del titular acredita su vinculación con la entidad para la que trabaja.
+>* **Certificado de representante**, que además de la pertenencia a empresa acredita también los poderes de representación que el titular tiene sobre la misma.
+>* **Certificado de persona jurídica**, que identifica una empresa o sociedad como tal a la hora de realizar trámites ante las administraciones o instituciones.
+>* **Certificado de atributo** , el cual permite identificar una cualidad, estado o situación. Este tipo de certificado va asociado al certificado personal. (p.ej. Médico, Director, Casado, Apoderado de..., etc.).
+>
+>Además, existen otros tipos de certificado digital utilizados en entornos más técnicos:
+>* **Certificado de servidor seguro**, utilizado en los servidores web que quieren proteger ante terceros el intercambio de información con los usuarios.
+Certificado de firma de código, para garantizar la autoría y la no modificación del código de aplicaciones informáticas.
+
 >[X.509 - Structure_of_a_certificate - Wikipedia (en)](https://en.wikipedia.org/wiki/X.509#Structure_of_a_certificate)
 
 >**Certificate filename extensions** (tomado de [X.509 - Structure_of_a_certificate - Wikipedia (en)](https://en.wikipedia.org/wiki/X.509#Structure_of_a_certificate) ):
@@ -65,21 +79,6 @@ $ pwd
 >**PKCS#7** is a standard for signing or encrypting (officially called "enveloping") data. Since the certificate is needed to verify signed data, it is possible to include them in the SignedData structure. A `.P7C` file is a degenerated SignedData structure, without any data to sign.
 >
 >**PKCS#12** evolved from the personal information exchange `(PFX)` standard and is used to exchange public and private objects in a single file
-
-
->**Tipos de certificados**: [ver Infraestructura de clave pública - Wikipedia (es)](https://es.wikipedia.org/wiki/Infraestructura_de_clave_p%C3%BAblica)
->
->Existen diferentes **tipos** de **certificado digital**, en función de la información que contiene cada uno y a nombre de quién se emite el certificado:
->
->* **Certificado personal**, que acredita la identidad del titular.
->* **Certificado de pertenencia a empresa**, que además de la identidad del titular acredita su vinculación con la entidad para la que trabaja.
->* **Certificado de representante**, que además de la pertenencia a empresa acredita también los poderes de representación que el titular tiene sobre la misma.
->* **Certificado de persona jurídica**, que identifica una empresa o sociedad como tal a la hora de realizar trámites ante las administraciones o instituciones.
->* **Certificado de atributo** , el cual permite identificar una cualidad, estado o situación. Este tipo de certificado va asociado al certificado personal. (p.ej. Médico, Director, Casado, Apoderado de..., etc.).
->
->Además, existen otros tipos de certificado digital utilizados en entornos más técnicos:
->* **Certificado de servidor seguro**, utilizado en los servidores web que quieren proteger ante terceros el intercambio de información con los usuarios.
-Certificado de firma de código, para garantizar la autoría y la no modificación del código de aplicaciones informáticas.
 
 ### PKI - Public key infrastructure y Certificate Enrollment Process
 
