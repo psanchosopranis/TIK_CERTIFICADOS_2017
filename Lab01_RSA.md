@@ -1246,6 +1246,8 @@ i7cJN+ykWIQIFgBfVpCyRWiMX01mWv2F3iUVrNYqXDPOmpwgqe21SA==
 
 >[PKCS#8 - Wikipedia (en)](https://en.wikipedia.org/wiki/PKCS_8)
 
+>[Openssl Manual:Pkcs8(1)](https://wiki.openssl.org/index.php/Manual:Pkcs8(1))
+
 Cuando se requiere que los archivos contenedores de parejas de claves (`keypairs`) se encuentren en el formato que define el estandar `PKCS#8`, `openssl` cuenta con el comando `pkcs8` para ello. 
 
 #### Ayuda de `openssl pkcs8`

@@ -626,6 +626,10 @@ Dependiendo de la
 Recordar:
 
 ```
+openssl pkcs8 -topk8 -in labtik122017_privkey.pem -inform PEM -passin pass:changeit -out labtik122017_privkey_pkcs8.pem -outform PEM -passout pass:changeit -v2 aes-256-cbc -v2prf hmacWithSHA256
+```
+
+```
   openssl pkcs7 -in labtik122017.techedgegroup.es.p7b -out TIK_CA_chain.pem -inform DER -outform PEM -print_certs
 
   subl TIK_CA_chain.pem  (Dejar solo, y en orden,los certificados de la CA)
@@ -635,5 +639,9 @@ Recordar:
   openssl pkcs12 -info -in labtik122017.techedgegroup.es.p12 
 
   keytool -importkeystore -srckeystore labtik122017.techedgegroup.es.p12 -srcstoretype pkcs12 -srcalias labtik122017.techedgegroup.es -srcstorepass changeit -destkeystore labtik122017.techedgegroup.es.jks -deststoretype jks -deststorepass changeit -destalias labtik122017.techedgegroup.es
+
+```
+
+```
 
 ```
