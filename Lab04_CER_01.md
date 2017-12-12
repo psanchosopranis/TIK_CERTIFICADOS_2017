@@ -65,7 +65,7 @@ $ pwd
 >
 >Además, existen otros tipos de certificado digital utilizados en entornos más técnicos:
 >* **Certificado de servidor seguro**, utilizado en los servidores web que quieren proteger ante terceros el intercambio de información con los usuarios.
-Certificado de firma de código, para garantizar la autoría y la no modificación del código de aplicaciones informáticas.
+>* **Certificado de firma de código**, para garantizar la autoría y la no modificación del código de aplicaciones informáticas.
 
 >[X.509 - Structure_of_a_certificate - Wikipedia (en)](https://en.wikipedia.org/wiki/X.509#Structure_of_a_certificate)
 
