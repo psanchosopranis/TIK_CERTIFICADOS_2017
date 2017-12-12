@@ -615,7 +615,7 @@ Formato `DER` con la `Cadena de Certificados en formato PKCS#7` y extensión `.p
 gcr-viewer labtik122017.techedgegroup.es.p7b
 ```
 
-![TIKDemoCA_img15_PKCS7_viewer.png](images/TIKDemoCA_img15_PKCS7_viewer.png "TIKDemoCA_img15_PKCS7_viewer.png")
+![TIKDemoCA_img15_P7b_CHAIN_Viewer.png](images/TIKDemoCA_img15_P7b_CHAIN_Viewer.png "TIKDemoCA_img15_P7b_CHAIN_Viewer.png")
 
 ### Paso 4. Hacer disponible al `SOLICITANTE` el certificado generado junto con los certíficados X.509 de `Cadena de Certificación` con la que se firmó:
 
@@ -665,25 +665,616 @@ Cada Entidad Certificadora `CA` tiene procedimientos diferentes para hacer dispo
         * PEM encoded -> labtik122017.techedgegroup.es.crt  
         * ![TIKDemoCA_img15_CERT_Viewer.png](images/TIKDemoCA_img15_CERT_Viewer.png "TIKDemoCA_img15_CERT_Viewer.png")
 
-Recordar:
+
+## 01.03 Nuevamente del lado del `SOLICITANTE`
+
+### Cuando el `SOLICITANTE` verifica/recibe la notificación de que el `Certificado X.509`, correspondiente a su `CSR - Certificate Signing Request`, ha sido generado y se halla disponible para su descarga, necesita realizar los pasos para ubicar los elementos que especifica la documentación del servidor que desea exponer **HTTPS** (Ej: `SAP`,`Apache Tomcat`, `Apache Server`, `NGINX`, `SAP Web Dispatcher`, ...) o bien **FTPS**.
+
+* Caso 1: Algunos servidores requieren de ubicar en sitios específicos:
+
+    * La clave privada (Protegida/No Protegida)(en PKCS#1 o PKCS#8 format)(en `DER` o `PEM` encoding).
+    * El certificado X.509 con la clave pública asociada (en `DER` o `PEM` encoding).
+    * Un `contenedor` con los certificados X.509 que componen la `Cadena de Certificación` HABITUALMENTE EXCLUYENDO el de la `Entidad Certificadora Raiz (Root CA)`. 
+        * Dicho `contenedor` puede ser un archivo en formato `PKCS#7 (.p7b) DER encoded` 
+        * o bien un simplemente un archivo conteniendo, uno detrás de otro, los certificados X.509 de las `Entidades Certificadoras` en formato `PEM encoded`
+        
+    * Ejemplo:
+    * ![EjemploSAP_BC.png](images/EjemploSAP_BC.png "EjemploSAP_BC.png")
+
+* Caso 2: Algunos otros servidores requieren de ubicar en sitios específicos:
+
+    * Un único archivo `Key Store - (Almacén de Claves)` habitualmente en la forma de un archivo:
+        * Con formato `PKCS#12 (.p12/.pfx)` protegido por clave.
+        * Con formato de `JKS - Java KeyStore (.jks)`
+
+>[Java KeyStore (JKS) - Wikipedia (en)](https://en.wikipedia.org/wiki/Keystore)
+
+>[Wikipedia (ES) PKCS](https://es.wikipedia.org/wiki/PKCS)
+>* **PKCS#12** - Estándar de sintaxis de intercambio de información personal. Define un formato de fichero usado comúnmente para almacenar claves privadas con su certificado de clave pública protegido mediante clave simétrica.
+>* **PKCS#7** Estándar sobre la sintaxis del mensaje criptográfico
+Ver [RFC 2315](https://tools.ietf.org/html/rfc2315). Usado para firmar y/o cifrar mensajes en PKI. También usado para la diseminación de certificados (p.ej. como respuesta a un mensaje PKCS#10). Fue la base para el estándar [S/MIME](https://es.wikipedia.org/wiki/S/MIME), ahora basado en la [RFC 3852](https://tools.ietf.org/html/rfc3852), una actualización del estándar **CMS Cryptographic Message Syntax**, utilizado para firmar digitalmente, obtener el digest, autenticar, o cifrar arbitrariamente el contenido de un mensaje (no confundir con Sistema de gestión de contenido -Content Management System-). 
+
+>[Public-Key Cryptography Standards `(PKCS)` (RSA Laboratories - _ARCHIVO_)](https://web.archive.org/web/20061209135809/http://www.rsasecurity.com/rsalabs/node.asp?id=2124)
+
+>[PKCS #7: PKCS #7: Cryptographic Message Syntax Standard (RSA Laboratories - _ARCHIVO_)](https://web.archive.org/web/20061210143318/http://www.rsasecurity.com/rsalabs/node.asp?id=2129)
+
+>[PKCS #12: PKCS #12: Personal Information Exchange Syntax Standard (RSA Laboratories - _ARCHIVO_)](https://web.archive.org/web/20061210143421/http://www.rsasecurity.com/rsalabs/node.asp?id=2138)
+
+#### En este ejemplo vamos a partir de los siguientes supuestos:
+
+1. La entidad Certificadora nos ha devuelto (o hemos descargado) un archivo en formato `PKCS#7 (.p7b) DER Encoded` con el `Certificado X.509 del Servidor` que hemos solicitado y el conjunto de certificados X.509 que constituyen la `Cadena de Certificación` **completa** de la `Entidad Certificadora Raiz (Root CA)` y el resto de las `Entidades Certificadores Intermedias`.
+
+    * ![TIKDemoCA_img15_P7b_CHAIN_Viewer.png](images/TIKDemoCA_img15_P7b_CHAIN_Viewer.png "TIKDemoCA_img15_P7b_CHAIN_Viewer.png")
+
+2. Que nos encontramos en el `Caso 2` arriba expuesto, es decir, que tenemos que crear uno de estos tipos de archivo:
+        * Con formato `PKCS#12 (.p12/.pfx)` protegido por clave.
+        * Con formato de `JKS - Java KeyStore (.jks)`
+
+
+    * ![labtik122017_PKCS12_Viewer_img01.png](images/labtik122017_PKCS12_Viewer_img01.png "labtik122017_PKCS12_Viewer_img01.png")
+
+Para ello tenemos que disponer de las siguientes _'piezas del Mecano'_ por separado para luego poder _**ensamblarlas**:
+
+
+![Construccion_PKCS12_img01.png](images/Construccion_PKCS12_img01.png "Construccion_PKCS12_img01.png")
+
+* Paso 1: Descomponer el archivo `labtik122017.techedgegroup.es_CHAIN.p7b` en sus `piezas` componentes:
 
 ```
-openssl pkcs8 -topk8 -in labtik122017_privkey.pem -inform PEM -passin pass:changeit -out labtik122017_privkey_pkcs8.pem -outform PEM -passout pass:changeit -v2 aes-256-cbc -v2prf hmacWithSHA256
+openssl pkcs7 -in labtik122017.techedgegroup.es_CHAIN.p7b -out labtik122017.techedgegroup.es_FULLCHAIN.pem -inform DER -outform PEM -print_certs
+
+cp labtik122017.techedgegroup.es_FULLCHAIN.pem labtik122017.techedgegroup.es_EXTRAIDO.crt
+vim labtik122017.techedgegroup.es_EXTRAIDO.crt
+
+cp labtik122017.techedgegroup.es_FULLCHAIN.pem TIK_ServerCa_EXTRAIDO.crt
+vim TIK_ServerCa_EXTRAIDO.crt
+
+cp labtik122017.techedgegroup.es_FULLCHAIN.pem TIK_CA_Chain_EXTRAIDO.crt
+vim TIK_CA_Chain_EXTRAIDO.crt
+```
+
+* Paso 2: Ensamblaje de un archivo `PKCS#12` a partir de los elementos constituyentes: 
+
+```
+openssl pkcs12 -export -out labtik122017.techedgegroup.es.p12 \
+-inkey labtik122017_privkey.pem -passin pass:changeit \
+-name labtik122017.techedgegroup.es \
+-in labtik122017.techedgegroup.es_EXTRAIDO.crt \
+-CAfile TIK_CA_Chain_EXTRAIDO.crt \
+-certfile TIK_ServerCa_EXTRAIDO.crt \
+-passout pass:changeit
+```
+
+* Paso 3: A partir del archivo `PKCS#12` ensamblado en el paso anterior es muy fácil _convertirlo_ en un archivo con formato `Java Key Store (JKS)`:
+
+```
+keytool -importkeystore \
+-srckeystore labtik122017.techedgegroup.es.p12 \
+-srcstoretype pkcs12 -srcalias labtik122017.techedgegroup.es \
+-srcstorepass changeit \
+-destkeystore labtik122017.techedgegroup.es.jks -deststoretype jks \
+-deststorepass changeit -destalias labtik122017.techedgegroup.es
+```
+
+
+
+Bitácora de los pasos 1, 2 y 3 realizados:
+```
+$ openssl pkcs7 -in labtik122017.techedgegroup.es_CHAIN.p7b -out labtik122017.techedgegroup.es_FULLCHAIN.pem -inform DER -outform PEM -print_certs
+
+$ cat labtik122017.techedgegroup.es_FULLCHAIN.pem
+subject=/C=ES/ST=Madrid/L=Madrid/O=TIK Techedge Institute of Knowledge/OU=Admin Lab Demo Servers/CN=labtik122017.techedgegroup.es
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+-----BEGIN CERTIFICATE-----
+MIIFLzCCBBegAwIBAgIBBjANBgkqhkiG9w0BAQsFADCCASExCzAJBgNVBAYTAkVT
+MQ8wDQYDVQQIEwZNYWRyaWQxDzANBgNVBAcTBk1hZHJpZDEoMCYGA1UEChMfVGVj
+aGVkZ2UgSW5zdGl0dXRlIE9mIEtub3dsZWRnZTEkMCIGA1UECxMbRGVtbyBJbnRl
+cm1lZGlhdGUgU2VydmVyIENBMRswGQYDVQQDExJUSUsgRGVtbyBTZXJ2ZXIgQ0Ex
+JDAiBgkqhkiG9w0BCQEWFXN1cHBvcnQuZGVtb2NhQHRpay5lczE9MDsGA1UEDRM0
+RGVtbyBkZSBJbnRlcm1lZGlhdGUgU2VydmVyIENBIFRJSyBkZSBEaWNpZW1icmUg
+MjAxNzEeMBwGA1UELRMVMjAxNzEyMTFTQUxBVElLU2VydmVyMB4XDTE3MTIxMTE1
+MDgwMFoXDTE5MTIxMTE1MDgwMFowgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIDAZN
+YWRyaWQxDzANBgNVBAcMBk1hZHJpZDEsMCoGA1UECgwjVElLIFRlY2hlZGdlIElu
+c3RpdHV0ZSBvZiBLbm93bGVkZ2UxHzAdBgNVBAsMFkFkbWluIExhYiBEZW1vIFNl
+cnZlcnMxJjAkBgNVBAMMHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuZ2cuF1uFrjpKNyHhw/9iAM6
+XA0cn7qjWBb2PDFJL1D1mIyAIzVOib56tn/IzUX/unGslcvcqS2KFkQbghLxdfTS
+HF9SoKybh/tZDckc4Im6XqNhVArQYLMwKaIRObk+HeOfD3+MeB9R+pIKY2YOK89/
+2RjoRb5BKzYnlxxhqPJdugrzW8dFrUXEzV6Kvd8eA7EOpQm/QTU6VMjVwfvARd2l
+1M9UDBJA27oqUhJmVQzAgJPlwtuVLMMO2UudxfAiSLWW4FnZk7RGzaUncBo3q/8f
+M35yktvk4TMqMzeH3PNHkrUYvebqCaI6CJ+9AiaJIMcZGgmlf2/gbIRPmWJlWwID
+AQABo4HpMIHmMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFHCZHe5bk6MOuFx7x6kO
+Hw8Y1UXGMAsGA1UdDwQEAwIF4DATBgNVHSUEDDAKBggrBgEFBQcDATARBglghkgB
+hvhCAQEEBAMCBkAwRAYJYIZIAYb4QgENBDcWNUNFUlRJRklDQURPIERFIERFTU8u
+IFNJTiBWQUxPUiBMRUdBUiBPIFJFUFJFU0VOVEFUSVZPMDwGA1UdEQQ1MDOCDGxh
+YnRpazEyMjAxN4IdbGFidGlrMTIyMDE3LnRlY2hlZGdlZ3JvdXAuZXOHBH8AAAEw
+DQYJKoZIhvcNAQELBQADggEBACFwKTuSaFZFxhwUk4E0NUXfomTx43wiTWqnstFx
+R3cptWbBcMmjh2sSinraJ3sJd5FJ8V+SAHRhPKIh9XGLxOpORfl3dYK5A3lMWnaM
+E62YrgKtWBTSZAv8u2kMG0uiMiQhvB3Smde8BnSUJ2NvjTTleSUJs43oBue+u0pl
+cPbODNv0Np0Rox2YCp0PfOd11Su8qa6MQCPYEWJUNDIYzj3WFQBMQugCmvD8SwqD
+xb8Wq9VInN+p57LORUzItkihTCURy4OMKeXiALRdSGvGYHtxJ0Y3tuihmwaSEV1f
+pQ8lzX2LucRyVdV34S0nwsUVFo+g3HnB73LUpWjlVfVSfN4=
+-----END CERTIFICATE-----
+
+subject=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+-----BEGIN CERTIFICATE-----
+MIIFPjCCBCagAwIBAgIBAjANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIIBITELMAkGA1UEBhMC
+RVMxDzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9U
+ZWNoZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMSQwIgYDVQQLExtEZW1vIElu
+dGVybWVkaWF0ZSBTZXJ2ZXIgQ0ExGzAZBgNVBAMTElRJSyBEZW1vIFNlcnZlciBD
+QTEkMCIGCSqGSIb3DQEJARYVc3VwcG9ydC5kZW1vY2FAdGlrLmVzMT0wOwYDVQQN
+EzREZW1vIGRlIEludGVybWVkaWF0ZSBTZXJ2ZXIgQ0EgVElLIGRlIERpY2llbWJy
+ZSAyMDE3MR4wHAYDVQQtExUyMDE3MTIxMVNBTEFUSUtTZXJ2ZXIwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDyFZNRhb7eKFx1HMzi0MoHRsgXmCCfKkDn
+HfJ6XEonjvaA/wQZovbPd2UwPQ6wFW5sWqALdbekSBrYvA3El83gS/yF0P1kuQqS
+XdOG1iyMKJA2JGB3Uf658WTrcUtKQBftoExIBpNGoC/9nP23T2paLqJjkAfd/wez
+BcGBxDhcBdRZmVHNh9siRJwS5IkkBj8S4huOUPL5CdU8qMapCt7vlFrChSRnFlX6
+71Yq+GUAXaDM90WGLTDAQeqMvYVFhmaiyKwEzdhqVG+MvOTjoRx/ufBqFVMDRIbH
+18FUmaPtQVC3jQPmW5VZlCZ69KZJ8dyyzj9zoEh808LOkphV8l7hAgMBAAGjgZ8w
+gZwwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQULVVmcQKYw/LIoi9dCtPWsZs6
+aEIwCwYDVR0PBAQDAgEGMBEGCWCGSAGG+EIBAQQEAwIABzBKBglghkgBhvhCAQ0E
+PRY7RGVtbyBSb290IENBIFBhcmEgVFJBSU5JTkcgc2luIFZBTE9SIExFR0FMIE8g
+UkVQUkVTRU5UQVRJVk8wDQYJKoZIhvcNAQELBQADggEBAHUx+x8v1YhEHNssl1aZ
++EvyQB04tmuouhlLjA5d4zLXcCzCKvXyNr9l/DKhWhyr+NV6HBzwDdhC3MnP6bg4
+tdB/zc50FlSjlnpDZ7GA9u0z33lH2lZrWCYWtScwcXTe9xU9/sPalYVHmrTs6VH6
+W749dpq5pJyeMltS728YA+NDXLvij5sbMRWiVIhNVSToanmuRZVv38BtNK6vtgG4
+hk0wo9lJ6dHDOJwuUiMaqe8w7mKXXozOmIWY0nWmrjY5MSMdYUSOP/5y3pBflxyL
+YlWbeFRDJJRue8qM8KDr25G/287OJqty/TRnANKr2vDK2Bz323aKGOo2iL40knbd
+4IQ=
+-----END CERTIFICATE-----
+
+subject=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+-----BEGIN CERTIFICATE-----
+MIIFGzCCBAOgAwIBAgIBATANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIH/MQswCQYDVQQGEwJF
+UzEPMA0GA1UECBMGTWFkcmlkMQ8wDQYDVQQHEwZNYWRyaWQxKDAmBgNVBAoTH1Rl
+Y2hlZGdlIEluc3RpdHV0ZSBPZiBLbm93bGVkZ2UxFTATBgNVBAsTDERlbW8gUm9v
+dCBDQTEZMBcGA1UEAxMQVElLIERlbW8gUm9vdCBDQTEkMCIGCSqGSIb3DQEJARYV
+c3VwcG9ydC5kZW1vY2FAdGlrLmVzMS4wLAYDVQQNEyVEZW1vIGRlIFJvb3QgQ0Eg
+VElLIGRlIERpY2llbWJyZSAyMDE3MRwwGgYDVQQtExMyMDE3MTIxMVNBTEFUSUtS
+b290MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwlydq+Uabqodfod3
+I+Nsr5l13uBhBqPM+4/j4RbCzk08t7fczOspYR9Du5Q7WwaGE9M6mHrR303aeznL
+GQbDFXZIsrIO/EzJorvUu2uKRGo0LLu6+Hfezybkn34GtvPES5ItPFeeI1/aCQfZ
+tDNltQUMAOIZL0YMnTC9yF/4P072Hd5WlafhEa/JnIqkNueuI/c4T+8FAqBMEWCL
+4v1vN9xcuDBd/8AQiW7QcTkilbYVil+R9GcKpmA00Mj25rMXnEM7w8Htdicpcahe
+PsjFCTb+NsEAjQ/HYqb9LqH5b9n7aerpWykD6xb7qRK69oNr8LuSiAR5fWJfT6KT
+Gn9WHwIDAQABo4GfMIGcMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFLH51RwF
+J82kjyKlwjK2UREkIfnPMAsGA1UdDwQEAwIBBjARBglghkgBhvhCAQEEBAMCAAcw
+SgYJYIZIAYb4QgENBD0WO0RlbW8gUm9vdCBDQSBQYXJhIFRSQUlOSU5HIHNpbiBW
+QUxPUiBMRUdBTCBPIFJFUFJFU0VOVEFUSVZPMA0GCSqGSIb3DQEBCwUAA4IBAQBw
+TYsgty6WTSlrv79klmm4xwqYpTMCp9YvrD2/mLETAXEYOWOHDdVqXEdhmtTUlFkm
+e6VkjrGz1kXHXFhTb7ZIptiBD/VBCLisJUju8RFIz46sIVXLLlwkHmqqSNSR/WN8
+rw3yOc4tXY/Rz3+IxaCCtR8sPSme9KLsKiPm9orBEF7/OXZgSUSQpCmURQq1CBRM
+vy611o6AHBpj8/5o2fJMcwgPAlU1Kg3ouihVoKePzzTPmQV78pTpeh6SsHQO3y5q
+/zNhZAAmcndVOAhIyEEOs3ZWyBTfKmylLBhaqpqjjk5PgZl7CE8HRwDfFGZ3hEI9
+PNHrv96O6wHdE055D3Xa
+-----END CERTIFICATE-----
+
+$ cp labtik122017.techedgegroup.es_FULLCHAIN.pem labtik122017.techedgegroup.es_EXTRAIDO.crt
+
+$ vim labtik122017.techedgegroup.es_EXTRAIDO.crt
+
+$ cat labtik122017.techedgegroup.es_EXTRAIDO.crt
+subject=/C=ES/ST=Madrid/L=Madrid/O=TIK Techedge Institute of Knowledge/OU=Admin Lab Demo Servers/CN=labtik122017.techedgegroup.es
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+-----BEGIN CERTIFICATE-----
+MIIFLzCCBBegAwIBAgIBBjANBgkqhkiG9w0BAQsFADCCASExCzAJBgNVBAYTAkVT
+MQ8wDQYDVQQIEwZNYWRyaWQxDzANBgNVBAcTBk1hZHJpZDEoMCYGA1UEChMfVGVj
+aGVkZ2UgSW5zdGl0dXRlIE9mIEtub3dsZWRnZTEkMCIGA1UECxMbRGVtbyBJbnRl
+cm1lZGlhdGUgU2VydmVyIENBMRswGQYDVQQDExJUSUsgRGVtbyBTZXJ2ZXIgQ0Ex
+JDAiBgkqhkiG9w0BCQEWFXN1cHBvcnQuZGVtb2NhQHRpay5lczE9MDsGA1UEDRM0
+RGVtbyBkZSBJbnRlcm1lZGlhdGUgU2VydmVyIENBIFRJSyBkZSBEaWNpZW1icmUg
+MjAxNzEeMBwGA1UELRMVMjAxNzEyMTFTQUxBVElLU2VydmVyMB4XDTE3MTIxMTE1
+MDgwMFoXDTE5MTIxMTE1MDgwMFowgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIDAZN
+YWRyaWQxDzANBgNVBAcMBk1hZHJpZDEsMCoGA1UECgwjVElLIFRlY2hlZGdlIElu
+c3RpdHV0ZSBvZiBLbm93bGVkZ2UxHzAdBgNVBAsMFkFkbWluIExhYiBEZW1vIFNl
+cnZlcnMxJjAkBgNVBAMMHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuZ2cuF1uFrjpKNyHhw/9iAM6
+XA0cn7qjWBb2PDFJL1D1mIyAIzVOib56tn/IzUX/unGslcvcqS2KFkQbghLxdfTS
+HF9SoKybh/tZDckc4Im6XqNhVArQYLMwKaIRObk+HeOfD3+MeB9R+pIKY2YOK89/
+2RjoRb5BKzYnlxxhqPJdugrzW8dFrUXEzV6Kvd8eA7EOpQm/QTU6VMjVwfvARd2l
+1M9UDBJA27oqUhJmVQzAgJPlwtuVLMMO2UudxfAiSLWW4FnZk7RGzaUncBo3q/8f
+M35yktvk4TMqMzeH3PNHkrUYvebqCaI6CJ+9AiaJIMcZGgmlf2/gbIRPmWJlWwID
+AQABo4HpMIHmMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFHCZHe5bk6MOuFx7x6kO
+Hw8Y1UXGMAsGA1UdDwQEAwIF4DATBgNVHSUEDDAKBggrBgEFBQcDATARBglghkgB
+hvhCAQEEBAMCBkAwRAYJYIZIAYb4QgENBDcWNUNFUlRJRklDQURPIERFIERFTU8u
+IFNJTiBWQUxPUiBMRUdBUiBPIFJFUFJFU0VOVEFUSVZPMDwGA1UdEQQ1MDOCDGxh
+YnRpazEyMjAxN4IdbGFidGlrMTIyMDE3LnRlY2hlZGdlZ3JvdXAuZXOHBH8AAAEw
+DQYJKoZIhvcNAQELBQADggEBACFwKTuSaFZFxhwUk4E0NUXfomTx43wiTWqnstFx
+R3cptWbBcMmjh2sSinraJ3sJd5FJ8V+SAHRhPKIh9XGLxOpORfl3dYK5A3lMWnaM
+E62YrgKtWBTSZAv8u2kMG0uiMiQhvB3Smde8BnSUJ2NvjTTleSUJs43oBue+u0pl
+cPbODNv0Np0Rox2YCp0PfOd11Su8qa6MQCPYEWJUNDIYzj3WFQBMQugCmvD8SwqD
+xb8Wq9VInN+p57LORUzItkihTCURy4OMKeXiALRdSGvGYHtxJ0Y3tuihmwaSEV1f
+pQ8lzX2LucRyVdV34S0nwsUVFo+g3HnB73LUpWjlVfVSfN4=
+-----END CERTIFICATE-----
+
+$ cp labtik122017.techedgegroup.es_FULLCHAIN.pem TIK_ServerCa_EXTRAIDO.crt
+
+$ vim TIK_ServerCa_EXTRAIDO.crt
+
+$ cat TIK_ServerCa_EXTRAIDO.crt
+subject=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+-----BEGIN CERTIFICATE-----
+MIIFPjCCBCagAwIBAgIBAjANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIIBITELMAkGA1UEBhMC
+RVMxDzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9U
+ZWNoZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMSQwIgYDVQQLExtEZW1vIElu
+dGVybWVkaWF0ZSBTZXJ2ZXIgQ0ExGzAZBgNVBAMTElRJSyBEZW1vIFNlcnZlciBD
+QTEkMCIGCSqGSIb3DQEJARYVc3VwcG9ydC5kZW1vY2FAdGlrLmVzMT0wOwYDVQQN
+EzREZW1vIGRlIEludGVybWVkaWF0ZSBTZXJ2ZXIgQ0EgVElLIGRlIERpY2llbWJy
+ZSAyMDE3MR4wHAYDVQQtExUyMDE3MTIxMVNBTEFUSUtTZXJ2ZXIwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDyFZNRhb7eKFx1HMzi0MoHRsgXmCCfKkDn
+HfJ6XEonjvaA/wQZovbPd2UwPQ6wFW5sWqALdbekSBrYvA3El83gS/yF0P1kuQqS
+XdOG1iyMKJA2JGB3Uf658WTrcUtKQBftoExIBpNGoC/9nP23T2paLqJjkAfd/wez
+BcGBxDhcBdRZmVHNh9siRJwS5IkkBj8S4huOUPL5CdU8qMapCt7vlFrChSRnFlX6
+71Yq+GUAXaDM90WGLTDAQeqMvYVFhmaiyKwEzdhqVG+MvOTjoRx/ufBqFVMDRIbH
+18FUmaPtQVC3jQPmW5VZlCZ69KZJ8dyyzj9zoEh808LOkphV8l7hAgMBAAGjgZ8w
+gZwwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQULVVmcQKYw/LIoi9dCtPWsZs6
+aEIwCwYDVR0PBAQDAgEGMBEGCWCGSAGG+EIBAQQEAwIABzBKBglghkgBhvhCAQ0E
+PRY7RGVtbyBSb290IENBIFBhcmEgVFJBSU5JTkcgc2luIFZBTE9SIExFR0FMIE8g
+UkVQUkVTRU5UQVRJVk8wDQYJKoZIhvcNAQELBQADggEBAHUx+x8v1YhEHNssl1aZ
++EvyQB04tmuouhlLjA5d4zLXcCzCKvXyNr9l/DKhWhyr+NV6HBzwDdhC3MnP6bg4
+tdB/zc50FlSjlnpDZ7GA9u0z33lH2lZrWCYWtScwcXTe9xU9/sPalYVHmrTs6VH6
+W749dpq5pJyeMltS728YA+NDXLvij5sbMRWiVIhNVSToanmuRZVv38BtNK6vtgG4
+hk0wo9lJ6dHDOJwuUiMaqe8w7mKXXozOmIWY0nWmrjY5MSMdYUSOP/5y3pBflxyL
+YlWbeFRDJJRue8qM8KDr25G/287OJqty/TRnANKr2vDK2Bz323aKGOo2iL40knbd
+4IQ=
+-----END CERTIFICATE-----
+
+$ cp labtik122017.techedgegroup.es_FULLCHAIN.pem TIK_CA_Chain_EXTRAIDO.crt
+$ vim TIK_CA_Chain_EXTRAIDO.crt
+
+$ cat TIK_CA_Chain_EXTRAIDO.crt
+subject=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+-----BEGIN CERTIFICATE-----
+MIIFPjCCBCagAwIBAgIBAjANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIIBITELMAkGA1UEBhMC
+RVMxDzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9U
+ZWNoZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMSQwIgYDVQQLExtEZW1vIElu
+dGVybWVkaWF0ZSBTZXJ2ZXIgQ0ExGzAZBgNVBAMTElRJSyBEZW1vIFNlcnZlciBD
+QTEkMCIGCSqGSIb3DQEJARYVc3VwcG9ydC5kZW1vY2FAdGlrLmVzMT0wOwYDVQQN
+EzREZW1vIGRlIEludGVybWVkaWF0ZSBTZXJ2ZXIgQ0EgVElLIGRlIERpY2llbWJy
+ZSAyMDE3MR4wHAYDVQQtExUyMDE3MTIxMVNBTEFUSUtTZXJ2ZXIwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDyFZNRhb7eKFx1HMzi0MoHRsgXmCCfKkDn
+HfJ6XEonjvaA/wQZovbPd2UwPQ6wFW5sWqALdbekSBrYvA3El83gS/yF0P1kuQqS
+XdOG1iyMKJA2JGB3Uf658WTrcUtKQBftoExIBpNGoC/9nP23T2paLqJjkAfd/wez
+BcGBxDhcBdRZmVHNh9siRJwS5IkkBj8S4huOUPL5CdU8qMapCt7vlFrChSRnFlX6
+71Yq+GUAXaDM90WGLTDAQeqMvYVFhmaiyKwEzdhqVG+MvOTjoRx/ufBqFVMDRIbH
+18FUmaPtQVC3jQPmW5VZlCZ69KZJ8dyyzj9zoEh808LOkphV8l7hAgMBAAGjgZ8w
+gZwwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQULVVmcQKYw/LIoi9dCtPWsZs6
+aEIwCwYDVR0PBAQDAgEGMBEGCWCGSAGG+EIBAQQEAwIABzBKBglghkgBhvhCAQ0E
+PRY7RGVtbyBSb290IENBIFBhcmEgVFJBSU5JTkcgc2luIFZBTE9SIExFR0FMIE8g
+UkVQUkVTRU5UQVRJVk8wDQYJKoZIhvcNAQELBQADggEBAHUx+x8v1YhEHNssl1aZ
++EvyQB04tmuouhlLjA5d4zLXcCzCKvXyNr9l/DKhWhyr+NV6HBzwDdhC3MnP6bg4
+tdB/zc50FlSjlnpDZ7GA9u0z33lH2lZrWCYWtScwcXTe9xU9/sPalYVHmrTs6VH6
+W749dpq5pJyeMltS728YA+NDXLvij5sbMRWiVIhNVSToanmuRZVv38BtNK6vtgG4
+hk0wo9lJ6dHDOJwuUiMaqe8w7mKXXozOmIWY0nWmrjY5MSMdYUSOP/5y3pBflxyL
+YlWbeFRDJJRue8qM8KDr25G/287OJqty/TRnANKr2vDK2Bz323aKGOo2iL40knbd
+4IQ=
+-----END CERTIFICATE-----
+
+subject=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+-----BEGIN CERTIFICATE-----
+MIIFGzCCBAOgAwIBAgIBATANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIH/MQswCQYDVQQGEwJF
+UzEPMA0GA1UECBMGTWFkcmlkMQ8wDQYDVQQHEwZNYWRyaWQxKDAmBgNVBAoTH1Rl
+Y2hlZGdlIEluc3RpdHV0ZSBPZiBLbm93bGVkZ2UxFTATBgNVBAsTDERlbW8gUm9v
+dCBDQTEZMBcGA1UEAxMQVElLIERlbW8gUm9vdCBDQTEkMCIGCSqGSIb3DQEJARYV
+c3VwcG9ydC5kZW1vY2FAdGlrLmVzMS4wLAYDVQQNEyVEZW1vIGRlIFJvb3QgQ0Eg
+VElLIGRlIERpY2llbWJyZSAyMDE3MRwwGgYDVQQtExMyMDE3MTIxMVNBTEFUSUtS
+b290MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwlydq+Uabqodfod3
+I+Nsr5l13uBhBqPM+4/j4RbCzk08t7fczOspYR9Du5Q7WwaGE9M6mHrR303aeznL
+GQbDFXZIsrIO/EzJorvUu2uKRGo0LLu6+Hfezybkn34GtvPES5ItPFeeI1/aCQfZ
+tDNltQUMAOIZL0YMnTC9yF/4P072Hd5WlafhEa/JnIqkNueuI/c4T+8FAqBMEWCL
+4v1vN9xcuDBd/8AQiW7QcTkilbYVil+R9GcKpmA00Mj25rMXnEM7w8Htdicpcahe
+PsjFCTb+NsEAjQ/HYqb9LqH5b9n7aerpWykD6xb7qRK69oNr8LuSiAR5fWJfT6KT
+Gn9WHwIDAQABo4GfMIGcMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFLH51RwF
+J82kjyKlwjK2UREkIfnPMAsGA1UdDwQEAwIBBjARBglghkgBhvhCAQEEBAMCAAcw
+SgYJYIZIAYb4QgENBD0WO0RlbW8gUm9vdCBDQSBQYXJhIFRSQUlOSU5HIHNpbiBW
+QUxPUiBMRUdBTCBPIFJFUFJFU0VOVEFUSVZPMA0GCSqGSIb3DQEBCwUAA4IBAQBw
+TYsgty6WTSlrv79klmm4xwqYpTMCp9YvrD2/mLETAXEYOWOHDdVqXEdhmtTUlFkm
+e6VkjrGz1kXHXFhTb7ZIptiBD/VBCLisJUju8RFIz46sIVXLLlwkHmqqSNSR/WN8
+rw3yOc4tXY/Rz3+IxaCCtR8sPSme9KLsKiPm9orBEF7/OXZgSUSQpCmURQq1CBRM
+vy611o6AHBpj8/5o2fJMcwgPAlU1Kg3ouihVoKePzzTPmQV78pTpeh6SsHQO3y5q
+/zNhZAAmcndVOAhIyEEOs3ZWyBTfKmylLBhaqpqjjk5PgZl7CE8HRwDfFGZ3hEI9
+PNHrv96O6wHdE055D3Xa
+-----END CERTIFICATE-----
+
+$ openssl pkcs12 -export -out labtik122017.techedgegroup.es.p12 -inkey labtik122017_privkey.pem -passin pass:changeit -name labtik122017.techedgegroup.es -in labtik122017.techedgegroup.es_EXTRAIDO.crt -CAfile TIK_CA_Chain_EXTRAIDO.crt -certfile TIK_ServerCa_EXTRAIDO.crt -passout pass:changeit
+
+$ openssl pkcs12 -in labtik122017.techedgegroup.es.p12 -passin pass:changeit -info
+MAC Iteration 2048
+MAC verified OK
+PKCS7 Encrypted data: pbeWithSHA1And40BitRC2-CBC, Iteration 2048
+Certificate bag
+Bag Attributes
+    localKeyID: B6 C5 4E 9F B6 F7 8A E7 BF 65 EC 60 B3 E2 B0 C2 E1 EC 51 62 
+    friendlyName: labtik122017.techedgegroup.es
+subject=/C=ES/ST=Madrid/L=Madrid/O=TIK Techedge Institute of Knowledge/OU=Admin Lab Demo Servers/CN=labtik122017.techedgegroup.es
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+-----BEGIN CERTIFICATE-----
+MIIFLzCCBBegAwIBAgIBBjANBgkqhkiG9w0BAQsFADCCASExCzAJBgNVBAYTAkVT
+MQ8wDQYDVQQIEwZNYWRyaWQxDzANBgNVBAcTBk1hZHJpZDEoMCYGA1UEChMfVGVj
+aGVkZ2UgSW5zdGl0dXRlIE9mIEtub3dsZWRnZTEkMCIGA1UECxMbRGVtbyBJbnRl
+cm1lZGlhdGUgU2VydmVyIENBMRswGQYDVQQDExJUSUsgRGVtbyBTZXJ2ZXIgQ0Ex
+JDAiBgkqhkiG9w0BCQEWFXN1cHBvcnQuZGVtb2NhQHRpay5lczE9MDsGA1UEDRM0
+RGVtbyBkZSBJbnRlcm1lZGlhdGUgU2VydmVyIENBIFRJSyBkZSBEaWNpZW1icmUg
+MjAxNzEeMBwGA1UELRMVMjAxNzEyMTFTQUxBVElLU2VydmVyMB4XDTE3MTIxMTE1
+MDgwMFoXDTE5MTIxMTE1MDgwMFowgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIDAZN
+YWRyaWQxDzANBgNVBAcMBk1hZHJpZDEsMCoGA1UECgwjVElLIFRlY2hlZGdlIElu
+c3RpdHV0ZSBvZiBLbm93bGVkZ2UxHzAdBgNVBAsMFkFkbWluIExhYiBEZW1vIFNl
+cnZlcnMxJjAkBgNVBAMMHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuZ2cuF1uFrjpKNyHhw/9iAM6
+XA0cn7qjWBb2PDFJL1D1mIyAIzVOib56tn/IzUX/unGslcvcqS2KFkQbghLxdfTS
+HF9SoKybh/tZDckc4Im6XqNhVArQYLMwKaIRObk+HeOfD3+MeB9R+pIKY2YOK89/
+2RjoRb5BKzYnlxxhqPJdugrzW8dFrUXEzV6Kvd8eA7EOpQm/QTU6VMjVwfvARd2l
+1M9UDBJA27oqUhJmVQzAgJPlwtuVLMMO2UudxfAiSLWW4FnZk7RGzaUncBo3q/8f
+M35yktvk4TMqMzeH3PNHkrUYvebqCaI6CJ+9AiaJIMcZGgmlf2/gbIRPmWJlWwID
+AQABo4HpMIHmMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFHCZHe5bk6MOuFx7x6kO
+Hw8Y1UXGMAsGA1UdDwQEAwIF4DATBgNVHSUEDDAKBggrBgEFBQcDATARBglghkgB
+hvhCAQEEBAMCBkAwRAYJYIZIAYb4QgENBDcWNUNFUlRJRklDQURPIERFIERFTU8u
+IFNJTiBWQUxPUiBMRUdBUiBPIFJFUFJFU0VOVEFUSVZPMDwGA1UdEQQ1MDOCDGxh
+YnRpazEyMjAxN4IdbGFidGlrMTIyMDE3LnRlY2hlZGdlZ3JvdXAuZXOHBH8AAAEw
+DQYJKoZIhvcNAQELBQADggEBACFwKTuSaFZFxhwUk4E0NUXfomTx43wiTWqnstFx
+R3cptWbBcMmjh2sSinraJ3sJd5FJ8V+SAHRhPKIh9XGLxOpORfl3dYK5A3lMWnaM
+E62YrgKtWBTSZAv8u2kMG0uiMiQhvB3Smde8BnSUJ2NvjTTleSUJs43oBue+u0pl
+cPbODNv0Np0Rox2YCp0PfOd11Su8qa6MQCPYEWJUNDIYzj3WFQBMQugCmvD8SwqD
+xb8Wq9VInN+p57LORUzItkihTCURy4OMKeXiALRdSGvGYHtxJ0Y3tuihmwaSEV1f
+pQ8lzX2LucRyVdV34S0nwsUVFo+g3HnB73LUpWjlVfVSfN4=
+-----END CERTIFICATE-----
+Certificate bag
+Bag Attributes: <No Attributes>
+subject=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+-----BEGIN CERTIFICATE-----
+MIIFPjCCBCagAwIBAgIBAjANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIIBITELMAkGA1UEBhMC
+RVMxDzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9U
+ZWNoZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMSQwIgYDVQQLExtEZW1vIElu
+dGVybWVkaWF0ZSBTZXJ2ZXIgQ0ExGzAZBgNVBAMTElRJSyBEZW1vIFNlcnZlciBD
+QTEkMCIGCSqGSIb3DQEJARYVc3VwcG9ydC5kZW1vY2FAdGlrLmVzMT0wOwYDVQQN
+EzREZW1vIGRlIEludGVybWVkaWF0ZSBTZXJ2ZXIgQ0EgVElLIGRlIERpY2llbWJy
+ZSAyMDE3MR4wHAYDVQQtExUyMDE3MTIxMVNBTEFUSUtTZXJ2ZXIwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDyFZNRhb7eKFx1HMzi0MoHRsgXmCCfKkDn
+HfJ6XEonjvaA/wQZovbPd2UwPQ6wFW5sWqALdbekSBrYvA3El83gS/yF0P1kuQqS
+XdOG1iyMKJA2JGB3Uf658WTrcUtKQBftoExIBpNGoC/9nP23T2paLqJjkAfd/wez
+BcGBxDhcBdRZmVHNh9siRJwS5IkkBj8S4huOUPL5CdU8qMapCt7vlFrChSRnFlX6
+71Yq+GUAXaDM90WGLTDAQeqMvYVFhmaiyKwEzdhqVG+MvOTjoRx/ufBqFVMDRIbH
+18FUmaPtQVC3jQPmW5VZlCZ69KZJ8dyyzj9zoEh808LOkphV8l7hAgMBAAGjgZ8w
+gZwwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQULVVmcQKYw/LIoi9dCtPWsZs6
+aEIwCwYDVR0PBAQDAgEGMBEGCWCGSAGG+EIBAQQEAwIABzBKBglghkgBhvhCAQ0E
+PRY7RGVtbyBSb290IENBIFBhcmEgVFJBSU5JTkcgc2luIFZBTE9SIExFR0FMIE8g
+UkVQUkVTRU5UQVRJVk8wDQYJKoZIhvcNAQELBQADggEBAHUx+x8v1YhEHNssl1aZ
++EvyQB04tmuouhlLjA5d4zLXcCzCKvXyNr9l/DKhWhyr+NV6HBzwDdhC3MnP6bg4
+tdB/zc50FlSjlnpDZ7GA9u0z33lH2lZrWCYWtScwcXTe9xU9/sPalYVHmrTs6VH6
+W749dpq5pJyeMltS728YA+NDXLvij5sbMRWiVIhNVSToanmuRZVv38BtNK6vtgG4
+hk0wo9lJ6dHDOJwuUiMaqe8w7mKXXozOmIWY0nWmrjY5MSMdYUSOP/5y3pBflxyL
+YlWbeFRDJJRue8qM8KDr25G/287OJqty/TRnANKr2vDK2Bz323aKGOo2iL40knbd
+4IQ=
+-----END CERTIFICATE-----
+PKCS7 Data
+Shrouded Keybag: pbeWithSHA1And3-KeyTripleDES-CBC, Iteration 2048
+Bag Attributes
+    localKeyID: B6 C5 4E 9F B6 F7 8A E7 BF 65 EC 60 B3 E2 B0 C2 E1 EC 51 62 
+    friendlyName: labtik122017.techedgegroup.es
+Key Attributes: <No Attributes>
+Enter PEM pass phrase:
+Verifying - Enter PEM pass phrase:
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIIFDjBABgkqhkiG9w0BBQ0wMzAbBgkqhkiG9w0BBQwwDgQI+uNBTPR6VhcCAggA
+MBQGCCqGSIb3DQMHBAjkMT3aHD8Z9QSCBMiZgvaOUf1/e6my8rIZHkOsAnL0AAsj
+/2sQdvKp0rVHn/kI9f3KP+z+hfpaCzKy4/pe64xYRnCR5HnyB3ytjx0b38bMkxUF
+SU/Em2jq3js62iI5eJSrua58pzcihf0wdmSdLZnRjGIexfb9pk8u33oJTXkZFJVo
+UGuHXH8hUMSi19chjucPKRC1lrPMzzQxRfN9m7ie5W/tK3tfKBSnt4rGyrp3MHJ9
+F9yyKIEL7HXumPg9rIeN8+q6qplzYexob5ADkJzUWAoIAN7YwiXL7jrGlal7k2K7
+Orl9KkcM3U7yGUScXIk8neMyBf/QjbX3i/4hRO1ZF32OsgWBwf9BddgotRzlzPZh
+8JJNX5qG9Lep1mU/hMWzs6uk7uXsamATmPUQugtOHU3El0pntf8gVGT16KU0mP81
+E3dEsZE5KhvCMlEvdboKa1CKxf7zrLahEzsx1c5BVazLwyJcTgfZvc847g8JNyZ8
+RbxEdqYw2JlBUQ5HmENfnXvIA+QhYQSfpXDgQw99DH+RFtyglsbq3jfjYsxa3XYX
+xtoYoBD6ylNnxVdBaAkmFTIQmi5Vglu7z28r0sRCupff52WeKJPr02lC67vTSeMZ
+3xQobKpXhsG9qPwmT3q2J4maN9Es4E57AqbmAOz69Z5c8UdiEkoxKM6NtnxBzFNl
+89mkeShBLL4NtQschFBDzBlLa4QI7AwRpkR2FU5+SUgEjBipmXfkjcQa3MrQpcJE
+3YWFii34CZ3IfvDmOkhpDZJXV196FmQFQzTJpvmxDLpxD1aPMwfgRpG4VBpldUhY
+OF4kJp38B1n1u3VKnX+fb5nQdgvqjwZISSGbs9PrsDxIE16J6/SSWPWh8+f+58R6
+Wt9d8m6yfF4ERBkGqmEdbcENhoY6YKbHQU9SlDfSOQ1NS2+iDTZ/2c5pu5cMteUl
+8cJeNZCv+3WarGfH1N3yLJscFsLvy5GWY31QLfO1u0tIt0D5VR+cSEeHP1f6OWmL
+TBKtRU8l5IEEQMBI8VHanDO3SGhaNZ4ITaY/LfqKm79ZfbWkmt8wqIQNPqin0dpD
+RYf2F4ACk9T3HOsTx+8lMiXEqlSAyGE0XLVywmldb41BPjd7YREIPhy3twVi9ntq
++o+HbLyKqXs9/qL4Y7uEmcjFImQwy83HK2y/zygWk38ZLtyxPSb/q2sjq02HejjR
+ixL7GUn+8g6riYuONEUnykf5i+yvEcAF4QRkbDm91Ba+R7KGEF0o8WY7Ov9X38sR
+sBAxoz8zaop/tUabpMIs550hcVwX2xuJSwM67czV+kTZEI8TP9rSugiaodrBWp31
+IaRUH9NFxQipk73ALRfYqe6QtP4dma3Csql5C0Dq1vXjBa/yKoeUxJXYv+aCQGcT
+RxK1KpAKsk/LO4244xk1kPvGTI+e5Hd73ceiDb91Yp3LcVo4zFpwSLG7AcqY+Az0
+SB3PgIJ0pHeMp2h5/KbGysJeqqvR88EQni7JRHL/0bXqALeowcEhFlJ8zNw03kL2
+fMQVJrWwIfk44LsCQgHTiG+sjK/pnJQZ9/ph/J7MLzmhLiJR/LKlCOxo/W8ASeB9
+Em+7aefwVCHrjvRCmeXQpkswcrKKsgNXlbfKsCVSNtnNQHBYaGzyENMetqyMztUL
+/i0=
+-----END ENCRYPTED PRIVATE KEY-----
+
+$ keytool -importkeystore -srckeystore labtik122017.techedgegroup.es.p12 -srcstoretype pkcs12 -srcalias labtik122017.techedgegroup.es -srcstorepass changeit -destkeystore labtik122017.techedgegroup.es.jks -deststoretype jks -deststorepass changeit -destalias labtik122017.techedgegroup.es
+
+Warning:
+El almacén de claves JKS utiliza un formato propietario. Se recomienda migrar a PKCS12, que es un formato estándar del sector que utiliza "keytool -importkeystore -srckeystore labtik122017.techedgegroup.es.jks -destkeystore labtik122017.techedgegroup.es.jks -deststoretype pkcs12".
+
+```
+
+* Paso 4: Instalamos el archivo con formato `Java Key Store (JKS)` en un servidor `Apache Tomcat 8`:
+
+
+    - Configuramos la entrada para el puerto `TLS/SSL` en el archivo `server.xml` del directorio `<dir install>\conf` del servidor:
+    > Nota: realizado en la máquina virtual de pruebas Ubuntu 17.10
+
+```
+$ vim /home/devel1/devel/srv/instance12x/apache-tomcat-8.5.11/conf/server.xml
 ```
 
 ```
-  openssl pkcs7 -in labtik122017.techedgegroup.es.p7b -out TIK_CA_chain.pem -inform DER -outform PEM -print_certs
-
-  subl TIK_CA_chain.pem  (Dejar solo, y en orden,los certificados de la CA)
-
-  openssl pkcs12 -export -out labtik122017.techedgegroup.es.p12 -inkey labtik122017_privkey.pem -name labtik122017.techedgegroup.es -in labtik122017.techedgegroup.es.crt -CAfile TIK_CA_chain.pem -certfile TIK_CA_chain.pem -passin pass:changeit -passout pass:changeit
-
-  openssl pkcs12 -info -in labtik122017.techedgegroup.es.p12 
-
-  keytool -importkeystore -srckeystore labtik122017.techedgegroup.es.p12 -srcstoretype pkcs12 -srcalias labtik122017.techedgegroup.es -srcstorepass changeit -destkeystore labtik122017.techedgegroup.es.jks -deststoretype jks -deststorepass changeit -destalias labtik122017.techedgegroup.es
-
+    <Connector port="12443"
+	  protocol="org.apache.coyote.http11.Http11NioProtocol"
+	  SSLEnabled="true"
+	  maxThreads="150"
+	  scheme="https"
+	  secure="true"
+	  keystoreFile="/home/devel1/labs/lab04_CER_01/labtik122017.techedgegroup.es.jks"
+	  keystorePass="changeit"
+	  clientAuth="false"
+	  sslProtocol="TLSv1.2"
+	  sslEnabledProtocols="TLSv1.2,TLSv1.1,TLSv1"
+	  SSLCipherSuite="TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
+			   TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384,
+			   TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			   TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256,
+			   TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,
+			   TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+			   TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384,
+			   TLS_ECDH_RSA_WITH_AES_256_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA,
+			   TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,
+			   TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+			   TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256,
+			   TLS_ECDH_RSA_WITH_AES_128_CBC_SHA,TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA"
+	   />
 ```
 
+* Paso 5: Paramos y re-arrancamos el servidor `Apache Tomcat 8` y probamos que responde correctamente a un cliente `SSL\TLS`:
+
 ```
+$ openssl s_client -connect localhost:12443 -showcerts
+CONNECTED(00000003)
+depth=1 C = ES, ST = Madrid, L = Madrid, O = Techedge Institute Of Knowledge, OU = Demo Intermediate Server CA, CN = TIK Demo Server CA, emailAddress = support.democa@tik.es, description = Demo de Intermediate Server CA TIK de Diciembre 2017, x500UniqueIdentifier = 20171211SALATIKServer
+verify error:num=20:unable to get local issuer certificate
+---
+Certificate chain
+ 0 s:/C=ES/ST=Madrid/L=Madrid/O=TIK Techedge Institute of Knowledge/OU=Admin Lab Demo Servers/CN=labtik122017.techedgegroup.es
+   i:/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+-----BEGIN CERTIFICATE-----
+MIIFLzCCBBegAwIBAgIBBjANBgkqhkiG9w0BAQsFADCCASExCzAJBgNVBAYTAkVT
+MQ8wDQYDVQQIEwZNYWRyaWQxDzANBgNVBAcTBk1hZHJpZDEoMCYGA1UEChMfVGVj
+aGVkZ2UgSW5zdGl0dXRlIE9mIEtub3dsZWRnZTEkMCIGA1UECxMbRGVtbyBJbnRl
+cm1lZGlhdGUgU2VydmVyIENBMRswGQYDVQQDExJUSUsgRGVtbyBTZXJ2ZXIgQ0Ex
+JDAiBgkqhkiG9w0BCQEWFXN1cHBvcnQuZGVtb2NhQHRpay5lczE9MDsGA1UEDRM0
+RGVtbyBkZSBJbnRlcm1lZGlhdGUgU2VydmVyIENBIFRJSyBkZSBEaWNpZW1icmUg
+MjAxNzEeMBwGA1UELRMVMjAxNzEyMTFTQUxBVElLU2VydmVyMB4XDTE3MTIxMTE1
+MDgwMFoXDTE5MTIxMTE1MDgwMFowgaYxCzAJBgNVBAYTAkVTMQ8wDQYDVQQIDAZN
+YWRyaWQxDzANBgNVBAcMBk1hZHJpZDEsMCoGA1UECgwjVElLIFRlY2hlZGdlIElu
+c3RpdHV0ZSBvZiBLbm93bGVkZ2UxHzAdBgNVBAsMFkFkbWluIExhYiBEZW1vIFNl
+cnZlcnMxJjAkBgNVBAMMHWxhYnRpazEyMjAxNy50ZWNoZWRnZWdyb3VwLmVzMIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuZ2cuF1uFrjpKNyHhw/9iAM6
+XA0cn7qjWBb2PDFJL1D1mIyAIzVOib56tn/IzUX/unGslcvcqS2KFkQbghLxdfTS
+HF9SoKybh/tZDckc4Im6XqNhVArQYLMwKaIRObk+HeOfD3+MeB9R+pIKY2YOK89/
+2RjoRb5BKzYnlxxhqPJdugrzW8dFrUXEzV6Kvd8eA7EOpQm/QTU6VMjVwfvARd2l
+1M9UDBJA27oqUhJmVQzAgJPlwtuVLMMO2UudxfAiSLWW4FnZk7RGzaUncBo3q/8f
+M35yktvk4TMqMzeH3PNHkrUYvebqCaI6CJ+9AiaJIMcZGgmlf2/gbIRPmWJlWwID
+AQABo4HpMIHmMAwGA1UdEwEB/wQCMAAwHQYDVR0OBBYEFHCZHe5bk6MOuFx7x6kO
+Hw8Y1UXGMAsGA1UdDwQEAwIF4DATBgNVHSUEDDAKBggrBgEFBQcDATARBglghkgB
+hvhCAQEEBAMCBkAwRAYJYIZIAYb4QgENBDcWNUNFUlRJRklDQURPIERFIERFTU8u
+IFNJTiBWQUxPUiBMRUdBUiBPIFJFUFJFU0VOVEFUSVZPMDwGA1UdEQQ1MDOCDGxh
+YnRpazEyMjAxN4IdbGFidGlrMTIyMDE3LnRlY2hlZGdlZ3JvdXAuZXOHBH8AAAEw
+DQYJKoZIhvcNAQELBQADggEBACFwKTuSaFZFxhwUk4E0NUXfomTx43wiTWqnstFx
+R3cptWbBcMmjh2sSinraJ3sJd5FJ8V+SAHRhPKIh9XGLxOpORfl3dYK5A3lMWnaM
+E62YrgKtWBTSZAv8u2kMG0uiMiQhvB3Smde8BnSUJ2NvjTTleSUJs43oBue+u0pl
+cPbODNv0Np0Rox2YCp0PfOd11Su8qa6MQCPYEWJUNDIYzj3WFQBMQugCmvD8SwqD
+xb8Wq9VInN+p57LORUzItkihTCURy4OMKeXiALRdSGvGYHtxJ0Y3tuihmwaSEV1f
+pQ8lzX2LucRyVdV34S0nwsUVFo+g3HnB73LUpWjlVfVSfN4=
+-----END CERTIFICATE-----
+ 1 s:/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+   i:/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Root CA/CN=TIK Demo Root CA/emailAddress=support.democa@tik.es/description=Demo de Root CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKRoot
+-----BEGIN CERTIFICATE-----
+MIIFPjCCBCagAwIBAgIBAjANBgkqhkiG9w0BAQsFADCB/zELMAkGA1UEBhMCRVMx
+DzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9UZWNo
+ZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMRUwEwYDVQQLEwxEZW1vIFJvb3Qg
+Q0ExGTAXBgNVBAMTEFRJSyBEZW1vIFJvb3QgQ0ExJDAiBgkqhkiG9w0BCQEWFXN1
+cHBvcnQuZGVtb2NhQHRpay5lczEuMCwGA1UEDRMlRGVtbyBkZSBSb290IENBIFRJ
+SyBkZSBEaWNpZW1icmUgMjAxNzEcMBoGA1UELRMTMjAxNzEyMTFTQUxBVElLUm9v
+dDAeFw0xNzEyMDYwMDAwMDBaFw0yNzEyMDUyMzU5NTlaMIIBITELMAkGA1UEBhMC
+RVMxDzANBgNVBAgTBk1hZHJpZDEPMA0GA1UEBxMGTWFkcmlkMSgwJgYDVQQKEx9U
+ZWNoZWRnZSBJbnN0aXR1dGUgT2YgS25vd2xlZGdlMSQwIgYDVQQLExtEZW1vIElu
+dGVybWVkaWF0ZSBTZXJ2ZXIgQ0ExGzAZBgNVBAMTElRJSyBEZW1vIFNlcnZlciBD
+QTEkMCIGCSqGSIb3DQEJARYVc3VwcG9ydC5kZW1vY2FAdGlrLmVzMT0wOwYDVQQN
+EzREZW1vIGRlIEludGVybWVkaWF0ZSBTZXJ2ZXIgQ0EgVElLIGRlIERpY2llbWJy
+ZSAyMDE3MR4wHAYDVQQtExUyMDE3MTIxMVNBTEFUSUtTZXJ2ZXIwggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDyFZNRhb7eKFx1HMzi0MoHRsgXmCCfKkDn
+HfJ6XEonjvaA/wQZovbPd2UwPQ6wFW5sWqALdbekSBrYvA3El83gS/yF0P1kuQqS
+XdOG1iyMKJA2JGB3Uf658WTrcUtKQBftoExIBpNGoC/9nP23T2paLqJjkAfd/wez
+BcGBxDhcBdRZmVHNh9siRJwS5IkkBj8S4huOUPL5CdU8qMapCt7vlFrChSRnFlX6
+71Yq+GUAXaDM90WGLTDAQeqMvYVFhmaiyKwEzdhqVG+MvOTjoRx/ufBqFVMDRIbH
+18FUmaPtQVC3jQPmW5VZlCZ69KZJ8dyyzj9zoEh808LOkphV8l7hAgMBAAGjgZ8w
+gZwwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQULVVmcQKYw/LIoi9dCtPWsZs6
+aEIwCwYDVR0PBAQDAgEGMBEGCWCGSAGG+EIBAQQEAwIABzBKBglghkgBhvhCAQ0E
+PRY7RGVtbyBSb290IENBIFBhcmEgVFJBSU5JTkcgc2luIFZBTE9SIExFR0FMIE8g
+UkVQUkVTRU5UQVRJVk8wDQYJKoZIhvcNAQELBQADggEBAHUx+x8v1YhEHNssl1aZ
++EvyQB04tmuouhlLjA5d4zLXcCzCKvXyNr9l/DKhWhyr+NV6HBzwDdhC3MnP6bg4
+tdB/zc50FlSjlnpDZ7GA9u0z33lH2lZrWCYWtScwcXTe9xU9/sPalYVHmrTs6VH6
+W749dpq5pJyeMltS728YA+NDXLvij5sbMRWiVIhNVSToanmuRZVv38BtNK6vtgG4
+hk0wo9lJ6dHDOJwuUiMaqe8w7mKXXozOmIWY0nWmrjY5MSMdYUSOP/5y3pBflxyL
+YlWbeFRDJJRue8qM8KDr25G/287OJqty/TRnANKr2vDK2Bz323aKGOo2iL40knbd
+4IQ=
+-----END CERTIFICATE-----
+---
+Server certificate
+subject=/C=ES/ST=Madrid/L=Madrid/O=TIK Techedge Institute of Knowledge/OU=Admin Lab Demo Servers/CN=labtik122017.techedgegroup.es
+issuer=/C=ES/ST=Madrid/L=Madrid/O=Techedge Institute Of Knowledge/OU=Demo Intermediate Server CA/CN=TIK Demo Server CA/emailAddress=support.democa@tik.es/description=Demo de Intermediate Server CA TIK de Diciembre 2017/x500UniqueIdentifier=20171211SALATIKServer
+---
+No client certificate CA names sent
+Peer signing digest: SHA512
+Server Temp Key: ECDH, P-256, 256 bits
+---
+SSL handshake has read 3164 bytes and written 431 bytes
+---
+New, TLSv1/SSLv3, Cipher is ECDHE-RSA-AES256-GCM-SHA384
+Server public key is 2048 bit
+Secure Renegotiation IS supported
+Compression: NONE
+Expansion: NONE
+No ALPN negotiated
+SSL-Session:
+    Protocol  : TLSv1.2
+    Cipher    : ECDHE-RSA-AES256-GCM-SHA384
+    Session-ID: 5A30083E6A573C7D971266970E10D0EFCA804DD37CA9A02091CB99F95A089B8D
+    Session-ID-ctx: 
+    Master-Key: 70AEE9F1A1DEC39BCBBB4C312866FA72CD60FC65A53FD6D56CFD694BE92B3551CB3A4F5B4638361FEC053EE5CC44008D
+    Key-Arg   : None
+    PSK identity: None
+    PSK identity hint: None
+    SRP username: None
+    Start Time: 1513097278
+    Timeout   : 300 (sec)
+    Verify return code: 20 (unable to get local issuer certificate)
+---
 
 ```
