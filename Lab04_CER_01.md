@@ -620,7 +620,11 @@ gcr-viewer labtik122017.techedgegroup.es.p7b
 ### Paso 4. Hacer disponible al `SOLICITANTE` el certificado generado junto con los certíficados X.509 de `Cadena de Certificación` con la que se firmó:
 
 
-Dependiendo de la 
+Cada Entidad Certificadora `CA` tiene procedimientos diferentes para hacer disponibles los certificados públicos que componen su `Cadena de Certificación (Certificate chain)`
+
+* Algunas la hacen disponible formando parte de un archivo en formato `PKCS#7 (.p7b)` (en formato `PEM` encoded o `DER` encoded) junto con el certificado generado para el solicitante como se vió más arriba.
+
+* Otras dejan disponible, en su página web de descarga, los certificados que componen la `Cadena de Certificación` como archivos `X.509` individuales, bien en formato `PEM` encoded (habitualmente con extensión `.crt`), bien en formato `DER` encoded (habitualmente con extensión `.cer`): 
 
 
 Recordar:
