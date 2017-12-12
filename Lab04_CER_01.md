@@ -622,10 +622,48 @@ gcr-viewer labtik122017.techedgegroup.es.p7b
 
 Cada Entidad Certificadora `CA` tiene procedimientos diferentes para hacer disponibles los certificados públicos que componen su `Cadena de Certificación (Certificate chain)`
 
-* Algunas la hacen disponible formando parte de un archivo en formato `PKCS#7 (.p7b)` (en formato `PEM` encoded o `DER` encoded) junto con el certificado generado para el solicitante como se vió más arriba.
+1. Algunas la hacen disponible formando parte de un archivo en formato `PKCS#7 (.p7b)` (en formato `PEM` encoded o `DER` encoded) junto con el certificado generado para el solicitante como se vió más arriba.
 
-* Otras dejan disponible, en su página web de descarga, los certificados que componen la `Cadena de Certificación` como archivos `X.509` individuales, bien en formato `PEM` encoded (habitualmente con extensión `.crt`), bien en formato `DER` encoded (habitualmente con extensión `.cer`): 
+    ![TIKDemoCA_img15_PEM_CHAIN_Viewer.png](images/TIKDemoCA_img15_PEM_CHAIN_Viewer.png "TIKDemoCA_img15_PEM_CHAIN_Viewer.png")
 
+* Archivos:
+    * DER encoded -> labtik122017.techedgegroup.es_CHAIN.p7b, o bien
+    * PEM encoded -> labtik122017.techedgegroup.es_CHAIN.pem   
+
+2. Otras dejan disponible, en su página web de descarga, los certificados que componen la `Cadena de Certificación` como archivos `X.509` individuales, bien en formato `PEM` encoded (habitualmente con extensión `.crt`), bien en formato `DER` encoded (habitualmente con extensión `.cer`), como `Información pública` disponible habitualmente sin restricción, e igualmente en forma de archivo individual el certificado `X.509` generado para el solicitante, e igualmente bien en formato `PEM` encoded (habitualmente con extensión `.crt`), bien en formato `DER` encoded (habitualmente con extensión `.cer`):
+
+    ![XCA_CA_Export_img01.png](images/XCA_CA_Export_img01.png "XCA_CA_Export_img01.png")
+
+    ![XCA_CA_Export_img02.png](images/XCA_CA_Export_img02.png "XCA_CA_Export_img02.png")
+
+    ![TIKDemoCA_img14.png](images/TIKDemoCA_img14.png "TIKDemoCA_img14.png")
+
+* Archivos:
+    * X.509 CA Root:
+        * DER encoded -> TIKDemoRootCA.cer, o bien
+        * PEM encoded -> TIKDemoRootCA.crt
+
+        * ![TIKDemoCA_RootCA_img01.png](images/TIKDemoCA_RootCA_img01.png "TIKDemoCA_RootCA_img01.png")
+    * X.509 CA Subordinada (Server CA)
+        * DER encoded -> TIKDemoServerCA.cer, o bien
+        * PEM encoded -> TIKDemoServerCA.crt
+        * ![TIKDemoCA_ServerCA_img01.png](images/TIKDemoCA_ServerCA_img01.png "TIKDemoCA_ServerCA_img01.png") 
+    * X.509 Certificado generado 
+        * DER encoded -> labtik122017.techedgegroup.es.cer, o bien
+        * PEM encoded -> labtik122017.techedgegroup.es.crt  
+        * ![TIKDemoCA_img15_CERT_Viewer.png](images/TIKDemoCA_img15_CERT_Viewer.png "TIKDemoCA_img15_CERT_Viewer.png")
+
+3. Otras dejan disponible, en su página web de descarga, los certificados que componen la `Cadena de Certificación` en un único archivo en formato `PKCS#7 (.p7b)` conteniendo todos los certificados  `X.509` que componen dicha `Cadena de Certificación` (bien en formato `PEM` encoded o bien en formato `DER` encoded), y, de forma separada en forma de archivo individual el certificado `X.509` generado para el solicitante, e igualmente bien en formato `PEM` encoded (habitualmente con extensión `.crt`), bien en formato `DER` encoded (habitualmente con extensión `.cer`):
+
+    * X.509 CA Root + X.509 CA Subordinada (Server CA):
+        * DER encoded -> TIKDemoRootAndServerCA.p7b, o bien
+        * PEM encoded -> TIKDemoRootAndServerCA.pem
+        * ![TIKDemoCARootAndServerCA_img01.png](images/TIKDemoCARootAndServerCA_img01.png "TIKDemoCARootAndServerCA_img01.png")
+
+    * X.509 Certificado generado 
+        * DER encoded -> labtik122017.techedgegroup.es.cer, o bien
+        * PEM encoded -> labtik122017.techedgegroup.es.crt  
+        * ![TIKDemoCA_img15_CERT_Viewer.png](images/TIKDemoCA_img15_CERT_Viewer.png "TIKDemoCA_img15_CERT_Viewer.png")
 
 Recordar:
 
